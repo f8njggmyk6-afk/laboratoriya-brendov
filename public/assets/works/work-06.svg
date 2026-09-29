@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-label="SFERA — НЕДВИЖИМОСТЬ">
+<style>:root{--bg:#20100d;--light:#fff1df;--accent:#f06449;--dark:#55221a;--accent2:#f1b75b}.t{font-family:Arial,Helvetica,sans-serif}</style>
+<rect width="1200" height="750" fill="var(--bg)"/>
+<rect x="28" y="28" width="1144" height="694" rx="16" fill="none" stroke="var(--light)" opacity=".22"/>
+<text class="t" x="70" y="92" fill="var(--accent)" font-size="22" font-weight="700" letter-spacing="4">CASE 06 / НЕДВИЖИМОСТЬ</text>
+<text class="t" x="70" y="180" fill="var(--light)" font-size="104" font-weight="700" letter-spacing="-4">SFERA</text>
+<text class="t" x="72" y="238" fill="var(--light)" opacity=".62" font-size="23">ЛАБОРАТОРИЯ БРЕНДОВ / КОНЦЕПТ 06</text>
+<circle cx="870" cy="365" r="60" fill="none" stroke="var(--light)" stroke-width="28" opacity="0.18"/><circle cx="870" cy="365" r="108" fill="none" stroke="var(--light)" stroke-width="25" opacity="0.28"/><circle cx="870" cy="365" r="156" fill="none" stroke="var(--light)" stroke-width="22" opacity="0.38"/><circle cx="870" cy="365" r="204" fill="none" stroke="var(--light)" stroke-width="19" opacity="0.48000000000000004"/><circle cx="870" cy="365" r="252" fill="none" stroke="var(--light)" stroke-width="16" opacity="0.5800000000000001"/><circle cx="870" cy="365" r="32" fill="var(--accent)"/>
+<path d="M70 670h1060" stroke="var(--accent)" stroke-width="3"/>
+<circle cx="307" cy="438" r="52" fill="var(--accent2)" opacity=".85"/>
+<text class="t" x="1080" y="700" fill="var(--light)" font-size="20">06/50</text>
+</svg>

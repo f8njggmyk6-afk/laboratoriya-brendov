@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-label="LEVEL — СТРОИТЕЛЬСТВО">
+<style>:root{--bg:#16101d;--light:#fff0e4;--accent:#ff6b8a;--dark:#3c203b;--accent2:#6fe7dd}.t{font-family:Arial,Helvetica,sans-serif}</style>
+<rect width="1200" height="750" fill="var(--bg)"/>
+<rect x="28" y="28" width="1144" height="694" rx="24" fill="none" stroke="var(--light)" opacity=".22"/>
+<text class="t" x="70" y="92" fill="var(--accent)" font-size="22" font-weight="700" letter-spacing="4">CASE 32 / СТРОИТЕЛЬСТВО</text>
+<text class="t" x="70" y="610" fill="var(--light)" font-size="96" font-weight="700" letter-spacing="-4">LEVEL</text>
+<text class="t" x="72" y="668" fill="var(--light)" opacity=".62" font-size="23">ЛАБОРАТОРИЯ БРЕНДОВ / КОНЦЕПТ 32</text>
+<rect x="620" y="389" width="48" height="196" fill="var(--light)" opacity="0.35"/><rect x="692" y="342" width="48" height="243" fill="var(--light)" opacity="0.5"/><rect x="764" y="295" width="48" height="290" fill="var(--light)" opacity="0.6499999999999999"/><rect x="836" y="248" width="48" height="337" fill="var(--light)" opacity="0.7999999999999999"/><rect x="908" y="201" width="48" height="384" fill="var(--light)" opacity="0.35"/><rect x="980" y="474" width="48" height="111" fill="var(--light)" opacity="0.5"/><rect x="1052" y="427" width="48" height="158" fill="var(--light)" opacity="0.6499999999999999"/><path d="M600 590h540" stroke="var(--accent)" stroke-width="5"/>
+<path d="M70 670h1060" stroke="var(--accent)" stroke-width="3"/>
+<circle cx="429" cy="316" r="38" fill="var(--accent2)" opacity=".85"/>
+<text class="t" x="1080" y="700" fill="var(--light)" font-size="20">32/50</text>
+</svg>

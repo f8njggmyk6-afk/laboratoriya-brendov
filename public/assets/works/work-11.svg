@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-label="LUMEN — СВЕТ">
+<style>:root{--bg:#07131d;--light:#e9f4ef;--accent:#4dd0ba;--dark:#163a48;--accent2:#f7c86b}.t{font-family:Arial,Helvetica,sans-serif}</style>
+<rect width="1200" height="750" fill="var(--bg)"/>
+<rect x="28" y="28" width="1144" height="694" rx="16" fill="none" stroke="var(--light)" opacity=".22"/>
+<text class="t" x="70" y="92" fill="var(--accent)" font-size="22" font-weight="700" letter-spacing="4">CASE 11 / СВЕТ</text>
+<text class="t" x="70" y="610" fill="var(--light)" font-size="96" font-weight="700" letter-spacing="-4">LUMEN</text>
+<text class="t" x="72" y="668" fill="var(--light)" opacity=".62" font-size="23">ЛАБОРАТОРИЯ БРЕНДОВ / КОНЦЕПТ 11</text>
+<path d="M690 180h310l-28 390H720Z" fill="var(--light)"/><path d="M712 240h266" stroke="var(--accent)" stroke-width="30"/><circle cx="845" cy="405" r="74" fill="none" stroke="var(--dark)" stroke-width="15"/>
+<path d="M70 670h1060" stroke="var(--accent)" stroke-width="3"/>
+<circle cx="492" cy="203" r="38" fill="var(--accent2)" opacity=".85"/>
+<text class="t" x="1080" y="700" fill="var(--light)" font-size="20">11/50</text>
+</svg>

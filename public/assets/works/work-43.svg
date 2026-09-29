@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-label="SPACE — КОВОРКИНГ">
+<style>:root{--bg:#081c18;--light:#f3f0dc;--accent:#92c65d;--dark:#20463b;--accent2:#e7a84b}.t{font-family:Arial,Helvetica,sans-serif}</style>
+<rect width="1200" height="750" fill="var(--bg)"/>
+<rect x="28" y="28" width="1144" height="694" rx="32" fill="none" stroke="var(--light)" opacity=".22"/>
+<text class="t" x="70" y="92" fill="var(--accent)" font-size="22" font-weight="700" letter-spacing="4">CASE 43 / КОВОРКИНГ</text>
+<text class="t" x="70" y="310" fill="var(--light)" font-size="112" font-weight="700" letter-spacing="-4">SPACE</text>
+<text class="t" x="72" y="368" fill="var(--light)" opacity=".62" font-size="23">ЛАБОРАТОРИЯ БРЕНДОВ / КОНЦЕПТ 43</text>
+<rect x="700" y="120" width="340" height="500" rx="70" fill="var(--light)"/><rect x="735" y="185" width="270" height="300" rx="20" fill="var(--dark)"/><circle cx="870" cy="550" r="24" fill="var(--accent)"/>
+<path d="M70 670h1060" stroke="var(--accent)" stroke-width="3"/>
+<circle cx="416" cy="399" r="17" fill="var(--accent2)" opacity=".85"/>
+<text class="t" x="1080" y="700" fill="var(--light)" font-size="20">43/50</text>
+</svg>

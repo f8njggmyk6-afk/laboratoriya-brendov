@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-label="MOMO — ДОСТАВКА">
+<style>:root{--bg:#0d1324;--light:#f5f0e7;--accent:#6f91ff;--dark:#23345d;--accent2:#62c3b6}.t{font-family:Arial,Helvetica,sans-serif}</style>
+<rect width="1200" height="750" fill="var(--bg)"/>
+<rect x="28" y="28" width="1144" height="694" rx="8" fill="none" stroke="var(--light)" opacity=".22"/>
+<text class="t" x="70" y="92" fill="var(--accent)" font-size="22" font-weight="700" letter-spacing="4">CASE 05 / ДОСТАВКА</text>
+<text class="t" x="70" y="610" fill="var(--light)" font-size="96" font-weight="700" letter-spacing="-4">MOMO</text>
+<text class="t" x="72" y="668" fill="var(--light)" opacity=".62" font-size="23">ЛАБОРАТОРИЯ БРЕНДОВ / КОНЦЕПТ 05</text>
+<path d="M640 570 760 240l105 210 95-310 170 430Z" fill="var(--light)" opacity=".72"/><path d="m650 585 170-150 120 70 180-220" fill="none" stroke="var(--accent)" stroke-width="18"/>
+<path d="M70 670h1060" stroke="var(--accent)" stroke-width="3"/>
+<circle cx="270" cy="385" r="45" fill="var(--accent2)" opacity=".85"/>
+<text class="t" x="1080" y="700" fill="var(--light)" font-size="20">05/50</text>
+</svg>

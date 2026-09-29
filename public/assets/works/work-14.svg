@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-label="PULSE — ФИТНЕС">
+<style>:root{--bg:#171512;--light:#f8f3e8;--accent:#d7a96b;--dark:#44382a;--accent2:#6d8fb7}.t{font-family:Arial,Helvetica,sans-serif}</style>
+<rect width="1200" height="750" fill="var(--bg)"/>
+<rect x="28" y="28" width="1144" height="694" rx="40" fill="none" stroke="var(--light)" opacity=".22"/>
+<text class="t" x="70" y="92" fill="var(--accent)" font-size="22" font-weight="700" letter-spacing="4">CASE 14 / ФИТНЕС</text>
+<text class="t" x="70" y="610" fill="var(--light)" font-size="96" font-weight="700" letter-spacing="-4">PULSE</text>
+<text class="t" x="72" y="668" fill="var(--light)" opacity=".62" font-size="23">ЛАБОРАТОРИЯ БРЕНДОВ / КОНЦЕПТ 14</text>
+<circle cx="850" cy="365" r="205" fill="none" stroke="var(--light)" stroke-width="78" opacity=".6"/><path d="M720 365h260M850 235v260" stroke="var(--accent2)" stroke-width="34" stroke-linecap="round"/>
+<path d="M70 670h1060" stroke="var(--accent)" stroke-width="3"/>
+<circle cx="183" cy="362" r="10" fill="var(--accent2)" opacity=".85"/>
+<text class="t" x="1080" y="700" fill="var(--light)" font-size="20">14/50</text>
+</svg>

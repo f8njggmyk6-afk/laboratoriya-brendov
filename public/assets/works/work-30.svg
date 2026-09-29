@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-label="SOUL — ПАРФЮМ">
+<style>:root{--bg:#1d1710;--light:#f7efd9;--accent:#dcae5d;--dark:#514028;--accent2:#83a77b}.t{font-family:Arial,Helvetica,sans-serif}</style>
+<rect width="1200" height="750" fill="var(--bg)"/>
+<rect x="28" y="28" width="1144" height="694" rx="8" fill="none" stroke="var(--light)" opacity=".22"/>
+<text class="t" x="70" y="92" fill="var(--accent)" font-size="22" font-weight="700" letter-spacing="4">CASE 30 / ПАРФЮМ</text>
+<text class="t" x="70" y="180" fill="var(--light)" font-size="104" font-weight="700" letter-spacing="-4">SOUL</text>
+<text class="t" x="72" y="238" fill="var(--light)" opacity=".62" font-size="23">ЛАБОРАТОРИЯ БРЕНДОВ / КОНЦЕПТ 30</text>
+<rect x="650" y="410" width="72" height="150" rx="25" fill="var(--light)" opacity="0.42"/><rect x="662" y="386" width="48" height="31" rx="8" fill="var(--accent)"/><rect x="755" y="314" width="72" height="246" rx="25" fill="var(--light)" opacity="0.54"/><rect x="767" y="290" width="48" height="31" rx="8" fill="var(--accent)"/><rect x="860" y="378" width="72" height="182" rx="25" fill="var(--light)" opacity="0.6599999999999999"/><rect x="872" y="354" width="48" height="31" rx="8" fill="var(--accent)"/><rect x="965" y="282" width="72" height="278" rx="25" fill="var(--light)" opacity="0.78"/><rect x="977" y="258" width="48" height="31" rx="8" fill="var(--accent)"/>
+<path d="M70 670h1060" stroke="var(--accent)" stroke-width="3"/>
+<circle cx="355" cy="210" r="24" fill="var(--accent2)" opacity=".85"/>
+<text class="t" x="1080" y="700" fill="var(--light)" font-size="20">30/50</text>
+</svg>

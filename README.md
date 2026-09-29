@@ -1,3 +1,3 @@
 # Лаборатория брендов
 
-Исходный лендинг сохранён отдельно. Этот репозиторий содержит версию для Vercel.
+Vercel migration from Higgsfield. See DEPLOY-VERCEL.md for deployment and notification setup.

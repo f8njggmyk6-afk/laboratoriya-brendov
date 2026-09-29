@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-label="MIRA — ОДЕЖДА">
+<style>:root{--bg:#16101d;--light:#fff0e4;--accent:#ff6b8a;--dark:#3c203b;--accent2:#6fe7dd}.t{font-family:Arial,Helvetica,sans-serif}</style>
+<rect width="1200" height="750" fill="var(--bg)"/>
+<rect x="28" y="28" width="1144" height="694" rx="24" fill="none" stroke="var(--light)" opacity=".22"/>
+<text class="t" x="70" y="92" fill="var(--accent)" font-size="22" font-weight="700" letter-spacing="4">CASE 22 / ОДЕЖДА</text>
+<text class="t" x="70" y="310" fill="var(--light)" font-size="112" font-weight="700" letter-spacing="-4">MIRA</text>
+<text class="t" x="72" y="368" fill="var(--light)" opacity=".62" font-size="23">ЛАБОРАТОРИЯ БРЕНДОВ / КОНЦЕПТ 22</text>
+<rect x="620" y="199" width="48" height="386" fill="var(--light)" opacity="0.35"/><rect x="692" y="472" width="48" height="113" fill="var(--light)" opacity="0.5"/><rect x="764" y="425" width="48" height="160" fill="var(--light)" opacity="0.6499999999999999"/><rect x="836" y="378" width="48" height="207" fill="var(--light)" opacity="0.7999999999999999"/><rect x="908" y="331" width="48" height="254" fill="var(--light)" opacity="0.35"/><rect x="980" y="284" width="48" height="301" fill="var(--light)" opacity="0.5"/><rect x="1052" y="237" width="48" height="348" fill="var(--light)" opacity="0.6499999999999999"/><path d="M600 590h540" stroke="var(--accent)" stroke-width="5"/>
+<path d="M70 670h1060" stroke="var(--accent)" stroke-width="3"/>
+<circle cx="479" cy="286" r="17" fill="var(--accent2)" opacity=".85"/>
+<text class="t" x="1080" y="700" fill="var(--light)" font-size="20">22/50</text>
+</svg>
