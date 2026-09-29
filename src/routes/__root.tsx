@@ -23,7 +23,7 @@ function NotFoundComponent() {
   return <main className="error-page"><p>404</p><h1>Такой страницы нет</h1><Link to="/">Вернуться в Лабораторию брендов</Link></main>;
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ reset }: { error: unknown; reset: () => void }) {
   const router = useRouter();
   return <main className="error-page"><p>Ошибка</p><h1>Страница не загрузилась</h1><button onClick={() => { router.invalidate(); reset(); }}>Попробовать снова</button><a href="/">Перейти на главную</a></main>;
 }

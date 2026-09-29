@@ -6,7 +6,7 @@
 
 ## Загрузка
 
-На странице создания проекта Vercel выберите `file` и загрузите ZIP с содержимым этой папки. Framework Preset: TanStack Start. Build Command: `npm run build`. Не добавляйте домен до проверки.
+На странице создания проекта Vercel выберите Import Git Repository и репозиторий `f8njggmyk6-afk/laboratoriya-brendov`. Framework Preset: TanStack Start. Build Command: `npm run build`. Сначала проверьте адрес Vercel, затем подключайте домен.
 
 ## Уведомления
 
@@ -14,6 +14,6 @@
 
 - `RESEND_API_KEY` — ключ Resend, хранить только как секрет в Vercel.
 - `RESEND_FROM_EMAIL` — адрес отправителя на подтверждённом в Resend домене (например, `notify@laboratoriyabrendov.com`).
-- `NOTIFY_TO_EMAIL` — почта, куда доставлять заявки. На прежнем сайте указан `laboratoriabrendov@gmail.com`; подтвердите, что это нужный адрес.
+- `NOTIFY_TO_EMAIL` — `laboratoriabrendov@gmail.com`.
 
 После настройки переменных выполните Redeploy и отправьте тестовую заявку. Если уведомление не доставлено, форма покажет ошибку, а не ложное сообщение об успехе. Текущий сайт в Higgsfield не затрагивается.
