@@ -108,5 +108,5 @@ export function HomePage() {
 
     <section className="clear-section faq-section"><header><p className="section-index">05 / Вопросы</p><h2>Коротко о главном.</h2></header><div className="faq-list">{faq.map(([q,a],i)=><details key={q}><summary><span>0{i+1}</span>{q}</summary><p>{a}</p></details>)}</div></section>
     <ContactBand/>
-  </main><BackToTop/><footer className="home-footer"><p>Лаборатория брендов</p><span>Тестовая версия, домен не подключён</span></footer></>;
+  </main><BackToTop/><footer className="home-footer"><p>Лаборатория брендов</p></footer></>;
 }
