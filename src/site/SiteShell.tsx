@@ -21,7 +21,7 @@ export function SiteHeader() {
       <nav className="main-nav" aria-label="Основная навигация">
         {nav.map(([to, label, index]) => (
           <Link key={to} to={to} activeProps={{ className: "is-active" }}>
-            <span>{index}</span>{label}
+            <span>{index}</span>{lang === "en" ? ({ "Услуги":"Services","Цены":"Pricing","Работы":"Work","Процесс":"Process","Заявка":"Contact" } as Record<string,string>)[label] : label}
           </Link>
         ))}
       </nav>
