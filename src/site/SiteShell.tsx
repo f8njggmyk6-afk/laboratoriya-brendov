@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useLanguage } from "./i18n";
 
 const nav = [
   ["/services", "Услуги", "01"],
