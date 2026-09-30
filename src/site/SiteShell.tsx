@@ -25,6 +25,7 @@ export function SiteHeader() {
           </Link>
         ))}
       </nav>
+      <div className="language-switch" role="group" aria-label="Language"><button type="button" className={lang==="ru"?"is-active":""} onClick={()=>setLang("ru")}>RU</button><button type="button" className={lang==="en"?"is-active":""} onClick={()=>setLang("en")}>EN</button></div>
     </header>
   );
 }
