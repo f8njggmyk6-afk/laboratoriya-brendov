@@ -1,10 +1,10 @@
 import { useEffect,useState } from "react";
 import { PageIntro,SiteShell } from "./SiteShell";
-import { money,serviceCatalog,serviceGroups } from "./serviceCatalog";
+import { serviceCatalog,serviceGroups } from "./serviceCatalog";
 import { useLanguage } from "./i18n";
 
 export function PricingPage(){
-  const { lang, t } = useLanguage();
+  const { lang, t, money } = useLanguage();
   const[selected,setSelected]=useState<string[]>([]);
   const[hydrated,setHydrated]=useState(false);
   useEffect(()=>{try{const v=JSON.parse(window.sessionStorage.getItem("lb-selected-services")??"[]");if(Array.isArray(v))setSelected(v)}catch{}setHydrated(true)},[]);
