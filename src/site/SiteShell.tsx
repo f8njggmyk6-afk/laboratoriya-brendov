@@ -11,12 +11,12 @@ const nav = [
 ] as const;
 
 export function SiteHeader() {
-  const { lang, setLang } = useLanguage();
+  const { lang, setLang, t } = useLanguage();
   return (
     <header className="site-header">
-      <Link className="brand-lockup" to="/" aria-label="Лаборатория брендов, главная">
+      <Link className="brand-lockup" to="/" aria-label={t("Лаборатория брендов, главная","Brand Laboratory, home")}>
         <span className="brand-monogram">ЛБ</span>
-        <span className="brand-name">Лаборатория<br />брендов</span>
+        <span className="brand-name">{t("Лаборатория","Brand")}<br />{t("брендов","Laboratory")}</span>
       </Link>
       <nav className="main-nav" aria-label="Основная навигация">
         {nav.map(([to, label, index]) => (
