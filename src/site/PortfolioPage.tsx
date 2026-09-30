@@ -27,16 +27,41 @@ const works = [
 ] as const;
 
 function WorkCard({work,onOpen}:{work:typeof works[number];onOpen:(src:string,alt:string)=>void}) {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
   const [n,name,category,copy]=work;
+  const categoryEn: Record<string,string> = {"Недвижимость":"Real estate","Стоматология":"Dentistry","Одежда":"Fashion","Пекарня":"Bakery","Финтех":"Fintech","Кафе":"Cafe","Шаурма":"Street food","Шашлык":"Restaurant","Автосервис":"Auto service","Косметика":"Cosmetics","Клиника":"Clinic","IT-сервис":"IT service","Семейный сервис":"Family service"};
+  const copyEn: Record<string,string> = {
+    "01":"Architectural campaign for a residential project with a sense of space and status.",
+    "02":"Clean medical communication without a cold hospital aesthetic.",
+    "03":"Editorial fashion direction for the launch of a local brand.",
+    "04":"Tactile product visual emphasizing freshness and craft.",
+    "05":"Contemporary 3D composition for a digital financial service.",
+    "06":"Warm advertising direction for an urban cafe focused on atmosphere and product.",
+    "07":"High-contrast street-food concept with the product as the main hero.",
+    "08":"Premium presentation of fire, meat and hospitality for a grill restaurant.",
+    "09":"Technology-led visual communicating precision, speed and trust.",
+    "10":"Soft premium visual for a cosmetics product and digital advertising.",
+    "11":"Minimalist mark, signage, packaging and branded cup.",
+    "12":"Recognizable product symbol and bold visual system for a point of sale.",
+    "13":"Mark based on fire and charcoal with premium brand applications.",
+    "14":"Dynamic mark, facade signage and staff uniform application.",
+    "15":"Calm nature-inspired identity for a private medical practice.",
+    "16":"Refined typography, packaging and premium gold finishing.",
+    "17":"Geometric mark and architectural application in an urban environment.",
+    "18":"Craft-inspired grain symbol and natural packaging system.",
+    "19":"Technology-led mark with a modern digital palette and 3D presentation.",
+    "20":"Human-centered care symbol and a soft visual system."
+  };
+  const shownCategory = lang==="en" ? (categoryEn[category] ?? category) : category;
+  const shownCopy = lang==="en" ? (copyEn[n] ?? copy) : copy;
   const src='/assets/portfolio/work-'+n+'.webp';
-  const alt=name+' — '+category;
+  const alt=name+' — '+shownCategory;
   return <article>
     <button className="work-image-button" type="button" onClick={()=>onOpen(src,alt)} aria-label={t('Открыть работу полностью','Open work in full')}>
       <img src={src} alt={alt} loading="lazy" />
       <span className="image-open-hint"><b>↗</b> {t("Открыть полностью","Open in full")}</span>
     </button>
-    <div><span>№{n} / {category}</span><small className="work-status">{t("Защищённая версия · показ до передачи оригинала","Protected preview · shown before original delivery")}</small><h3>{name}</h3><p>{copy}</p><div className="work-links"><Link to={'/pricing#price-'+(Number(n) <= 10 ? '12' : '08')}>{t("Узнать стоимость →","See pricing →")}</Link><Link to={'/contacts?packages='+(Number(n) <= 10 ? '12' : '08')}>{t("Обсудить задачу","Discuss project")} <PhoneIcon className="is-pulsing"/></Link></div></div>
+    <div><span>№{n} / {shownCategory}</span><small className="work-status">{t("Защищённая версия · показ до передачи оригинала","Protected preview · shown before original delivery")}</small><h3>{name}</h3><p>{shownCopy}</p><div className="work-links"><Link to={'/pricing#price-'+(Number(n) <= 10 ? '12' : '08')}>{t("Узнать стоимость →","See pricing →")}</Link><Link to={'/contacts?packages='+(Number(n) <= 10 ? '12' : '08')}>{t("Обсудить задачу","Discuss project")} <PhoneIcon className="is-pulsing"/></Link></div></div>
   </article>;
 }
 
