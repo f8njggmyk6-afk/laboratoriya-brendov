@@ -108,14 +108,15 @@ export function SiteShell({ children }: { children: ReactNode }) {
 }
 
 function JourneyTrail({ current }: { current: string }) {
+  const { lang, t } = useLanguage();
   const currentIndex = nav.findIndex((item) => item[2] === current);
   return (
-    <nav className="journey-trail" aria-label="Этапы знакомства с сайтом">
+    <nav className="journey-trail" aria-label={t("Этапы знакомства с сайтом","Site journey")}>
       <div className="journey-line" aria-hidden="true" />
       {nav.map(([to, label, number], index) => {
         const state = index < currentIndex ? "is-done" : index === currentIndex ? "is-current" : index === currentIndex + 1 ? "is-next" : "";
         return <Link key={number} to={to} className={state} aria-current={index === currentIndex ? "step" : undefined}>
-          <span>{index < currentIndex ? "✓" : number}</span><b>{label}</b>{index === currentIndex + 1 ? <small>Далее</small> : null}
+          <span>{index < currentIndex ? "✓" : number}</span><b>{lang==="en"?({"Услуги":"Services","Цены":"Pricing","Работы":"Work","Процесс":"Process","Заявка":"Contact"} as Record<string,string>)[label]:label}</b>{index === currentIndex + 1 ? <small>{t("Далее","Next")}</small> : null}
         </Link>;
       })}
     </nav>
@@ -128,20 +129,22 @@ export function PageIntro({ number, title, lead, titleEn, leadEn }: { number: st
 }
 
 export function ContactBand() {
+  const { t } = useLanguage();
   return (
     <section className="contact-band">
       <div className="contact-band-copy">
-        <p>Есть задача для бренда?</p>
-        <h2>Разберём задачу и предложим решение.</h2>
+        <p>{t("Есть задача для бренда?","Have a brand task?")}</p>
+        <h2>{t("Разберём задачу и предложим решение.","We’ll review the task and propose a solution.")}</h2>
       </div>
-      <Link to="/contacts" className="contact-seal" aria-label="Обсудить задачу">
-        <span>Обсудить задачу</span>
+      <Link to="/contacts" className="contact-seal" aria-label={t("Обсудить задачу","Discuss your project")}>
+        <span>{t("Обсудить задачу","Discuss project")}</span>
         <PhoneIcon className="is-pulsing"/>
       </Link>
     </section>
   );
 }
 
-export function SectionCue({ label }: { label: string }) {
-  return <div className="section-cue" aria-hidden="true"><span>{label}</span><b>↓</b></div>;
+export function SectionCue({ label, labelEn }: { label: string; labelEn?: string }) {
+  const { lang } = useLanguage();
+  return <div className="section-cue" aria-hidden="true"><span>{lang==="en"&&labelEn?labelEn:label}</span><b>↓</b></div>;
 }
