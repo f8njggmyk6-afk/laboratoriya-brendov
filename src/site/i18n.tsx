@@ -1,9 +1,20 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 export type Lang = "ru" | "en";
-type LanguageContextValue = { lang: Lang; setLang: (lang: Lang) => void; t: (ru: string, en: string) => string };
+type LanguageContextValue = {
+  lang: Lang;
+  setLang: (lang: Lang) => void;
+  t: (ru: string, en: string) => string;
+  money: (rubles: number) => string;
+};
 
-const LanguageContext = createContext<LanguageContextValue>({ lang: "ru", setLang: () => {}, t: (ru) => ru });
+const FALLBACK_USD_PER_RUB = 0.0122;
+const LanguageContext = createContext<LanguageContextValue>({
+  lang: "ru",
+  setLang: () => {},
+  t: (ru) => ru,
+  money: (rubles) => rubles.toLocaleString("ru-RU") + " ₽",
+});
 
 const detectLanguage = (): Lang => {
   if (typeof window === "undefined") return "ru";
@@ -19,14 +30,38 @@ const detectLanguage = (): Lang => {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("ru");
+  const [usdPerRub, setUsdPerRub] = useState(FALLBACK_USD_PER_RUB);
+
   useEffect(() => { setLangState(detectLanguage()); }, []);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/fx")
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then((data) => {
+        if (active && typeof data?.usdPerRub === "number" && data.usdPerRub > 0) setUsdPerRub(data.usdPerRub);
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
   const setLang = (next: Lang) => {
     setLangState(next);
     window.localStorage.setItem("lb-language", next);
     document.documentElement.lang = next;
   };
+
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
-  const value = useMemo(() => ({ lang, setLang, t: (ru: string, en: string) => lang === "en" ? en : ru }), [lang]);
+
+  const value = useMemo<LanguageContextValue>(() => ({
+    lang,
+    setLang,
+    t: (ru: string, en: string) => lang === "en" ? en : ru,
+    money: (rubles: number) => lang === "en"
+      ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(rubles * usdPerRub)
+      : rubles.toLocaleString("ru-RU") + " ₽",
+  }), [lang, usdPerRub]);
+
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }
 
