@@ -575,3 +575,9 @@ body{background:var(--bg)}.site-header{background:rgba(11,18,32,.9)}.brand-mark{
 .contact-email-line{margin:16px 0 0;color:var(--muted)}
 .contact-email-line a{color:#aec0ff;border-bottom:1px solid #5877ff}
 @media(max-width:700px){.contact-mode-two{grid-template-columns:1fr}.contact-mode-link{padding:14px}}
+
+/* Language switch */
+.language-switch{display:flex;gap:4px;margin-left:auto;padding:4px;border:1px solid var(--line);border-radius:999px;background:#0d1727}
+.language-switch button{min-width:38px;padding:7px 9px;border:0;border-radius:999px;background:transparent;color:var(--muted);font:800 11px/1 inherit;letter-spacing:.06em;cursor:pointer}
+.language-switch button.is-active{background:#456bff;color:#fff}
+@media(max-width:700px){.site-header{gap:10px}.language-switch{position:absolute;right:14px;top:16px}.language-switch button{min-width:34px;padding:6px 7px;font-size:10px}.main-nav{padding-right:0}}
