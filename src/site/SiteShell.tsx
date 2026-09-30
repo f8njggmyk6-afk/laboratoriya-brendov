@@ -48,6 +48,7 @@ export function PhoneIcon({ className = "" }: { className?: string }) {
 }
 
 function BackButton() {
+  const { t } = useLanguage();
   const [scrollState, setScrollState] = useState({ away: false, scrolling: false, nearBottom: false });
   const stopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -80,10 +81,11 @@ function BackButton() {
   };
   const floating = scrollState.away && !scrollState.nearBottom;
   const hidden = (scrollState.scrolling && scrollState.away) || scrollState.nearBottom;
-  return <button type="button" className={`page-back-control${floating ? " is-floating" : ""}${hidden ? " is-hidden" : ""}`} onClick={goBack} aria-label="Вернуться на предыдущую страницу" aria-hidden={hidden}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg><span>Назад</span></button>;
+  return <button type="button" className={`page-back-control${floating ? " is-floating" : ""}${hidden ? " is-hidden" : ""}`} onClick={goBack} aria-label={t("Вернуться на предыдущую страницу","Go back")} aria-hidden={hidden}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg><span>{t("Назад","Back")}</span></button>;
 }
 
 export function BackToTop() {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const update = () => {
@@ -98,7 +100,7 @@ export function BackToTop() {
       window.removeEventListener("resize", update);
     };
   }, []);
-  return <button type="button" className={`back-to-top${visible ? " is-visible" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Вернуться наверх" aria-hidden={!visible}><span>Наверх</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 14 7-7 7 7"/></svg></button>;
+  return <button type="button" className={`back-to-top${visible ? " is-visible" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label={t("Вернуться наверх","Back to top")} aria-hidden={!visible}><span>{t("Наверх","Top")}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 14 7-7 7 7"/></svg></button>;
 }
 
 export function SiteShell({ children }: { children: ReactNode }) {
