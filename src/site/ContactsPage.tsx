@@ -116,10 +116,10 @@ export function ContactsPage() {
         {mode === "write" ? (
           <form id="application-form" onSubmit={submit} className="contact-form application-form">
             <div className="application-section-head"><div><span>Получить предложение</span><h2>Расскажите о задаче</h2></div></div>
-            <p className="choice-prompt">Укажите имя, email и коротко опишите задачу. Мы изучим запрос и ответим с предложением.</p>
+            <p className="choice-prompt">Укажите имя, email и коротко опишите задачу. Если удобнее обсудить детали по телефону, в Telegram или MAX, можете оставить контакт прямо в описании. Мы изучим запрос и ответим с предложением.</p>
             <div><label htmlFor="name">Как к вам обращаться</label><input id="name" name="name" required placeholder="Ваше имя" /></div>
             <div><label htmlFor="contact">Email для ответа</label><input id="contact" name="contact" type="email" required placeholder="name@company.com" /></div>
-            <div><label htmlFor="brief">Коротко о задаче</label><textarea id="brief" name="brief" required rows={4} placeholder="Что нужно создать и для какого проекта" /></div>
+            <div><label htmlFor="brief">Коротко о задаче</label><textarea id="brief" name="brief" required rows={4} placeholder="Что нужно создать, для какого проекта и любые важные детали. При желании укажите номер телефона, Telegram или MAX для связи." /></div>
             <button type="submit">Получить предложение <span>→</span></button>
             <p className="test-note">Основной канал связи: laboratoriabrendov@gmail.com</p>
           </form>
