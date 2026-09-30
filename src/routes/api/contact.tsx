@@ -33,21 +33,7 @@ export const Route = createFileRoute("/api/contact")({
         console.error("Notification provider returned", response.status);
         return Response.json({ ok: false, error: "notification_failed" }, { status: 502 });
       }
-      try {
-        const confirmation = await fetch("https://api.resend.com/emails", {
-          method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-          body: JSON.stringify({
-            from,
-            to: [email],
-            reply_to: to,
-            subject: "Мы получили вашу заявку — Лаборатория брендов",
-            text: `Здравствуйте, ${name}!\n\nСпасибо за обращение в Лабораторию брендов. Мы получили вашу заявку и ответим на указанный email в течение рабочего дня.\n\nВаш запрос:\n${brief}\n\nС уважением,\nЛаборатория брендов`,
-          }),
-        });
-        if (!confirmation.ok) console.error("Contact confirmation provider returned", confirmation.status);
-      } catch (error) {
-        console.error("Contact confirmation request failed", error);
-      }
+      // Клиенту отвечает умный автоответчик через Gmail: без повторяющегося шаблона.
       return Response.json({ ok: true });
     } catch (error) {
       console.error("Notification request failed", error);
