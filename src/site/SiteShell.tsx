@@ -11,6 +11,7 @@ const nav = [
 ] as const;
 
 export function SiteHeader() {
+  const { lang, setLang } = useLanguage();
   return (
     <header className="site-header">
       <Link className="brand-lockup" to="/" aria-label="Лаборатория брендов, главная">
