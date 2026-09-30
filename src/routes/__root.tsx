@@ -4,6 +4,7 @@ import { type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import appMetaJson from "../app-meta.json";
 import { themeColor } from "@/site/meta";
+import { LanguageProvider } from "@/site/i18n";
 
 
 type AppMeta = {
@@ -68,5 +69,5 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  return <QueryClientProvider client={queryClient}><Outlet /></QueryClientProvider>;
+  return <LanguageProvider><QueryClientProvider client={queryClient}><Outlet /></QueryClientProvider></LanguageProvider>;
 }
