@@ -119,8 +119,9 @@ function JourneyTrail({ current }: { current: string }) {
   );
 }
 
-export function PageIntro({ number, title, lead }: { number: string; title: string; lead: string }) {
-  return <section className="page-intro"><BackButton/><JourneyTrail current={number} /><h1>{title}</h1><p className="page-lead">{lead}</p></section>;
+export function PageIntro({ number, title, lead, titleEn, leadEn }: { number: string; title: string; lead: string; titleEn?: string; leadEn?: string }) {
+  const { lang } = useLanguage();
+  return <section className="page-intro"><BackButton/><JourneyTrail current={number} /><h1>{lang === "en" && titleEn ? titleEn : title}</h1><p className="page-lead">{lang === "en" && leadEn ? leadEn : lead}</p></section>;
 }
 
 export function ContactBand() {
