@@ -3,6 +3,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import { BackToTop, ContactBand, PhoneIcon, SectionCue, SiteHeader } from "./SiteShell";
 import { StructuredData } from "./StructuredData";
 import { serviceCatalog } from "./serviceCatalog";
+import { useLanguage } from "./i18n";
 
 const faq = [
   ["С чего начинается работа?", "С короткого разговора о задаче, продукте и клиенте. Затем мы предлагаем профессиональные направления и объясняем логику каждого."],
@@ -65,6 +66,7 @@ function ServiceFinder() {
 }
 
 export function HomePage() {
+  const { lang, t } = useLanguage();
   return <><StructuredData json={schema}/><SiteHeader/><main>
     <section className="new-hero">
       <video autoPlay muted loop playsInline poster="/assets/world/scene-01-poster.jpg"><source src="/assets/world/scene-01.mp4" type="video/mp4"/></video>
