@@ -20,8 +20,8 @@ export function PricingPage(){
       <h2>{lang==="en"?(g.titleEn??g.title):g.title}</h2>
       <div className="pricing-dossier">{g.packages.map(p=>{const active=selected.includes(p.n);return <article id={"price-"+p.n} key={p.n} className={active?"is-selected":""}>
         <div className="package-head"><span className="package-number-badge">№ {p.n}</span><button type="button" className="package-check" onClick={()=>toggle(p.n)} aria-pressed={active}><b>{active?t("✓ Добавлено","✓ Added"):t("+ Добавить","+ Add")}</b></button></div>
-        <div className="package-copy"><h3>{lang==="en"?(p.nameEn??p.name):p.name}</h3><p>{lang==="en"?(p.subtitleEn??p.subtitle):p.subtitle}</p>{p.items.length?<ul>{p.items.map(x=><li key={x}>{x}</li>)}</ul>:null}</div>
-        <strong className="package-price">{p.price}</strong>
+        <div className="package-copy"><h3>{lang==="en"?(p.nameEn??p.name):p.name}</h3><p>{lang==="en"?(p.subtitleEn??p.subtitle):p.subtitle}</p>{p.items.length?<ul>{(lang==="en"?(p.itemsEn??p.items):p.items).map(x=><li key={x}>{x}</li>)}</ul>:null}</div>
+        <strong className="package-price">{money(p.amount)}</strong>
       </article>})}</div>
     </section>)}
     {hydrated&&selected.length?<aside className="selection-dock" role="status" aria-live="polite"><div className="selection-dock-count"><b>{selected.length}</b><span>{t("услуг выбрано","services selected")}</span></div><div className="selection-dock-total"><small>{t("Итого","Total")}</small><strong>{money(total)}</strong></div><div className="selection-dock-actions"><a href={href}>{t("Перейти к заявке →","Continue to contact →")}</a></div></aside>:null}
