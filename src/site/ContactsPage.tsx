@@ -1,14 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { PageIntro, SiteShell } from "./SiteShell";
-import { money, serviceCatalog } from "./serviceCatalog";
+import { serviceCatalog } from "./serviceCatalog";
 import { useLanguage } from "./i18n";
 
 const options = serviceCatalog.map(({ n, name: label, nameEn: labelEn, amount }) => ({ n, label, labelEn, amount }));
 type ContactMode = "write" | null;
 
 export function ContactsPage() {
-  const { lang, t } = useLanguage();
+  const { lang, t, money } = useLanguage();
   const [sent, setSent] = useState(false);
   const [mode, setMode] = useState<ContactMode>(null);
   const [selected, setSelected] = useState<string[]>([]);
