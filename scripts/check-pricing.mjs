@@ -6,7 +6,7 @@ import * as catalog from '../src/site/serviceCatalog.ts';
 
 const all = catalog.serviceCatalog;
 const premium = all.filter(item => item.discountPercent);
-assert.equal(all.length, 27);
+assert.equal(all.length, 29);
 assert.equal(new Set(all.map(item => item.n)).size, all.length);
 assert.equal(premium.length, 6);
 const expected = {'22':190000, '23':237500, '24':142500, '25':285000, '26':142500, '27':475000};
@@ -37,13 +37,24 @@ const context = {
   fetch: async (_url, options) => { message = JSON.parse(options.body); return Response.json({id:'mock'}); },
 };
 vm.runInNewContext(code, context);
-const request = new Request('http://localhost/api/contact', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name:'Test', email:'test@example.com', brief:'Test', services:['08','23','26','21'], total:999999})});
+const request = new Request('http://localhost/api/contact', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name:'Test', email:'test@example.com', brief:'Test', services:['08','23','26','21','ad-custom','dev-custom'], total:999999})});
 const result = await context.exports.Route.server.handlers.POST({request});
 assert.equal(result.status, 200);
 assert.match(message.text, /Итого за выбранные пакеты: 384\s000 ₽/u);
 assert.match(message.text, /Разработка · № 09 \[DEV-09\] — Интернет-магазин: 237\s500 ₽ \(скидка 5% уже учтена; без скидки 250\s000 ₽\)/u);
 assert.match(message.text, /Разработка · № 12 \[DEV-12\] — ИИ-помощник по документам/u);
 assert(!message.text.includes('999999'));
+assert.match(message.text, /Реклама и дизайн: 4\s000 ₽/u);
+assert.match(message.text, /Разработка: 380\s000 ₽/u);
+assert.match(message.text, /AD-15.*стоимость по индивидуальному заданию/u);
+assert.match(message.text, /DEV-14.*стоимость по индивидуальному заданию/u);
+const mixed = catalog.summarizeServices(['08','23','26','ad-custom','dev-custom','23']);
+assert.equal(mixed.advertisingTotal,4000);
+assert.equal(mixed.developmentTotal,380000);
+assert.equal(mixed.total,mixed.advertisingTotal+mixed.developmentTotal);
+assert.equal(mixed.custom.length,2);
+assert.equal(catalog.serviceGroups[3].packages.at(-1).n,'ad-custom');
+assert.equal(catalog.serviceGroups.at(-1).packages.at(-1).n,'dev-custom');
 assert.match(message.text, /В стоимость входит: Каталог до 100 товаров/u);
 assert.match(message.text, /DEV-07.*стоимость по индивидуальному заданию, в итог не включена/u);
 assert.equal(catalog.summarizeServices(['21']).total, 0);
@@ -58,5 +69,5 @@ assert.match(message.text, /📣 Реклама · № 08 \[AD-08\] — Прос
 assert.equal(catalog.serviceIdentity(all.find(item=>item.n==='14')).code, 'AD-14');
 assert.equal(catalog.serviceIdentity(all.find(item=>item.n==='15')).code, 'DEV-01');
 assert.equal(catalog.serviceIdentity(all.find(item=>item.n==='27')).code, 'DEV-13');
-assert.equal(new Set(all.map(item=>catalog.serviceIdentity(item).code)).size, 27);
+assert.equal(new Set(all.map(item=>catalog.serviceIdentity(item).code)).size, 29);
 console.log('PASS: six 5% discounts, localized catalog, stable existing prices, fixed package totals, custom-project exclusion and actual notification route. No emails sent.');

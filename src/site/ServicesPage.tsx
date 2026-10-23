@@ -1,3 +1,4 @@
+import { CustomPackageCard } from "./CustomPackageCard";
 import { ServiceBadge } from "./ServiceBadge";
 import { serviceGroups } from "./serviceCatalog";
 import { PageIntro, SiteShell } from "./SiteShell";
@@ -12,7 +13,7 @@ export function ServicesPage(){
     </nav>
     {serviceGroups.map((g,i)=><section className="service-group" id={`service-group-${i+1}`} key={g.title}>
       <header><span>0{i+1}</span><h2>{lang==="en"?(g.titleEn??g.title):g.title}</h2></header>
-      <div className="editorial-list service-catalog-list">{g.packages.map(s=><article id={"service-"+s.n} key={s.n}>
+      <div className="editorial-list service-catalog-list">{g.packages.map(s=>s.customRequest ? <CustomPackageCard key={s.n} item={s}/> : <article id={"service-"+s.n} key={s.n}>
         <span><ServiceBadge item={s}/></span><h3>{lang==="en"?(s.nameEn??s.name):s.name}</h3>
         <div><p>{lang==="en"?(s.descriptionEn??s.description):s.description}</p><a href={"/pricing#price-"+s.n}>{t("Узнать стоимость →","See pricing →")}</a></div>
       </article>)}</div>

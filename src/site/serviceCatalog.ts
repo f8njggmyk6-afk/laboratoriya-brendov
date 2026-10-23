@@ -1,5 +1,8 @@
 export type ServiceItem = {
   n: string;
+  direction?: "advertising" | "development";
+  displayNumber?: string;
+  customRequest?: boolean;
   name: string;
   nameEn?: string;
   subtitle: string;
@@ -25,6 +28,19 @@ function discountedProject(item: Omit<ServiceItem, "amount" | "price" | "pricing
   return { ...item, amount, price: amount.toLocaleString("ru-RU") + " ₽", pricing: "fixed", discountPercent: COMPLEX_PROJECT_DISCOUNT };
 }
 
+function customPackage(direction: "advertising" | "development"): ServiceItem {
+  const development = direction === "development";
+  return {
+    n: development ? "dev-custom" : "ad-custom", direction, displayNumber: development ? "14" : "15", customRequest: true,
+    name: development ? "Индивидуальный пакет разработки" : "Индивидуальный пакет рекламы и дизайна",
+    nameEn: development ? "Custom development package" : "Custom advertising & design package",
+    subtitle: "Не нашли нужную услугу? Подберём решение вместе.", subtitleEn: "Can't find the service you need? Let's find the right solution together.",
+    description: "Расскажите о задаче — предложим состав работ, согласуем стоимость и сроки до начала.",
+    descriptionEn: "Tell us what you need. We'll propose the scope and agree on price and timing before starting.",
+    price: "По индивидуальному заданию", amount: 0, pricing: "quote", items: [], itemsEn: [], searchTerms: ["индивидуальный пакет", "другая услуга", "custom package"]
+  };
+}
+
 export const serviceGroups: readonly { title: string; titleEn?: string; note?: string; noteEn?: string; packages: readonly ServiceItem[] }[] = [
   { title: "Названия", titleEn: "Naming", packages: [
     { n: "01", name: "Название, 2 варианта", nameEn: "Name — 2 options", subtitle: "Для компании, услуги, продукта или проекта", subtitleEn: "For a company, service, product or project", description: "Создаём два продуманных названия, объясняем логику каждого и предварительно проверяем совпадения.", descriptionEn: "Two considered naming options with rationale and a preliminary online similarity check.", price: "2 000 ₽", amount: 2000, items: ["2 продуманных варианта", "Краткое объяснение каждого", "Предварительный поиск совпадений в интернете"], itemsEn: ["2 considered options", "Short rationale for each", "Preliminary online similarity check"], searchTerms: ["название", "назвать", "имя", "нейминг", "компания", "продукт", "проект", "кафе", "магазин", "бренд"] },
@@ -47,6 +63,7 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
     { n: "12", name: "1 статичный рекламный креатив", nameEn: "1 static advertising creative", subtitle: "Готовое изображение с текстом под выбранную площадку", subtitleEn: "Ready-to-use visual for the selected platform", description: "Создаём один готовый рекламный макет для социальной сети, сайта, баннера или другой площадки.", descriptionEn: "One finished advertising visual for social media, a website banner or another digital placement.", price: "1 500 ₽", amount: 1500, items: [], searchTerms: ["фото для рекламы", "фотография для рекламы", "картинка", "креатив", "баннер", "пост", "сторис", "макет", "соцсеть", "telegram", "телеграм", "meta"] },
     { n: "13", name: "5 статичных креативов", nameEn: "5 static creatives", subtitle: "Разные визуальные подачи для тестирования", subtitleEn: "Different visual directions for testing", description: "Готовим пять рекламных креативов, чтобы сравнить разные идеи и визуальные направления.", descriptionEn: "Five advertising creatives for comparing several ideas and visual approaches.", price: "6 000 ₽", amount: 6000, items: [], searchTerms: ["5 креативов", "пять картинок", "несколько баннеров", "тест рекламы", "креативы"] },
     { n: "14", name: "10 статичных креативов", nameEn: "10 static creatives", subtitle: "Полный набор вариантов для рекламной кампании", subtitleEn: "A complete set for an advertising campaign", description: "Создаём десять согласованных рекламных креативов для полноценного запуска кампании.", descriptionEn: "Ten coordinated advertising creatives for a full campaign launch.", price: "10 000 ₽", amount: 10000, items: [], searchTerms: ["10 креативов", "десять картинок", "рекламная кампания", "набор баннеров", "много креативов"] },
+    customPackage("advertising"),
   ]},
   { title: "Разработка и автоматизация", titleEn: "Development & automation", packages: [
     {"n": "15", "name": "Исправление ошибки на сайте", "nameEn": "Website bug fix", "subtitle": "Одна ошибка в интерфейсе существующего сайта", "subtitleEn": "One interface issue on an existing website", "description": "Одна ошибка в интерфейсе существующего сайта. В стоимость входит: Диагностика одной ошибки формы или отображения; Исправление в существующем коде без смены платформы; Проверка на телефоне и компьютере.", "descriptionEn": "One interface issue on an existing website. Includes: Diagnosis of one form or display issue; Fix in the existing code without platform migration; Mobile and desktop verification.", "price": "3 000 ₽", "amount": 3000, "pricing": "fixed", "items": ["Диагностика одной ошибки формы или отображения", "Исправление в существующем коде без смены платформы", "Проверка на телефоне и компьютере"], "itemsEn": ["Diagnosis of one form or display issue", "Fix in the existing code without platform migration", "Mobile and desktop verification"], "searchTerms": ["Исправление ошибки на сайте", "Website bug fix", "разработка", "исправление"]},
@@ -60,7 +77,7 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
   { title: "Комплексная разработка для бизнеса", titleEn: "Business software & digital products",
     note: "Скидка 5% уже включена в цены комплексных пакетов. Стоимость фиксирована за указанный состав работ. Дополнительные функции согласуем и оцениваем отдельно до выполнения. Хостинг, домен, лицензии, платные API, эквайринг и сопровождение оплачиваются отдельно; скидка на них не распространяется.",
     noteEn: "Complex package prices already include a 5% discount. Prices are fixed for the listed scope. Additional features are agreed and quoted separately before work starts. Hosting, domains, licenses, paid APIs, payment fees and ongoing support are separate and excluded from the discount.",
-    packages: [
+    packages: [...[
     {
         "n": "22",
         "name": "Корпоративный сайт",
@@ -263,15 +280,15 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
             "продукт"
         ]
     }
-].map(discountedProject)
+].map(discountedProject), customPackage("development")]
   },
 ];
 
 export const serviceCatalog = serviceGroups.flatMap((group) => group.packages);
 // Storage IDs remain stable so existing carts and links keep their meaning.
 export function serviceIdentity(item: ServiceItem, lang: "ru" | "en" = "ru") {
-  const development = Number(item.n) > 14;
-  const number = String(Number(item.n) - (development ? 14 : 0)).padStart(2, "0");
+  const development = item.direction ? item.direction === "development" : Number(item.n) > 14;
+  const number = item.displayNumber ?? String(Number(item.n) - (development ? 14 : 0)).padStart(2, "0");
   const direction = development ? (lang === "en" ? "Development" : "Разработка") : (lang === "en" ? "Advertising" : "Реклама");
   const symbol = development ? "</>" : "📣";
   return { development, number, direction, symbol, code: `${development ? "DEV" : "AD"}-${number}`, label: `${symbol} ${direction} · № ${number}` };
@@ -289,5 +306,7 @@ export function summarizeServices(ids: readonly string[]) {
   const fixed = chosen.filter(item => item.pricing !== "quote");
   const development = chosen.filter(item => serviceIdentity(item).development);
   const custom = chosen.filter(item => item.pricing === "quote");
-  return { chosen, fixed, development, custom, total: fixed.reduce((sum, item) => sum + item.amount, 0) };
+  const advertisingTotal = fixed.filter(item => !serviceIdentity(item).development).reduce((sum,item)=>sum+item.amount,0);
+  const developmentTotal = fixed.filter(item => serviceIdentity(item).development).reduce((sum,item)=>sum+item.amount,0);
+  return { chosen, fixed, development, custom, advertisingTotal, developmentTotal, total: fixed.reduce((sum, item) => sum + item.amount, 0) };
 }

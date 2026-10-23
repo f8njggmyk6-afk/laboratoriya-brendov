@@ -15,7 +15,7 @@ export const Route = createFileRoute("/api/contact")({
     const email = clean(payload.email, 254).toLowerCase();
     const brief = clean(payload.brief, 4000);
     const services = Array.isArray(payload.services) ? payload.services.filter((x): x is string => typeof x === "string").slice(0, 50).map(x => clean(x, 80)) : [];
-    const { fixed, custom, total } = summarizeServices(services);
+    const { fixed, custom, advertisingTotal, developmentTotal, total } = summarizeServices(services);
     if (!name || !emailPattern.test(email) || !brief) return Response.json({ ok: false, error: "invalid_fields" }, { status: 400 });
     const apiKey = process.env.RESEND_API_KEY;
     const from = process.env.RESEND_FROM_EMAIL;
@@ -31,6 +31,8 @@ export const Route = createFileRoute("/api/contact")({
         `${serviceIdentity(item).label} [${serviceIdentity(item).code}] — ${item.name}: ${money(item.amount)}${item.discountPercent ? ` (скидка ${item.discountPercent}% уже учтена; без скидки ${money(item.baseAmount!)})` : ""}`,
         ...(item.items.length ? ["В стоимость входит: " + item.items.join("; ")] : []),
       ]),
+      `Реклама и дизайн: ${money(advertisingTotal)}`,
+      `Разработка: ${money(developmentTotal)}`,
       fixed.length ? `Итого за выбранные пакеты: ${money(total)}` : "Пакеты с указанной ценой не выбраны",
       ...custom.map(item => `${serviceIdentity(item).label} [${serviceIdentity(item).code}] — ${item.name}: стоимость по индивидуальному заданию, в итог не включена`),
       "Стоимость пакетов фиксирована за указанный состав. Дополнительные функции — по согласованию за отдельную плату до выполнения.",

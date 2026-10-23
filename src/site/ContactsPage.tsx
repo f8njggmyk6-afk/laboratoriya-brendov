@@ -21,9 +21,16 @@ export function ContactsPage() {
     const raw = new URLSearchParams(window.location.search).get("packages");
     if (raw) setSelected(raw.split(",").filter(Boolean));
     else try { const saved = JSON.parse(window.sessionStorage.getItem("lb-selected-services") ?? "[]"); if (Array.isArray(saved)) setSelected(saved); } catch {}
+    if (new URLSearchParams(window.location.search).get("request") === "custom") setMode("write");
     setHydrated(true);
   }, []);
   useEffect(() => { if (hydrated) window.sessionStorage.setItem("lb-selected-services", JSON.stringify(selected)); }, [selected, hydrated]);
+
+  useEffect(() => {
+    if (mode === "write" && new URLSearchParams(window.location.search).get("request") === "custom") {
+      document.getElementById("application-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [mode]);
 
   const { chosen, total } = summarizeServices(selected);
 
