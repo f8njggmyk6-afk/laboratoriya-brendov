@@ -98,7 +98,7 @@ export function HomePage() {
     <section className="clear-section services-home">
       <header><p className="section-index">{t("02 / Услуги","02 / Services")}</p><h2>{t("Каждая задача в своём разделе.","A clear service for every task.")}</h2></header>
       <div className="service-grid">{services.map(([n,title,copy])=><Link to="/services" hash={n==="07"?"service-group-6":n==="06"?"service-group-5":undefined} className="service-tile" key={n}><span>{n}</span><h3>{title}</h3><p>{copy}</p><b>↗</b></Link>)}</div>
-      <p className="complex-project-offer">{t("Комплексная разработка для бизнеса — скидка 5% от базовой оценки работ. Стартовые цены в прайсе уже со скидкой.", "Complex business projects — 5% off our base development estimate. Starting prices already include the discount.")} <a href="/pricing#pricing-group-6">{t("Посмотреть проекты и цены →", "View projects and pricing →")}</a></p>
+      <p className="complex-project-offer">{t("Комплексная разработка для бизнеса — фиксированные пакеты со скидкой 5%. Состав и цена указаны в прайсе.", "Business development — fixed-scope packages with a 5% discount. See package contents and prices.")} <a href="/pricing#pricing-group-6">{t("Посмотреть проекты и цены →", "View projects and pricing →")}</a></p>
       <SectionCue label="Листайте дальше" labelEn="Keep scrolling"/>
     </section>
 

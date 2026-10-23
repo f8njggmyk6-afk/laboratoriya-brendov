@@ -84,19 +84,19 @@ export function ContactsPage() {
   return (
     <SiteShell>
       <main className="contacts-page application-flow">
-        <PageIntro number="05" title="Оформить заявку" titleEn="Contact" lead="Проверьте выбранные услуги. Задачи разработки рассчитаем отдельно после обсуждения." leadEn="Review your selected services. Development tasks receive a separate quote after discussion." />
+        <PageIntro number="05" title="Оформить заявку" titleEn="Contact" lead="Проверьте пакеты и общую стоимость. Дополнительные функции согласуем отдельно." leadEn="Review your packages and total. Additional features are agreed separately." />
         <div className="application-scroll-cue" aria-hidden="true"><span>{t("Способы связи — ниже","Contact options below")}</span><b>↓</b></div>
 
         <section className="selected-services-first">
           <div className="application-section-head"><div><h2>{t("Выбранные услуги","Selected services")}</h2></div></div>
-          <p>{t("Можно добавить или убрать позиции. Выбор сохраняется. Стартовые цены разработки не включаются в фиксированную сумму.","You can add or remove items. Your selection is saved. Development starting prices are excluded from the fixed-price total.")}</p>
+          <p>{t("Можно добавить или убрать пакеты. В итог включён весь указанный состав работ; дополнительные функции — по согласованию за отдельную плату.","Add or remove packages. The total covers all listed work; additional features are agreed and priced separately.")}</p>
           <div className="application-total application-total-overview"><span>{hydrated ? <>{t("Выбрано","Selected")}: <b>{chosen.length}</b></> : t("Восстанавливаем выбор…","Restoring selection…")}</span>{hydrated ? <SelectionSummary selected={selected}/> : null}</div>
           <fieldset className="multi-service">
             <legend className="sr-only">{t("Услуги","Services")}</legend>
             {options.map((item) => (
               <label key={item.n} className={selected.includes(item.n) ? "is-selected" : ""}>
                 <input type="checkbox" name="packages" value={item.n} checked={selected.includes(item.n)} onChange={() => toggle(item.n)} />
-                <span><b><ServiceBadge item={item}/></b>{lang==="en"?(item.nameEn??item.name):item.name}<small>{servicePrice(item,money,lang)}{item.discountPercent ? t(" · скидка "," · ")+item.discountPercent+t("% уже учтена","% discount included") : ""}{item.pricing ? t(" · требуется расчёт", " · quote required") : ""}</small></span>
+                <span><b><ServiceBadge item={item}/></b>{lang==="en"?(item.nameEn??item.name):item.name}<small>{servicePrice(item,money,lang)}{item.discountPercent ? t(" · скидка "," · ")+item.discountPercent+t("% уже учтена","% discount included") : ""}{item.pricing === "quote" ? t(" · стоимость отдельно", " · priced separately") : ""}</small></span>
                 <em>{selected.includes(item.n) ? t("Убрать","Remove") : t("Добавить","Add")}</em>
               </label>
             ))}

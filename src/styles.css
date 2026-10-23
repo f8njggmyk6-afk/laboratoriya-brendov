@@ -651,3 +651,7 @@ body{background:var(--bg)}.site-header{background:rgba(11,18,32,.9)}.brand-mark{
 .price-row:has(.service-identity){grid-template-columns:100px minmax(0,1fr) auto 40px}
 .multi-service .service-identity{font-size:13px}
 @media(max-width:560px){.price-row:has(.service-identity){grid-template-columns:94px minmax(0,1fr);gap:14px}.price-row .service-identity{font-size:12px;gap:6px}.price-row .service-identity svg{width:19px}}
+
+.package-copy .package-scope-label{margin:18px 0 8px;color:#b4dfd8;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.custom-project-summary{font-size:12px;color:var(--muted)}
+.custom-project-summary small{font-size:12px}

@@ -8,7 +8,7 @@ export type ServiceItem = {
   descriptionEn?: string;
   price: string;
   amount: number;
-  pricing?: "from" | "quote";
+  pricing?: "fixed" | "quote";
   baseAmount?: number;
   discountPercent?: number;
   timeline?: string;
@@ -22,7 +22,7 @@ export const COMPLEX_PROJECT_DISCOUNT = 5;
 
 function discountedProject(item: Omit<ServiceItem, "amount" | "price" | "pricing" | "discountPercent"> & { baseAmount: number }): ServiceItem {
   const amount = Math.round(item.baseAmount * (100 - COMPLEX_PROJECT_DISCOUNT) / 100);
-  return { ...item, amount, price: "от " + amount.toLocaleString("ru-RU") + " ₽", pricing: "from", discountPercent: COMPLEX_PROJECT_DISCOUNT };
+  return { ...item, amount, price: amount.toLocaleString("ru-RU") + " ₽", pricing: "fixed", discountPercent: COMPLEX_PROJECT_DISCOUNT };
 }
 
 export const serviceGroups: readonly { title: string; titleEn?: string; note?: string; noteEn?: string; packages: readonly ServiceItem[] }[] = [
@@ -49,17 +49,17 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
     { n: "14", name: "10 статичных креативов", nameEn: "10 static creatives", subtitle: "Полный набор вариантов для рекламной кампании", subtitleEn: "A complete set for an advertising campaign", description: "Создаём десять согласованных рекламных креативов для полноценного запуска кампании.", descriptionEn: "Ten coordinated advertising creatives for a full campaign launch.", price: "10 000 ₽", amount: 10000, items: [], searchTerms: ["10 креативов", "десять картинок", "рекламная кампания", "набор баннеров", "много креативов"] },
   ]},
   { title: "Разработка и автоматизация", titleEn: "Development & automation", packages: [
-    { n: "15", name: "Исправление ошибок", nameEn: "Bug fixes", subtitle: "Одна локальная ошибка после диагностики", subtitleEn: "One localized issue after diagnosis", description: "Находим причину одной локальной ошибки на существующем сайте или в скрипте и согласуем исправление.", descriptionEn: "We diagnose one localized issue on an existing website or in a script and agree on the fix.", price: "от 3 000 ₽", amount: 3000, pricing: "from", items: ["Диагностика и согласование объёма", "Исправление одной локальной ошибки", "Проверка исправленного сценария"], itemsEn: ["Diagnosis and agreed scope", "One localized bug fix", "Verification of the corrected flow"], searchTerms: ["ошибка", "исправить", "не работает", "баг", "скрипт", "bug fix", "repair"] },
-    { n: "16", name: "Доработка сайта", nameEn: "Website improvements", subtitle: "Одна небольшая функция на существующем сайте", subtitleEn: "One small feature on an existing website", description: "Добавляем форму, фильтр, калькулятор или другую небольшую функцию. Перед работой проверяем существующий код и фиксируем объём.", descriptionEn: "We add a form, filter, calculator or another small feature after reviewing the existing code and confirming the scope.", price: "от 5 000 ₽", amount: 5000, pricing: "from", items: ["Одна согласованная функция", "Адаптация под мобильные устройства", "Проверка работы функции"], itemsEn: ["One agreed feature", "Mobile adaptation", "Feature verification"], searchTerms: ["доработка сайта", "форма", "калькулятор", "фильтр", "функция", "website improvement", "form", "calculator"] },
-    { n: "17", name: "Скрипты и автоматизация", nameEn: "Scripts & automation", subtitle: "Один сценарий для повторяющихся действий", subtitleEn: "One workflow for repetitive tasks", description: "Автоматизируем согласованный сценарий обработки файлов, таблиц или повторяющихся действий и объясняем, как им пользоваться.", descriptionEn: "We automate one agreed workflow involving files, spreadsheets or repetitive tasks and explain how to use it.", price: "от 7 000 ₽", amount: 7000, pricing: "from", items: ["Один согласованный сценарий", "Проверка на предоставленных примерах", "Краткая инструкция по запуску"], itemsEn: ["One agreed workflow", "Checks using supplied examples", "Short setup and usage guide"], searchTerms: ["автоматизация", "скрипт", "таблицы", "файлы", "программирование", "automation", "script", "programming"] },
-    { n: "18", name: "Telegram-бот для бизнеса", nameEn: "Telegram bot for business", subtitle: "Меню, сбор заявок и уведомления владельцу", subtitleEn: "Menu, lead collection and owner notifications", description: "Разрабатываем базового бота с меню, сбором заявок и уведомлениями. Сценарий, размещение и стоимость согласуем до начала.", descriptionEn: "A basic bot with a menu, lead collection and notifications. We agree on its workflow, hosting and price before starting.", price: "от 12 000 ₽", amount: 12000, pricing: "from", items: ["Меню и один сценарий сбора заявки", "Уведомления владельцу", "Проверка и инструкция"], itemsEn: ["Menu and one lead collection flow", "Owner notifications", "Verification and instructions"], searchTerms: ["телеграм бот", "telegram bot", "бот", "заявки", "чат бот"] },
-    { n: "19", name: "Подключение сервисов", nameEn: "Service integrations", subtitle: "Одна интеграция через доступный API", subtitleEn: "One integration through an available API", description: "Связываем два сервиса по одному сценарию, например передаём заявку с сайта в CRM. Сначала проверяем документацию и доступы.", descriptionEn: "We connect two services for one workflow, such as sending a website lead to a CRM, after checking API documentation and access.", price: "от 8 000 ₽", amount: 8000, pricing: "from", items: ["Одна интеграция и один сценарий", "Настройка обмена данными", "Проверка передачи данных"], itemsEn: ["One integration and one workflow", "Data exchange setup", "Data transfer verification"], searchTerms: ["интеграция", "api", "crm", "подключение", "сервисы", "integration"] },
-    { n: "20", name: "Одностраничный сайт", nameEn: "Landing page", subtitle: "До пяти блоков и форма по готовым материалам", subtitleEn: "Up to five sections and a form using supplied content", description: "Создаём адаптивную одностраничную страницу с формой. Тексты, изображения и материалы предоставляет заказчик; отдельный дизайн и контент оцениваем дополнительно.", descriptionEn: "A responsive landing page with a form using client-supplied text, images and materials. Custom design and content are quoted separately.", price: "от 15 000 ₽", amount: 15000, pricing: "from", items: ["До пяти блоков", "Адаптация для телефона и компьютера", "Форма и проверка отправки заявки"], itemsEn: ["Up to five sections", "Mobile and desktop layouts", "Form and submission verification"], searchTerms: ["сайт", "лендинг", "одностраничный сайт", "разработка сайта", "landing page", "website"] },
-    { n: "21", name: "Веб-приложение или личный кабинет", nameEn: "Web app or customer portal", subtitle: "Индивидуальная разработка по согласованному заданию", subtitleEn: "Custom development based on an agreed specification", description: "Обсуждаем функции, роли пользователей и интеграции. После оценки фиксируем состав, сроки, стоимость и этапы работы.", descriptionEn: "We review features, user roles and integrations, then confirm scope, deadlines, price and milestones.", price: "По расчёту", amount: 0, pricing: "quote", items: ["Оценка задачи и состава функций", "Согласование этапов и стоимости", "Разработка и проверка по заданию"], itemsEn: ["Feature and scope assessment", "Agreed milestones and price", "Development and verification against the specification"], searchTerms: ["веб приложение", "личный кабинет", "портал", "приложение", "разработка", "web app", "portal", "development"] },
+    {"n": "15", "name": "Исправление ошибки на сайте", "nameEn": "Website bug fix", "subtitle": "Одна ошибка в интерфейсе существующего сайта", "subtitleEn": "One interface issue on an existing website", "description": "Одна ошибка в интерфейсе существующего сайта. В стоимость входит: Диагностика одной ошибки формы или отображения; Исправление в существующем коде без смены платформы; Проверка на телефоне и компьютере.", "descriptionEn": "One interface issue on an existing website. Includes: Diagnosis of one form or display issue; Fix in the existing code without platform migration; Mobile and desktop verification.", "price": "3 000 ₽", "amount": 3000, "pricing": "fixed", "items": ["Диагностика одной ошибки формы или отображения", "Исправление в существующем коде без смены платформы", "Проверка на телефоне и компьютере"], "itemsEn": ["Diagnosis of one form or display issue", "Fix in the existing code without platform migration", "Mobile and desktop verification"], "searchTerms": ["Исправление ошибки на сайте", "Website bug fix", "разработка", "исправление"]},
+    {"n": "16", "name": "Форма заявки на сайте", "nameEn": "Website inquiry form", "subtitle": "Одна форма с отправкой заявки на email", "subtitleEn": "One form with email delivery", "description": "Одна форма с отправкой заявки на email. В стоимость входит: Одна форма до пяти полей на готовом сайте; Проверка полей и отправка на один email; Адаптация под телефон и проверка отправки.", "descriptionEn": "One form with email delivery. Includes: One form with up to five fields on an existing website; Field validation and delivery to one email address; Mobile layout and submission verification.", "price": "5 000 ₽", "amount": 5000, "pricing": "fixed", "items": ["Одна форма до пяти полей на готовом сайте", "Проверка полей и отправка на один email", "Адаптация под телефон и проверка отправки"], "itemsEn": ["One form with up to five fields on an existing website", "Field validation and delivery to one email address", "Mobile layout and submission verification"], "searchTerms": ["Форма заявки на сайте", "Website inquiry form", "разработка", "форма"]},
+    {"n": "17", "name": "Автоматизация обработки таблиц", "nameEn": "Spreadsheet automation", "subtitle": "Объединение или очистка данных по одному правилу", "subtitleEn": "Merge or clean data using one agreed rule", "description": "Объединение или очистка данных по одному правилу. В стоимость входит: Один скрипт для CSV или XLSX: до двух входных файлов; Объединение таблиц или удаление дублей по одному правилу; Один итоговый файл, проверка и инструкция.", "descriptionEn": "Merge or clean data using one agreed rule. Includes: One CSV or XLSX script with up to two input files; Merge tables or remove duplicates using one rule; One output file, verification and instructions.", "price": "7 000 ₽", "amount": 7000, "pricing": "fixed", "items": ["Один скрипт для CSV или XLSX: до двух входных файлов", "Объединение таблиц или удаление дублей по одному правилу", "Один итоговый файл, проверка и инструкция"], "itemsEn": ["One CSV or XLSX script with up to two input files", "Merge tables or remove duplicates using one rule", "One output file, verification and instructions"], "searchTerms": ["Автоматизация обработки таблиц", "Spreadsheet automation", "разработка", "автоматизация"]},
+    {"n": "18", "name": "Telegram-бот для бизнеса", "nameEn": "Telegram bot for business", "subtitle": "Меню, сбор заявок и уведомления владельцу", "subtitleEn": "Menu, lead collection and owner notifications", "description": "Меню, сбор заявок и уведомления владельцу. В стоимость входит: Меню до пяти кнопок и один сценарий заявки до пяти полей; Уведомления в один Telegram-чат владельца; Размещение на вашем хостинге, проверка и инструкция.", "descriptionEn": "Menu, lead collection and owner notifications. Includes: Menu with up to five buttons and one inquiry flow of up to five fields; Notifications to one owner Telegram chat; Deployment to your hosting, verification and instructions.", "price": "12 000 ₽", "amount": 12000, "pricing": "fixed", "items": ["Меню до пяти кнопок и один сценарий заявки до пяти полей", "Уведомления в один Telegram-чат владельца", "Размещение на вашем хостинге, проверка и инструкция"], "itemsEn": ["Menu with up to five buttons and one inquiry flow of up to five fields", "Notifications to one owner Telegram chat", "Deployment to your hosting, verification and instructions"], "searchTerms": ["Telegram-бот для бизнеса", "Telegram bot for business", "разработка", "telegram-бот"]},
+    {"n": "19", "name": "Передача заявок в CRM через API", "nameEn": "CRM lead integration", "subtitle": "Одна форма → один сервис → одна заявка", "subtitleEn": "One form → one service → one lead", "description": "Одна форма → один сервис → одна заявка. В стоимость входит: Подключение одной формы к одному документированному REST API; Передача до десяти полей заявки с готовым API-ключом; Обработка ошибок отправки и проверка передачи.", "descriptionEn": "One form → one service → one lead. Includes: One form connected to one documented REST API; Transfer of up to ten lead fields using an available API key; Delivery error handling and transfer verification.", "price": "8 000 ₽", "amount": 8000, "pricing": "fixed", "items": ["Подключение одной формы к одному документированному REST API", "Передача до десяти полей заявки с готовым API-ключом", "Обработка ошибок отправки и проверка передачи"], "itemsEn": ["One form connected to one documented REST API", "Transfer of up to ten lead fields using an available API key", "Delivery error handling and transfer verification"], "searchTerms": ["Передача заявок в CRM через API", "CRM lead integration", "разработка", "передача"]},
+    {"n": "20", "name": "Одностраничный сайт", "nameEn": "Landing page", "subtitle": "До пяти блоков и форма по готовым материалам", "subtitleEn": "Up to five sections and a form using supplied content", "description": "До пяти блоков и форма по готовым материалам. В стоимость входит: Одна страница до пяти блоков на одном языке; Адаптивная вёрстка по готовому макету, текстам и изображениям; Форма до пяти полей с отправкой на один email; Публикация на вашем хостинге и проверка.", "descriptionEn": "Up to five sections and a form using supplied content. Includes: One page of up to five sections in one language; Responsive implementation using supplied design, text and images; Form with up to five fields delivered to one email address; Deployment to your hosting and verification.", "price": "15 000 ₽", "amount": 15000, "pricing": "fixed", "items": ["Одна страница до пяти блоков на одном языке", "Адаптивная вёрстка по готовому макету, текстам и изображениям", "Форма до пяти полей с отправкой на один email", "Публикация на вашем хостинге и проверка"], "itemsEn": ["One page of up to five sections in one language", "Responsive implementation using supplied design, text and images", "Form with up to five fields delivered to one email address", "Deployment to your hosting and verification"], "searchTerms": ["Одностраничный сайт", "Landing page", "разработка", "одностраничный"]},
+    { n: "21", name: "Веб-приложение или личный кабинет", nameEn: "Web app or customer portal", subtitle: "Индивидуальная разработка по согласованному заданию", subtitleEn: "Custom development based on an agreed specification", description: "Обсуждаем функции, роли пользователей и интеграции. После оценки фиксируем состав, сроки, стоимость и этапы работы.", descriptionEn: "We review features, user roles and integrations, then confirm scope, deadlines, price and milestones.", price: "По индивидуальному заданию", amount: 0, pricing: "quote", items: ["Оценка задачи и состава функций", "Согласование этапов и стоимости", "Разработка и проверка по заданию"], itemsEn: ["Feature and scope assessment", "Agreed milestones and price", "Development and verification against the specification"], searchTerms: ["веб приложение", "личный кабинет", "портал", "приложение", "разработка", "web app", "portal", "development"] },
   ]},
   { title: "Комплексная разработка для бизнеса", titleEn: "Business software & digital products",
-    note: "На новые комплексные проекты — скидка 5% от нашей базовой оценки работ. Цены в прайсе уже со скидкой. В предложении покажем базовую смету, скидку и итог. Это стартовая оценка за описанный объём; окончательные состав, цена и сроки — после обсуждения. Хостинг, лицензии, платные API, эквайринг и сопровождение оплачиваются отдельно; скидка на них не распространяется.",
-    noteEn: "New complex projects receive 5% off our base development estimate. Starting prices in the price list already include the discount. Your proposal shows the base estimate, discount and final price. Final scope, price and timeline are confirmed after discussion. Hosting, licenses, paid APIs, payment fees and ongoing support are separate and excluded from the discount.",
+    note: "Скидка 5% уже включена в цены комплексных пакетов. Стоимость фиксирована за указанный состав работ. Дополнительные функции согласуем и оцениваем отдельно до выполнения. Хостинг, домен, лицензии, платные API, эквайринг и сопровождение оплачиваются отдельно; скидка на них не распространяется.",
+    noteEn: "Complex package prices already include a 5% discount. Prices are fixed for the listed scope. Additional features are agreed and quoted separately before work starts. Hosting, domains, licenses, paid APIs, payment fees and ongoing support are separate and excluded from the discount.",
     packages: [
     {
         "n": "22",
@@ -67,22 +67,22 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
         "nameEn": "Corporate website",
         "subtitle": "Сайт компании с услугами, кейсами и заявками",
         "subtitleEn": "A company website with services, case studies and inquiries",
-        "description": "Для компаний, которым нужна полноценная презентация бизнеса. Проектируем структуру, создаём адаптивный дизайн и страницы услуг, подключаем формы и управление контентом. Начальный объём — до восьми типов страниц на одном языке. Тексты и фотографии предоставляет заказчик; сложные кабинеты и интеграции оцениваем отдельно.",
-        "descriptionEn": "For companies that need a complete business website. Includes structure, responsive design, service pages, forms and content management. Starting scope: up to eight page templates in one language using client-supplied text and images. Complex portals and integrations are quoted separately.",
+        "description": "В пакет входит: До восьми типов страниц на одном языке; Адаптивный дизайн и управление контентом; До двух форм заявок и подключение одного счётчика аналитики; Публикация, исходный код и инструкция; тексты и фото — от клиента. Дополнительные функции — по согласованию за отдельную плату.",
+        "descriptionEn": "Package includes: Up to eight page templates in one language; Responsive design and content management; Up to two inquiry forms and one analytics counter; Deployment, source code and instructions; client-supplied text and photos. Additional features are agreed and priced separately.",
         "baseAmount": 200000,
         "timeline": "Ориентир: 4–6 недель",
         "timelineEn": "Estimate: 4–6 weeks",
         "items": [
-            "Структура и адаптивный дизайн",
-            "До восьми типов страниц и управление контентом",
-            "Формы заявок, базовая аналитика и проверка",
-            "Запуск, исходный код и инструкция"
+            "До восьми типов страниц на одном языке",
+            "Адаптивный дизайн и управление контентом",
+            "До двух форм заявок и подключение одного счётчика аналитики",
+            "Публикация, исходный код и инструкция; тексты и фото — от клиента"
         ],
         "itemsEn": [
-            "Structure and responsive design",
-            "Up to eight page templates and content management",
-            "Inquiry forms, basic analytics and verification",
-            "Launch, source code and instructions"
+            "Up to eight page templates in one language",
+            "Responsive design and content management",
+            "Up to two inquiry forms and one analytics counter",
+            "Deployment, source code and instructions; client-supplied text and photos"
         ],
         "searchTerms": [
             "корпоративный сайт",
@@ -98,22 +98,22 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
         "nameEn": "Online store",
         "subtitle": "Каталог, корзина, оформление и управление заказами",
         "subtitleEn": "Catalog, cart, checkout and order management",
-        "description": "Для брендов и магазинов, которые хотят принимать заказы на собственном сайте. Первый релиз: каталог до 100 товаров из готовой таблицы, карточки, корзина, оформление заказа и панель управления. Одна платёжная интеграция после проверки возможностей провайдера. Обмен с 1С, маркетплейсы, нестандартная доставка и массовый перенос данных — отдельно.",
-        "descriptionEn": "For brands and retailers taking orders on their own website. First release: up to 100 products imported from a prepared spreadsheet, product pages, cart, checkout and an admin panel. One payment integration subject to provider availability. ERP sync, marketplace integrations, custom delivery and large data migrations are separate.",
+        "description": "В пакет входит: Каталог до 100 товаров из готовой таблицы и карточки товаров; Корзина, оформление заказа и статусы заказов; Панель управления и один платёжный провайдер по готовому API; Один язык, адаптивный дизайн, тестирование, запуск и исходный код. Дополнительные функции — по согласованию за отдельную плату.",
+        "descriptionEn": "Package includes: Catalog of up to 100 products from a prepared spreadsheet and product pages; Cart, checkout and order statuses; Admin panel and one payment provider through an available API; One language, responsive design, testing, launch and source code. Additional features are agreed and priced separately.",
         "baseAmount": 250000,
         "timeline": "Ориентир: 5–8 недель",
         "timelineEn": "Estimate: 5–8 weeks",
         "items": [
-            "Каталог до 100 товаров и карточки",
-            "Корзина, оформление и статусы заказов",
-            "Панель управления и одна платёжная интеграция",
-            "Проверка сценариев, запуск и исходный код"
+            "Каталог до 100 товаров из готовой таблицы и карточки товаров",
+            "Корзина, оформление заказа и статусы заказов",
+            "Панель управления и один платёжный провайдер по готовому API",
+            "Один язык, адаптивный дизайн, тестирование, запуск и исходный код"
         ],
         "itemsEn": [
-            "Catalog of up to 100 products and product pages",
+            "Catalog of up to 100 products from a prepared spreadsheet and product pages",
             "Cart, checkout and order statuses",
-            "Admin panel and one payment integration",
-            "Workflow verification, launch and source code"
+            "Admin panel and one payment provider through an available API",
+            "One language, responsive design, testing, launch and source code"
         ],
         "searchTerms": [
             "интернет магазин",
@@ -132,22 +132,22 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
         "nameEn": "Telegram Mini App",
         "subtitle": "Каталог, запись или кабинет внутри Telegram",
         "subtitleEn": "A catalog, booking flow or portal inside Telegram",
-        "description": "Для бизнеса с аудиторией в Telegram. Создаём один согласованный сценарий — каталог с заявкой, запись или кабинет — до пяти основных экранов, с проверкой авторизации Telegram на сервере, базой данных и небольшой панелью управления. Платежи, дополнительные интеграции и сложные программы лояльности рассчитываем отдельно.",
-        "descriptionEn": "For businesses with an audience in Telegram. One agreed flow—a catalog with inquiries, booking or a portal—with up to five main screens, server-validated Telegram authentication, a database and a small admin panel. Payments, extra integrations and complex loyalty programs are quoted separately.",
+        "description": "В пакет входит: Один сценарий: каталог с заявкой, запись или кабинет; До пяти экранов на одном языке; Авторизация Telegram, база данных и базовая админ-панель; Запуск из бота, тестирование и исходный код. Дополнительные функции — по согласованию за отдельную плату.",
+        "descriptionEn": "Package includes: One flow: catalog with inquiries, booking or a portal; Up to five screens in one language; Telegram authentication, database and basic admin panel; Bot launch entry, testing and source code. Additional features are agreed and priced separately.",
         "baseAmount": 150000,
         "timeline": "Ориентир: 3–5 недель",
         "timelineEn": "Estimate: 3–5 weeks",
         "items": [
-            "Один сценарий, до пяти основных экранов",
-            "Авторизация Telegram и база данных",
-            "Запуск из бота и базовая панель управления",
-            "Проверка в согласованных клиентах Telegram"
+            "Один сценарий: каталог с заявкой, запись или кабинет",
+            "До пяти экранов на одном языке",
+            "Авторизация Telegram, база данных и базовая админ-панель",
+            "Запуск из бота, тестирование и исходный код"
         ],
         "itemsEn": [
-            "One flow and up to five main screens",
-            "Telegram authentication and database",
-            "Bot launch entry and basic admin panel",
-            "Testing in agreed Telegram clients"
+            "One flow: catalog with inquiries, booking or a portal",
+            "Up to five screens in one language",
+            "Telegram authentication, database and basic admin panel",
+            "Bot launch entry, testing and source code"
         ],
         "searchTerms": [
             "mini app",
@@ -164,22 +164,22 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
         "nameEn": "CRM & internal business system",
         "subtitle": "Клиенты, заявки, задачи и отчёты в одном месте",
         "subtitleEn": "Customers, inquiries, tasks and reports in one place",
-        "description": "Для команды, которой уже не хватает таблиц. Начальная CRM: одна воронка, карточки клиентов и сделок, задачи, два уровня доступа и базовый отчёт по статусам. Сначала проверяем, нужна ли разработка с нуля или достаточно готовой CRM. Телефония, 1С, миграция данных и дополнительные процессы оцениваются отдельно.",
-        "descriptionEn": "For teams that have outgrown spreadsheets. Starting CRM: one pipeline, customer and deal records, tasks, two access roles and a basic status report. We first assess whether custom development or an existing CRM fits best. Telephony, ERP, data migration and additional workflows are separate.",
+        "description": "В пакет входит: Одна воронка продаж и два уровня доступа; Карточки клиентов, сделки и задачи; Один отчёт по статусам, без переноса старой базы; Тестирование, запуск, исходный код и инструкция. Дополнительные функции — по согласованию за отдельную плату.",
+        "descriptionEn": "Package includes: One sales pipeline and two access roles; Customer records, deals and tasks; One status report, excluding legacy data migration; Testing, launch, source code and instructions. Additional features are agreed and priced separately.",
         "baseAmount": 300000,
         "timeline": "Ориентир: 6–10 недель",
         "timelineEn": "Estimate: 6–10 weeks",
         "items": [
-            "Описание процесса и одна воронка",
-            "Карточки клиентов, сделок и задачи",
-            "Два уровня доступа и базовые отчёты",
-            "Проверка, запуск, код и обучение работе"
+            "Одна воронка продаж и два уровня доступа",
+            "Карточки клиентов, сделки и задачи",
+            "Один отчёт по статусам, без переноса старой базы",
+            "Тестирование, запуск, исходный код и инструкция"
         ],
         "itemsEn": [
-            "Workflow definition and one pipeline",
+            "One sales pipeline and two access roles",
             "Customer records, deals and tasks",
-            "Two access roles and basic reports",
-            "Testing, launch, source code and usage training"
+            "One status report, excluding legacy data migration",
+            "Testing, launch, source code and instructions"
         ],
         "searchTerms": [
             "crm",
@@ -198,22 +198,22 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
         "nameEn": "AI assistant for company documents",
         "subtitle": "Поиск ответов в базе знаний со ссылками на источники",
         "subtitleEn": "Answers from your knowledge base with source references",
-        "description": "Для сотрудников, которые регулярно ищут ответы в инструкциях и документах. Пилот на одной подготовленной базе: до 100 текстовых документов или 500 страниц, один интерфейс, ссылки на источники и проверка на 50 согласованных вопросах. Сканирование, распознавание, локальное размещение моделей и сложные права доступа — отдельные задачи. Провайдера модели и порядок обработки данных согласуем до загрузки.",
-        "descriptionEn": "For staff who regularly search instructions and documents. A pilot on one prepared knowledge base: up to 100 text documents or 500 pages, one interface, source references and evaluation against 50 agreed questions. Scanning, OCR, local model hosting and complex permissions are separate. Model provider and data handling are agreed before upload.",
+        "description": "В пакет входит: Одна база: до 100 текстовых документов и до 500 страниц суммарно; Один чат с ответами и ссылками на источники; Подключение одной облачной модели; без OCR и локального развёртывания; Проверка на 50 вопросах, запуск и инструкция. Дополнительные функции — по согласованию за отдельную плату.",
+        "descriptionEn": "Package includes: One knowledge base: up to 100 text documents and 500 pages total; One chat with answers and source references; One cloud model integration; no OCR or local model deployment; Evaluation on 50 questions, launch and instructions. Additional features are agreed and priced separately.",
         "baseAmount": 150000,
         "timeline": "Ориентир: 3–5 недель",
         "timelineEn": "Estimate: 3–5 weeks",
         "items": [
-            "Одна подготовленная база знаний",
-            "Чат с ответами и ссылками на документы",
-            "Отказ от ответа при отсутствии источника",
-            "Проверка на 50 вопросах и инструкция"
+            "Одна база: до 100 текстовых документов и до 500 страниц суммарно",
+            "Один чат с ответами и ссылками на источники",
+            "Подключение одной облачной модели; без OCR и локального развёртывания",
+            "Проверка на 50 вопросах, запуск и инструкция"
         ],
         "itemsEn": [
-            "One prepared knowledge base",
-            "Chat with answers and document references",
-            "Abstention when no supporting source is found",
-            "Evaluation on 50 questions and instructions"
+            "One knowledge base: up to 100 text documents and 500 pages total",
+            "One chat with answers and source references",
+            "One cloud model integration; no OCR or local model deployment",
+            "Evaluation on 50 questions, launch and instructions"
         ],
         "searchTerms": [
             "ии",
@@ -234,22 +234,22 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
         "nameEn": "Web service — first release",
         "subtitle": "Рабочая версия продукта для первых пользователей",
         "subtitleEn": "A working product for your first users",
-        "description": "Для нового сервиса, которому нужен первый рабочий релиз. В начальный объём входят один основной пользовательский сценарий, до восьми экранов, регистрация, два уровня доступа, серверная часть, база данных и панель управления. Функции и критерии приёмки фиксируем до начала; платежи, сложные интеграции, приложения для магазинов и высокая нагрузка — отдельный расчёт.",
-        "descriptionEn": "For a new service that needs its first working release. Starting scope: one core user journey, up to eight screens, registration, two access roles, backend, database and admin panel. Features and acceptance criteria are fixed before work starts. Payments, complex integrations, app-store apps and high-load requirements are quoted separately.",
+        "description": "В пакет входит: Один основной сценарий, до восьми экранов на одном языке; Регистрация и два уровня доступа; Серверная часть, база данных и базовая админ-панель; Тестирование, публикация, исходный код и документация. Дополнительные функции — по согласованию за отдельную плату.",
+        "descriptionEn": "Package includes: One core flow, up to eight screens in one language; Registration and two access roles; Backend, database and basic admin panel; Testing, deployment, source code and documentation. Additional features are agreed and priced separately.",
         "baseAmount": 500000,
         "timeline": "Ориентир: 8–12 недель",
         "timelineEn": "Estimate: 8–12 weeks",
         "items": [
-            "Задание, прототип и один основной сценарий",
-            "До восьми экранов, регистрация и два уровня доступа",
-            "Серверная часть, база данных и админ-панель",
-            "Тестирование, запуск, исходный код и документация"
+            "Один основной сценарий, до восьми экранов на одном языке",
+            "Регистрация и два уровня доступа",
+            "Серверная часть, база данных и базовая админ-панель",
+            "Тестирование, публикация, исходный код и документация"
         ],
         "itemsEn": [
-            "Specification, prototype and one core journey",
-            "Up to eight screens, registration and two access roles",
-            "Backend, database and admin panel",
-            "Testing, launch, source code and documentation"
+            "One core flow, up to eight screens in one language",
+            "Registration and two access roles",
+            "Backend, database and basic admin panel",
+            "Testing, deployment, source code and documentation"
         ],
         "searchTerms": [
             "mvp",
@@ -280,13 +280,14 @@ export function serviceIdentity(item: ServiceItem, lang: "ru" | "en" = "ru") {
 export const money = (value: number) => value.toLocaleString("ru-RU") + " ₽";
 
 export function servicePrice(item: ServiceItem, format: (value: number) => string, lang: "ru" | "en") {
-  if (item.pricing === "quote") return lang === "en" ? "Custom quote" : "По расчёту";
-  return (item.pricing === "from" ? (lang === "en" ? "from " : "от ") : "") + format(item.amount);
+  if (item.pricing === "quote") return lang === "en" ? "Custom specification" : "По индивидуальному заданию";
+  return format(item.amount);
 }
 
 export function summarizeServices(ids: readonly string[]) {
   const chosen = serviceCatalog.filter(item => ids.includes(item.n));
-  const fixed = chosen.filter(item => !item.pricing);
-  const development = chosen.filter(item => item.pricing);
-  return { chosen, fixed, development, total: fixed.reduce((sum, item) => sum + item.amount, 0) };
+  const fixed = chosen.filter(item => item.pricing !== "quote");
+  const development = chosen.filter(item => serviceIdentity(item).development);
+  const custom = chosen.filter(item => item.pricing === "quote");
+  return { chosen, fixed, development, custom, total: fixed.reduce((sum, item) => sum + item.amount, 0) };
 }
