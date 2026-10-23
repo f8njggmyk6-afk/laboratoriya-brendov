@@ -9,12 +9,23 @@ export type ServiceItem = {
   price: string;
   amount: number;
   pricing?: "from" | "quote";
+  baseAmount?: number;
+  discountPercent?: number;
+  timeline?: string;
+  timelineEn?: string;
   items: readonly string[];
   itemsEn?: readonly string[];
   searchTerms: readonly string[];
 };
 
-export const serviceGroups: readonly { title: string; titleEn?: string; packages: readonly ServiceItem[] }[] = [
+export const COMPLEX_PROJECT_DISCOUNT = 5;
+
+function discountedProject(item: Omit<ServiceItem, "amount" | "price" | "pricing" | "discountPercent"> & { baseAmount: number }): ServiceItem {
+  const amount = Math.round(item.baseAmount * (100 - COMPLEX_PROJECT_DISCOUNT) / 100);
+  return { ...item, amount, price: "от " + amount.toLocaleString("ru-RU") + " ₽", pricing: "from", discountPercent: COMPLEX_PROJECT_DISCOUNT };
+}
+
+export const serviceGroups: readonly { title: string; titleEn?: string; note?: string; noteEn?: string; packages: readonly ServiceItem[] }[] = [
   { title: "Названия", titleEn: "Naming", packages: [
     { n: "01", name: "Название, 2 варианта", nameEn: "Name — 2 options", subtitle: "Для компании, услуги, продукта или проекта", subtitleEn: "For a company, service, product or project", description: "Создаём два продуманных названия, объясняем логику каждого и предварительно проверяем совпадения.", descriptionEn: "Two considered naming options with rationale and a preliminary online similarity check.", price: "2 000 ₽", amount: 2000, items: ["2 продуманных варианта", "Краткое объяснение каждого", "Предварительный поиск совпадений в интернете"], itemsEn: ["2 considered options", "Short rationale for each", "Preliminary online similarity check"], searchTerms: ["название", "назвать", "имя", "нейминг", "компания", "продукт", "проект", "кафе", "магазин", "бренд"] },
     { n: "02", name: "Название, 5 вариантов", nameEn: "Name — 5 options", subtitle: "Для глубокого поиска и сравнения направлений", subtitleEn: "For deeper exploration and comparison", description: "Разрабатываем пять разных вариантов названия с обоснованием идей и предварительной проверкой совпадений.", descriptionEn: "Five distinct naming directions with rationale and a preliminary similarity check.", price: "5 000 ₽", amount: 5000, items: ["5 разных вариантов", "Обоснование идей", "Предварительный поиск совпадений"], itemsEn: ["5 distinct options", "Rationale for each direction", "Preliminary similarity check"], searchTerms: ["много названий", "варианты названия", "пять названий", "выбрать имя", "нейминг"] },
@@ -46,6 +57,214 @@ export const serviceGroups: readonly { title: string; titleEn?: string; packages
     { n: "20", name: "Одностраничный сайт", nameEn: "Landing page", subtitle: "До пяти блоков и форма по готовым материалам", subtitleEn: "Up to five sections and a form using supplied content", description: "Создаём адаптивную одностраничную страницу с формой. Тексты, изображения и материалы предоставляет заказчик; отдельный дизайн и контент оцениваем дополнительно.", descriptionEn: "A responsive landing page with a form using client-supplied text, images and materials. Custom design and content are quoted separately.", price: "от 15 000 ₽", amount: 15000, pricing: "from", items: ["До пяти блоков", "Адаптация для телефона и компьютера", "Форма и проверка отправки заявки"], itemsEn: ["Up to five sections", "Mobile and desktop layouts", "Form and submission verification"], searchTerms: ["сайт", "лендинг", "одностраничный сайт", "разработка сайта", "landing page", "website"] },
     { n: "21", name: "Веб-приложение или личный кабинет", nameEn: "Web app or customer portal", subtitle: "Индивидуальная разработка по согласованному заданию", subtitleEn: "Custom development based on an agreed specification", description: "Обсуждаем функции, роли пользователей и интеграции. После оценки фиксируем состав, сроки, стоимость и этапы работы.", descriptionEn: "We review features, user roles and integrations, then confirm scope, deadlines, price and milestones.", price: "По расчёту", amount: 0, pricing: "quote", items: ["Оценка задачи и состава функций", "Согласование этапов и стоимости", "Разработка и проверка по заданию"], itemsEn: ["Feature and scope assessment", "Agreed milestones and price", "Development and verification against the specification"], searchTerms: ["веб приложение", "личный кабинет", "портал", "приложение", "разработка", "web app", "portal", "development"] },
   ]},
+  { title: "Комплексная разработка для бизнеса", titleEn: "Business software & digital products",
+    note: "На новые комплексные проекты — скидка 5% от нашей базовой оценки работ. Цены ниже уже со скидкой. В предложении покажем базовую смету, скидку и итог. Это стартовая оценка за описанный объём; окончательные состав, цена и сроки — после обсуждения. Хостинг, лицензии, платные API, эквайринг и сопровождение оплачиваются отдельно; скидка на них не распространяется.",
+    noteEn: "New complex projects receive 5% off our base development estimate. Starting prices below already include the discount. Your proposal shows the base estimate, discount and final price. Final scope, price and timeline are confirmed after discussion. Hosting, licenses, paid APIs, payment fees and ongoing support are separate and excluded from the discount.",
+    packages: [
+    {
+        "n": "22",
+        "name": "Корпоративный сайт",
+        "nameEn": "Corporate website",
+        "subtitle": "Сайт компании с услугами, кейсами и заявками",
+        "subtitleEn": "A company website with services, case studies and inquiries",
+        "description": "Для компаний, которым нужна полноценная презентация бизнеса. Проектируем структуру, создаём адаптивный дизайн и страницы услуг, подключаем формы и управление контентом. Начальный объём — до восьми типов страниц на одном языке. Тексты и фотографии предоставляет заказчик; сложные кабинеты и интеграции оцениваем отдельно.",
+        "descriptionEn": "For companies that need a complete business website. Includes structure, responsive design, service pages, forms and content management. Starting scope: up to eight page templates in one language using client-supplied text and images. Complex portals and integrations are quoted separately.",
+        "baseAmount": 200000,
+        "timeline": "Ориентир: 4–6 недель",
+        "timelineEn": "Estimate: 4–6 weeks",
+        "items": [
+            "Структура и адаптивный дизайн",
+            "До восьми типов страниц и управление контентом",
+            "Формы заявок, базовая аналитика и проверка",
+            "Запуск, исходный код и инструкция"
+        ],
+        "itemsEn": [
+            "Structure and responsive design",
+            "Up to eight page templates and content management",
+            "Inquiry forms, basic analytics and verification",
+            "Launch, source code and instructions"
+        ],
+        "searchTerms": [
+            "корпоративный сайт",
+            "многостраничный сайт",
+            "сайт компании",
+            "corporate website",
+            "business website"
+        ]
+    },
+    {
+        "n": "23",
+        "name": "Интернет-магазин",
+        "nameEn": "Online store",
+        "subtitle": "Каталог, корзина, оформление и управление заказами",
+        "subtitleEn": "Catalog, cart, checkout and order management",
+        "description": "Для брендов и магазинов, которые хотят принимать заказы на собственном сайте. Первый релиз: каталог до 100 товаров из готовой таблицы, карточки, корзина, оформление заказа и панель управления. Одна платёжная интеграция после проверки возможностей провайдера. Обмен с 1С, маркетплейсы, нестандартная доставка и массовый перенос данных — отдельно.",
+        "descriptionEn": "For brands and retailers taking orders on their own website. First release: up to 100 products imported from a prepared spreadsheet, product pages, cart, checkout and an admin panel. One payment integration subject to provider availability. ERP sync, marketplace integrations, custom delivery and large data migrations are separate.",
+        "baseAmount": 250000,
+        "timeline": "Ориентир: 5–8 недель",
+        "timelineEn": "Estimate: 5–8 weeks",
+        "items": [
+            "Каталог до 100 товаров и карточки",
+            "Корзина, оформление и статусы заказов",
+            "Панель управления и одна платёжная интеграция",
+            "Проверка сценариев, запуск и исходный код"
+        ],
+        "itemsEn": [
+            "Catalog of up to 100 products and product pages",
+            "Cart, checkout and order statuses",
+            "Admin panel and one payment integration",
+            "Workflow verification, launch and source code"
+        ],
+        "searchTerms": [
+            "интернет магазин",
+            "магазин",
+            "каталог",
+            "корзина",
+            "онлайн оплата",
+            "ecommerce",
+            "online store",
+            "shop"
+        ]
+    },
+    {
+        "n": "24",
+        "name": "Telegram Mini App",
+        "nameEn": "Telegram Mini App",
+        "subtitle": "Каталог, запись или кабинет внутри Telegram",
+        "subtitleEn": "A catalog, booking flow or portal inside Telegram",
+        "description": "Для бизнеса с аудиторией в Telegram. Создаём один согласованный сценарий — каталог с заявкой, запись или кабинет — до пяти основных экранов, с проверкой авторизации Telegram на сервере, базой данных и небольшой панелью управления. Платежи, дополнительные интеграции и сложные программы лояльности рассчитываем отдельно.",
+        "descriptionEn": "For businesses with an audience in Telegram. One agreed flow—a catalog with inquiries, booking or a portal—with up to five main screens, server-validated Telegram authentication, a database and a small admin panel. Payments, extra integrations and complex loyalty programs are quoted separately.",
+        "baseAmount": 150000,
+        "timeline": "Ориентир: 3–5 недель",
+        "timelineEn": "Estimate: 3–5 weeks",
+        "items": [
+            "Один сценарий, до пяти основных экранов",
+            "Авторизация Telegram и база данных",
+            "Запуск из бота и базовая панель управления",
+            "Проверка в согласованных клиентах Telegram"
+        ],
+        "itemsEn": [
+            "One flow and up to five main screens",
+            "Telegram authentication and database",
+            "Bot launch entry and basic admin panel",
+            "Testing in agreed Telegram clients"
+        ],
+        "searchTerms": [
+            "mini app",
+            "мини приложение",
+            "телеграм приложение",
+            "telegram mini app",
+            "запись",
+            "бронирование"
+        ]
+    },
+    {
+        "n": "25",
+        "name": "CRM и внутренняя система",
+        "nameEn": "CRM & internal business system",
+        "subtitle": "Клиенты, заявки, задачи и отчёты в одном месте",
+        "subtitleEn": "Customers, inquiries, tasks and reports in one place",
+        "description": "Для команды, которой уже не хватает таблиц. Начальная CRM: одна воронка, карточки клиентов и сделок, задачи, два уровня доступа и базовый отчёт по статусам. Сначала проверяем, нужна ли разработка с нуля или достаточно готовой CRM. Телефония, 1С, миграция данных и дополнительные процессы оцениваются отдельно.",
+        "descriptionEn": "For teams that have outgrown spreadsheets. Starting CRM: one pipeline, customer and deal records, tasks, two access roles and a basic status report. We first assess whether custom development or an existing CRM fits best. Telephony, ERP, data migration and additional workflows are separate.",
+        "baseAmount": 300000,
+        "timeline": "Ориентир: 6–10 недель",
+        "timelineEn": "Estimate: 6–10 weeks",
+        "items": [
+            "Описание процесса и одна воронка",
+            "Карточки клиентов, сделок и задачи",
+            "Два уровня доступа и базовые отчёты",
+            "Проверка, запуск, код и обучение работе"
+        ],
+        "itemsEn": [
+            "Workflow definition and one pipeline",
+            "Customer records, deals and tasks",
+            "Two access roles and basic reports",
+            "Testing, launch, source code and usage training"
+        ],
+        "searchTerms": [
+            "crm",
+            "црм",
+            "срм",
+            "система учёта",
+            "управление клиентами",
+            "воронка продаж",
+            "internal system",
+            "customer management"
+        ]
+    },
+    {
+        "n": "26",
+        "name": "ИИ-помощник по документам",
+        "nameEn": "AI assistant for company documents",
+        "subtitle": "Поиск ответов в базе знаний со ссылками на источники",
+        "subtitleEn": "Answers from your knowledge base with source references",
+        "description": "Для сотрудников, которые регулярно ищут ответы в инструкциях и документах. Пилот на одной подготовленной базе: до 100 текстовых документов или 500 страниц, один интерфейс, ссылки на источники и проверка на 50 согласованных вопросах. Сканирование, распознавание, локальное размещение моделей и сложные права доступа — отдельные задачи. Провайдера модели и порядок обработки данных согласуем до загрузки.",
+        "descriptionEn": "For staff who regularly search instructions and documents. A pilot on one prepared knowledge base: up to 100 text documents or 500 pages, one interface, source references and evaluation against 50 agreed questions. Scanning, OCR, local model hosting and complex permissions are separate. Model provider and data handling are agreed before upload.",
+        "baseAmount": 150000,
+        "timeline": "Ориентир: 3–5 недель",
+        "timelineEn": "Estimate: 3–5 weeks",
+        "items": [
+            "Одна подготовленная база знаний",
+            "Чат с ответами и ссылками на документы",
+            "Отказ от ответа при отсутствии источника",
+            "Проверка на 50 вопросах и инструкция"
+        ],
+        "itemsEn": [
+            "One prepared knowledge base",
+            "Chat with answers and document references",
+            "Abstention when no supporting source is found",
+            "Evaluation on 50 questions and instructions"
+        ],
+        "searchTerms": [
+            "ии",
+            "ai",
+            "rag",
+            "ассистент",
+            "помощник",
+            "документы",
+            "база знаний",
+            "чат по документам",
+            "knowledge base",
+            "ai assistant"
+        ]
+    },
+    {
+        "n": "27",
+        "name": "Веб-сервис — первая версия",
+        "nameEn": "Web service — first release",
+        "subtitle": "Рабочая версия продукта для первых пользователей",
+        "subtitleEn": "A working product for your first users",
+        "description": "Для нового сервиса, которому нужен первый рабочий релиз. В начальный объём входят один основной пользовательский сценарий, до восьми экранов, регистрация, два уровня доступа, серверная часть, база данных и панель управления. Функции и критерии приёмки фиксируем до начала; платежи, сложные интеграции, приложения для магазинов и высокая нагрузка — отдельный расчёт.",
+        "descriptionEn": "For a new service that needs its first working release. Starting scope: one core user journey, up to eight screens, registration, two access roles, backend, database and admin panel. Features and acceptance criteria are fixed before work starts. Payments, complex integrations, app-store apps and high-load requirements are quoted separately.",
+        "baseAmount": 500000,
+        "timeline": "Ориентир: 8–12 недель",
+        "timelineEn": "Estimate: 8–12 weeks",
+        "items": [
+            "Задание, прототип и один основной сценарий",
+            "До восьми экранов, регистрация и два уровня доступа",
+            "Серверная часть, база данных и админ-панель",
+            "Тестирование, запуск, исходный код и документация"
+        ],
+        "itemsEn": [
+            "Specification, prototype and one core journey",
+            "Up to eight screens, registration and two access roles",
+            "Backend, database and admin panel",
+            "Testing, launch, source code and documentation"
+        ],
+        "searchTerms": [
+            "mvp",
+            "saas",
+            "веб сервис",
+            "стартап",
+            "онлайн сервис",
+            "сервис подписки",
+            "web service",
+            "startup",
+            "продукт"
+        ]
+    }
+].map(discountedProject)
+  },
 ];
 
 export const serviceCatalog = serviceGroups.flatMap((group) => group.packages);

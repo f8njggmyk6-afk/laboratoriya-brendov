@@ -597,3 +597,13 @@ body{background:var(--bg)}.site-header{background:rgba(11,18,32,.9)}.brand-mark{
 .thanks-summary .order-summary{margin:12px 0}
 .multi-service label small{white-space:normal;line-height:1.5}
 @media(max-width:700px){.pricing-dossier .package-price-block{grid-column:1/-1;max-width:none}.application-total{align-items:flex-start;gap:12px;flex-wrap:wrap}.application-total .order-summary{flex-basis:100%;margin-left:0}.application-total-bottom .order-summary{grid-column:1/-1}.selection-dock .order-summary{font-size:12px;gap:4px}.selection-dock .order-summary>div{gap:3px 8px}.selection-dock .order-summary strong{font-size:14px!important}}
+
+/* Complex projects: explicit scope, starting price and genuine estimate discount. */
+.pricing-category,.pricing-dossier>article{scroll-margin-top:180px}
+.project-pricing-note{max-width:90ch;margin:12px 0 30px;color:var(--muted);font-size:15px;line-height:1.65}
+.pricing-category>.project-pricing-note{width:calc(100% - 24px);margin-inline:auto}
+.project-discount-badge{display:inline-flex;justify-self:start;padding:5px 10px;border:1px solid rgba(98,195,182,.65);border-radius:999px;color:#a4e5d9;background:rgba(98,195,182,.08);font-size:12px;font-weight:700;line-height:1.5}
+.package-price-block .project-base-price{font-size:12px;color:#9aa6ba}
+.complex-project-offer{max-width:900px;margin:28px 0 0;padding:18px 22px;border:1px solid rgba(98,195,182,.3);border-radius:12px;background:rgba(98,195,182,.05);color:var(--muted);line-height:1.6}
+.complex-project-offer a{display:inline-block;margin-top:8px;color:#a4e5d9;font-weight:700}
+@media(max-width:700px){.pricing-category,.pricing-dossier>article{scroll-margin-top:145px}.project-pricing-note{font-size:14px}.complex-project-offer{padding:16px;font-size:14px}}

@@ -95,7 +95,7 @@ export function ContactsPage() {
             {options.map((item) => (
               <label key={item.n} className={selected.includes(item.n) ? "is-selected" : ""}>
                 <input type="checkbox" name="packages" value={item.n} checked={selected.includes(item.n)} onChange={() => toggle(item.n)} />
-                <span><b>№ {item.n}</b>{lang==="en"?(item.nameEn??item.name):item.name}<small>{servicePrice(item,money,lang)}{item.pricing ? t(" · требуется расчёт", " · quote required") : ""}</small></span>
+                <span><b>№ {item.n}</b>{lang==="en"?(item.nameEn??item.name):item.name}<small>{servicePrice(item,money,lang)}{item.discountPercent ? t(" · скидка "," · ")+item.discountPercent+t("% уже учтена","% discount included") : ""}{item.pricing ? t(" · требуется расчёт", " · quote required") : ""}</small></span>
                 <em>{selected.includes(item.n) ? t("Убрать","Remove") : t("Добавить","Add")}</em>
               </label>
             ))}

@@ -30,7 +30,7 @@ export const Route = createFileRoute("/api/contact")({
       ...fixed.map(item => `№ ${item.n} — ${item.name}: ${money(item.amount)}`),
       fixed.length ? `Сумма фиксированных услуг: ${money(total)}` : "Не выбраны",
       "Разработка — требуется расчёт:",
-      ...development.map(item => `№ ${item.n} — ${item.name} (${item.pricing === "quote" ? "по расчёту" : "стартовая цена от " + money(item.amount)})`),
+      ...development.map(item => `№ ${item.n} — ${item.name} (${item.pricing === "quote" ? "по расчёту" : "стартовая цена от " + money(item.amount)}${item.discountPercent ? `; скидка ${item.discountPercent}% уже учтена, базовая оценка от ${money(item.baseAmount!)}` : ""})`),
       ...(development.length ? ["Окончательные стоимость, сроки и этапы разработки согласуем отдельно. Стартовые цены не включены в фиксированную сумму."] : ["Не выбрана"]),
       "Задача:", brief,
     ];
