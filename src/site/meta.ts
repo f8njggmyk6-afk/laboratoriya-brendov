@@ -1,5 +1,5 @@
 export const themeColor = "#090A0D";
-const base = "https://laboratoriya-brendov-concept.higgsfield.app";
+const base = "https://laboratoriyabrendov.com";
 const image = `${base}/assets/head/og-wide.png`;
 
 export function pageHead(path: string, title: string, description: string) {

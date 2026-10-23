@@ -1,3 +1,4 @@
+
 @layer reset,theme,base,components,utilities;
 
 
@@ -581,3 +582,18 @@ body{background:var(--bg)}.site-header{background:rgba(11,18,32,.9)}.brand-mark{
 .language-switch button{min-width:38px;padding:7px 9px;border:0;border-radius:999px;background:transparent;color:var(--muted);font:800 11px/1 inherit;letter-spacing:.06em;cursor:pointer}
 .language-switch button.is-active{background:#456bff;color:#fff}
 @media(max-width:700px){.site-header{gap:10px}.language-switch{position:absolute;right:14px;top:16px}.language-switch button{min-width:34px;padding:6px 7px;font-size:10px}.main-nav{padding-right:0}}
+/* Development quotes stay separate from fixed-price services. */
+.package-price-block{display:grid;align-content:center;gap:12px;max-width:270px}
+.package-price-block .package-price{grid-column:auto}
+.package-price-block small{color:var(--muted);font-size:13px;line-height:1.5}
+.package-price-block .development-discuss{display:inline-flex;width:fit-content;color:#9de2d8;font-size:14px;font-weight:700;border-bottom:1px solid #62c3b6;padding-bottom:4px}
+.order-summary{display:grid;gap:7px;min-width:0;font-size:13px;line-height:1.4}
+.order-summary>div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.order-summary strong{font-size:16px!important;line-height:1.4!important;white-space:normal!important;padding:0!important}
+.selection-dock .order-summary span{font-size:12px}
+.selection-dock .order-summary strong{color:#0b1322}
+.application-total .order-summary{flex:1;margin-left:20px}
+.application-total-overview:before,.application-total-bottom:before{content:none}
+.thanks-summary .order-summary{margin:12px 0}
+.multi-service label small{white-space:normal;line-height:1.5}
+@media(max-width:700px){.pricing-dossier .package-price-block{grid-column:1/-1;max-width:none}.application-total{align-items:flex-start;gap:12px;flex-wrap:wrap}.application-total .order-summary{flex-basis:100%;margin-left:0}.application-total-bottom .order-summary{grid-column:1/-1}.selection-dock .order-summary{font-size:12px;gap:4px}.selection-dock .order-summary>div{gap:3px 8px}.selection-dock .order-summary strong{font-size:14px!important}}

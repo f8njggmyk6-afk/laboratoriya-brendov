@@ -2,10 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { useMemo, useState, type FormEvent } from "react";
 import { BackToTop, ContactBand, PhoneIcon, SectionCue, SiteHeader } from "./SiteShell";
 import { StructuredData } from "./StructuredData";
-import { serviceCatalog } from "./serviceCatalog";
+import { serviceCatalog, servicePrice } from "./serviceCatalog";
 import { useLanguage } from "./i18n";
 
-const schema = JSON.stringify({"@context":"https://schema.org","@type":"ProfessionalService","name":"Brand Laboratory","serviceType":"Naming, logos and advertising creatives","url":"https://laboratoriyabrendov.com"});
+const schema = JSON.stringify({"@context":"https://schema.org","@type":"ProfessionalService","name":"Brand Laboratory","serviceType":"Naming, design, websites, bots and automation","url":"https://laboratoriyabrendov.com"});
 
 const clean = (value: string) => value.toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 const distance = (a: string, b: string) => {
@@ -52,7 +52,7 @@ function ServiceFinder() {
     <div className="service-finder-control">
       <span className="finder-icon" aria-hidden="true" />
       <label className="sr-only" htmlFor="service-search">{t("Поиск услуги","Service search")}</label>
-      <input id="service-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("Например: придумать имя компании","For example: create a company name")} />
+      <input id="service-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("Например: создать Telegram-бота","For example: a Telegram bot")} />
       <button type="submit">{t("Найти","Find")} <span>→</span></button>
     </div>
     {query ? <p className="service-finder-result">{match ? <>{t("Подходит:","Best match:")} <b>{lang==="en"?(match.nameEn??match.name):match.name}</b></> : t("Покажем все подходящие услуги","We’ll show all relevant services")}</p> : null}
@@ -62,28 +62,28 @@ function ServiceFinder() {
 export function HomePage() {
   const { lang, t, money } = useLanguage();
   const approach = lang==="en"
-    ? [["01","Listen","We understand your task, product and expectations."],["02","Discuss","We clarify the audience, character and practical constraints."],["03","Propose","We develop professional directions with clear reasoning."],["04","Refine","We improve the selected direction together until it is ready."],["05","Payment","After approval, we deliver the clean final materials."]]
-    : [["01","Слушаем","Погружаемся в вашу задачу, продукт и ожидания."],["02","Обсуждаем","Уточняем аудиторию, характер и практические ограничения."],["03","Предлагаем","Разрабатываем профессиональные варианты с понятной логикой."],["04","Доводим","Вместе совершенствуем выбранное направление до результата."],["05","Оплата","После утверждения передаём чистые готовые материалы."]];
+    ? [["01","Listen","We understand your task, product and expectations."],["02","Discuss","We clarify the audience, character and practical constraints."],["03","Propose","We develop professional directions with clear reasoning."],["04","Refine","We improve the selected direction together until it is ready."],["05","Payment","Design is paid after approval. Development follows agreed milestones."]]
+    : [["01","Слушаем","Погружаемся в вашу задачу, продукт и ожидания."],["02","Обсуждаем","Уточняем аудиторию, характер и практические ограничения."],["03","Предлагаем","Разрабатываем профессиональные варианты с понятной логикой."],["04","Доводим","Вместе совершенствуем выбранное направление до результата."],["05","Оплата","Дизайн — после утверждения. Разработка — по согласованным этапам."]];
   const services = lang==="en"
-    ? [["01","Naming","Naming for a company, product or service."],["02","Slogan","A concise expression of the brand’s meaning and promise."],["03","Logo","A mark, typography and visual character."],["04","Advertising creatives","Ideas and layouts for Meta, Telegram, websites and banners."],["05","Brand system","A connected set of solutions for a complete launch."]]
-    : [["01","Название","Нейминг для компании, продукта или сервиса."],["02","Слоган","Короткая формула смысла и обещания бренда."],["03","Логотип","Знак, типографика и визуальный характер."],["04","Рекламные креативы","Идеи и макеты для Meta, Telegram, сайтов и баннеров."],["05","Фирменная система","Связанный набор решений для полноценного запуска."]];
+    ? [["01","Naming","Naming for a company, product or service."],["02","Slogan","A concise expression of the brand’s meaning and promise."],["03","Logo","A mark, typography and visual character."],["04","Advertising creatives","Ideas and layouts for Meta, Telegram, websites and banners."],["05","Brand system","A connected set of solutions for a complete launch."],["06","Development & automation","Websites, Telegram bots, integrations, scripts and bug fixes."]]
+    : [["01","Название","Нейминг для компании, продукта или сервиса."],["02","Слоган","Короткая формула смысла и обещания бренда."],["03","Логотип","Знак, типографика и визуальный характер."],["04","Рекламные креативы","Идеи и макеты для Meta, Telegram, сайтов и баннеров."],["05","Фирменная система","Связанный набор решений для полноценного запуска."],["06","Разработка и автоматизация","Сайты, Telegram-боты, интеграции, скрипты и исправление ошибок."]];
   const faq = lang==="en"
-    ? [["How does the work start?","With a short discussion of the task, product and customer. Then we propose professional directions and explain the logic behind each."],["When is payment due?","Payment comes at the end. First you see the prepared result with protection marks, choose a direction, and only then pay."],["Do you create advertising creatives?","Yes. We create ideas and layouts for social media, advertising platforms, banners and other digital formats."],["Can I order just one service?","Yes. You can start with a single name, slogan, logo or creative and expand later if needed."]]
-    : [["С чего начинается работа?","С короткого разговора о задаче, продукте и клиенте. Затем мы предлагаем профессиональные направления и объясняем логику каждого."],["Когда нужна оплата?","Оплата стоит в конце процесса. Сначала вы видите подготовленный результат с защитными отметками, выбираете направление и только потом оплачиваете."],["Вы делаете рекламные креативы?","Да. Создаём идеи и макеты для социальных сетей, рекламных кабинетов, баннеров и других цифровых форматов."],["Можно заказать одну услугу?","Да. Можно начать с одного названия, слогана, логотипа или креатива, а затем расширить работу до целой системы."]];
-  const featured = ["01","02","03","04","12"].map(n=>serviceCatalog.find(s=>s.n===n)!);
+    ? [["How does the work start?","With a short discussion of the task, product and customer. Then we propose professional directions and explain the logic behind each."],["When is payment due?","Design is paid after approval of protected previews. For development, we agree on scope and price first; larger projects use paid milestones. Hosting and paid services are separate."],["Do you create advertising creatives?","Yes. We create ideas and layouts for social media, advertising platforms, banners and other digital formats."],["Do you develop websites and bots?","Yes. We create landing pages, Telegram bots, integrations and automation, and improve existing websites. Scope, timeline and price are agreed before work starts."],["Can I order just one service?","Yes. You can start with a single name, slogan, logo or creative and expand later if needed."]]
+    : [["С чего начинается работа?","С короткого разговора о задаче, продукте и клиенте. Затем мы предлагаем профессиональные направления и объясняем логику каждого."],["Когда нужна оплата?","Дизайн оплачивается после утверждения защищённых вариантов. Для разработки заранее фиксируем объём и стоимость, крупные проекты делим на оплачиваемые этапы. Хостинг и платные сервисы — отдельно."],["Вы делаете рекламные креативы?","Да. Создаём идеи и макеты для социальных сетей, рекламных кабинетов, баннеров и других цифровых форматов."],["Вы разрабатываете сайты и ботов?","Да. Создаём одностраничные сайты, Telegram-ботов, интеграции и автоматизацию, дорабатываем существующие сайты. Состав, сроки и стоимость согласуем до начала работы."],["Можно заказать одну услугу?","Да. Можно начать с одного названия, слогана, логотипа или креатива, а затем расширить работу до целой системы."]];
+  const featured = ["01","03","12","18","20"].map(n=>serviceCatalog.find(s=>s.n===n)!);
 
   return <><StructuredData json={schema}/><SiteHeader/><main>
     <section className="new-hero">
-      <video autoPlay muted loop playsInline poster="/assets/world/scene-01-poster.jpg"><source src="/assets/world/scene-01.mp4" type="video/mp4"/></video>
+      <video autoPlay muted loop playsInline poster="/assets/world/scene-01-poster.png"><source src="/assets/world/scene-01.mp4" type="video/mp4"/></video>
       <div className="new-hero-shade"/>
       <div className="new-hero-content">
-        <p className="eyebrow">{t("Нейминг · Дизайн · Реклама · Креатив","Naming · Design · Advertising · Creative")}</p>
+        <p className="eyebrow">{t("Нейминг · Дизайн · Разработка · Реклама","Naming · Design · Development · Advertising")}</p>
         <h1>{t("Бренды, которые","Brands people")}<br/>{t("выбирают.","choose.")}</h1>
-        <p className="hero-lead">{t("Названия, слоганы, логотипы, рекламные концепции и креативы для бизнеса по всей России.","Naming, slogans, logos, advertising concepts and creative assets for businesses worldwide.")}</p>
+        <p className="hero-lead">{t("Названия, логотипы, дизайн, сайты, боты и автоматизация для бизнеса по всей России.","Naming, logos, design, websites, bots and automation for businesses worldwide.")}</p>
         <p className="hero-method">{t("Слушаем задачу, предлагаем сильные варианты и вместе доводим решение до результата.","We listen, propose strong directions and refine the selected solution together.")}</p>
         <ServiceFinder />
         <div className="hero-actions hero-actions-single"><Link to="/contacts">{t("Обсудить задачу","Discuss project")} <PhoneIcon className="is-pulsing"/></Link></div>
-        <p className="payment-last">{t("Оплата — после согласования выбранного решения.","Payment — after approval of the selected solution.")}</p>
+        <p className="payment-last">{t("Дизайн — без предоплаты. Разработка — по согласованному объёму и этапам.","Design — no advance payment. Development — agreed scope and milestones.")}</p>
       </div>
       <SectionCue label="Листайте дальше" labelEn="Keep scrolling"/>
     </section>
@@ -108,7 +108,7 @@ export function HomePage() {
 
     <section className="clear-section price-home">
       <header><p className="section-index">{t("04 / Прайс","04 / Pricing")}</p><h2>{t("Понятная стоимость.","Clear pricing.")}</h2></header>
-      {featured.map((p)=><Link to="/pricing" className="price-row" key={p.n}><b>{p.n}</b><span>{lang==="en"?(p.nameEn??p.name):p.name}</span><strong>{money(p.amount)}</strong><i>→</i></Link>)}
+      {featured.map((p)=><Link to="/pricing" className="price-row" key={p.n}><b>{p.n}</b><span>{lang==="en"?(p.nameEn??p.name):p.name}</span><strong>{servicePrice(p,money,lang)}</strong><i>→</i></Link>)}
       <SectionCue label="Листайте дальше" labelEn="Keep scrolling"/>
     </section>
 

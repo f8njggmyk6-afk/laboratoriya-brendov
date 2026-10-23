@@ -35,7 +35,7 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="footer-mark">ЛБ</div>
-      <div><p className="footer-title">{t("Лаборатория брендов","Brand Laboratory")}</p><p>{t("Нейминг, слоганы, логотипы, рекламные концепции и креативы.","Naming, slogans, logos, advertising concepts and creative assets.")}</p></div>
+      <div><p className="footer-title">{t("Лаборатория брендов","Brand Laboratory")}</p><p>{t("Нейминг, дизайн, реклама, сайты, боты и автоматизация.","Naming, design, advertising, websites, bots and automation.")}</p></div>
       <div><p className="footer-label">{t("География","Geography")}</p><p>{t("Россия и онлайн","Worldwide · online")}</p></div>
       <div><p className="footer-label">{t("Связаться","Contact")}</p><p><a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a></p></div>
       <p className="footer-note">{t("Основной канал связи — email.","Primary contact channel — email.")}</p>

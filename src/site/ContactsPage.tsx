@@ -1,15 +1,17 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { PageIntro, SiteShell } from "./SiteShell";
-import { serviceCatalog } from "./serviceCatalog";
+import { serviceCatalog, servicePrice, summarizeServices } from "./serviceCatalog";
+import { SelectionSummary } from "./SelectionSummary";
 import { useLanguage } from "./i18n";
 
-const options = serviceCatalog.map(({ n, name: label, nameEn: labelEn, amount }) => ({ n, label, labelEn, amount }));
+const options = serviceCatalog;
 type ContactMode = "write" | null;
 
 export function ContactsPage() {
   const { lang, t, money } = useLanguage();
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [mode, setMode] = useState<ContactMode>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
@@ -22,8 +24,7 @@ export function ContactsPage() {
   }, []);
   useEffect(() => { if (hydrated) window.sessionStorage.setItem("lb-selected-services", JSON.stringify(selected)); }, [selected, hydrated]);
 
-  const chosen = useMemo(() => options.filter((item) => selected.includes(item.n)), [selected]);
-  const total = chosen.reduce((sum, item) => sum + item.amount, 0);
+  const { chosen, total } = summarizeServices(selected);
 
   const toggle = (number: string) => setSelected((current) => current.includes(number) ? current.filter((item) => item !== number) : [...current, number]);
 
@@ -34,8 +35,10 @@ export function ContactsPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!mode) return;
+    if (!mode || submitting) return;
     const form = new FormData(event.currentTarget);
+    setSubmitting(true);
+    try {
     const response = await fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -43,7 +46,7 @@ export function ContactsPage() {
         name: String(form.get("name") ?? ""),
         email: String(form.get("contact") ?? ""),
         brief: String(form.get("brief") ?? ""),
-        services: selected,
+        services: chosen.map(item => item.n),
         total,
       }),
     });
@@ -53,6 +56,9 @@ export function ContactsPage() {
     }
     setSent(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch {
+      alert(t("Не получилось отправить заявку. Напишите нам на laboratoriabrendov@gmail.com", "We couldn’t send your request. Please email laboratoriabrendov@gmail.com"));
+    } finally { setSubmitting(false); }
   }
 
   if (sent) {
@@ -64,7 +70,7 @@ export function ContactsPage() {
             <h1>{t("Спасибо!","Thank you!")}</h1>
             <p>{t("Мы получили вашу заявку и ответим на указанный email в течение рабочего дня.","We received your request and will reply to the email you provided within one business day.")}</p>
             <div className="thanks-summary">
-              <b>{t("Выбрано","Selected")}: {selected.length} · {money(total)}</b>
+              <b>{t("Выбрано","Selected")}: {chosen.length}</b><SelectionSummary selected={selected}/>
               <small>{t("Заявка сохранена. Мы ответим на указанный email.","Your request has been saved. We’ll reply by email.")}</small>
             </div>
             <Link to="/">{t("Вернуться на главную →","Back to home →")}</Link>
@@ -77,24 +83,24 @@ export function ContactsPage() {
   return (
     <SiteShell>
       <main className="contacts-page application-flow">
-        <PageIntro number="05" title="Оформить заявку" titleEn="Contact" lead="Проверьте состав заказа и итоговую стоимость." leadEn="Review your selected services and total price." />
+        <PageIntro number="05" title="Оформить заявку" titleEn="Contact" lead="Проверьте выбранные услуги. Задачи разработки рассчитаем отдельно после обсуждения." leadEn="Review your selected services. Development tasks receive a separate quote after discussion." />
         <div className="application-scroll-cue" aria-hidden="true"><span>{t("Способы связи — ниже","Contact options below")}</span><b>↓</b></div>
 
         <section className="selected-services-first">
           <div className="application-section-head"><div><h2>{t("Выбранные услуги","Selected services")}</h2></div></div>
-          <p>{t("Можно добавить или убрать позиции. Выбор и сумма сохраняются.","You can add or remove items. Your selection and total are saved.")}</p>
-          <div className="application-total application-total-overview"><span>{hydrated ? <>{t("Выбрано","Selected")}: <b>{selected.length}</b></> : t("Восстанавливаем выбор…","Restoring selection…")}</span><strong>{hydrated ? money(total) : ""}</strong></div>
+          <p>{t("Можно добавить или убрать позиции. Выбор сохраняется. Стартовые цены разработки не включаются в фиксированную сумму.","You can add or remove items. Your selection is saved. Development starting prices are excluded from the fixed-price total.")}</p>
+          <div className="application-total application-total-overview"><span>{hydrated ? <>{t("Выбрано","Selected")}: <b>{chosen.length}</b></> : t("Восстанавливаем выбор…","Restoring selection…")}</span>{hydrated ? <SelectionSummary selected={selected}/> : null}</div>
           <fieldset className="multi-service">
             <legend className="sr-only">{t("Услуги","Services")}</legend>
             {options.map((item) => (
               <label key={item.n} className={selected.includes(item.n) ? "is-selected" : ""}>
                 <input type="checkbox" name="packages" value={item.n} checked={selected.includes(item.n)} onChange={() => toggle(item.n)} />
-                <span><b>№ {item.n}</b>{lang==="en"?(item.labelEn??item.label):item.label}<small>{money(item.amount)}</small></span>
+                <span><b>№ {item.n}</b>{lang==="en"?(item.nameEn??item.name):item.name}<small>{servicePrice(item,money,lang)}{item.pricing ? t(" · требуется расчёт", " · quote required") : ""}</small></span>
                 <em>{selected.includes(item.n) ? t("Убрать","Remove") : t("Добавить","Add")}</em>
               </label>
             ))}
           </fieldset>
-          <div className="application-total application-total-bottom"><span>{t("Выбрано","Selected")}: <b>{selected.length}</b></span><strong>{money(total)}</strong></div>
+          <div className="application-total application-total-bottom"><span>{t("Выбрано","Selected")}: <b>{chosen.length}</b></span><SelectionSummary selected={selected}/></div>
           {!selected.length && hydrated ? <p className="form-note">{t("Не определились с услугой? Всё равно напишите — поможем выбрать подходящий вариант.","Not sure which service you need? Send us a message anyway — we’ll help you choose.")}</p> : null}
         </section>
 
@@ -116,7 +122,7 @@ export function ContactsPage() {
             <div><label htmlFor="name">{t("Как к вам обращаться","Your name")}</label><input id="name" name="name" required placeholder={t("Ваше имя","Your name")} /></div>
             <div><label htmlFor="contact">{t("Email для ответа","Email for reply")}</label><input id="contact" name="contact" type="email" required placeholder="name@company.com" /></div>
             <div><label htmlFor="brief">{t("Коротко о задаче","Briefly about the task")}</label><textarea id="brief" name="brief" required rows={4} placeholder={t("Что нужно создать, для какого проекта и любые важные детали. При желании укажите номер телефона, Telegram или MAX для связи.","What needs to be created, for which project, and any important details. You can also include your phone, Telegram or MAX contact if you wish.")} /></div>
-            <button type="submit">{t("Получить предложение","Get a proposal")} <span>→</span></button>
+            <button type="submit" disabled={submitting}>{submitting ? t("Отправляем…", "Sending…") : t("Получить предложение","Get a proposal")} <span>→</span></button>
             <p className="test-note">{t("Основной канал связи","Primary contact channel")}: laboratoriabrendov@gmail.com</p>
           </form>
         ) : null}
