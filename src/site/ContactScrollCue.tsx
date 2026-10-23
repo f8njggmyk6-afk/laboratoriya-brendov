@@ -13,7 +13,7 @@ export function ContactScrollCue() {
       if (!slot.current || !button.current || !target) return;
       const top = (header?.getBoundingClientRect().bottom ?? 0) + 10;
       const height = button.current.getBoundingClientRect().height;
-      const visible = target.getBoundingClientRect().top > top + height + 24;
+      const visible = target.getBoundingClientRect().top > Math.max(top + height + 24, window.innerHeight * .65);
       const floating = slot.current.getBoundingClientRect().top <= top;
       setState(previous => previous.top === top && previous.height === height && previous.visible === visible && previous.floating === floating ? previous : { top, height, visible, floating });
     };
