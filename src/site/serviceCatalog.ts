@@ -58,8 +58,8 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
     { n: "21", name: "Веб-приложение или личный кабинет", nameEn: "Web app or customer portal", subtitle: "Индивидуальная разработка по согласованному заданию", subtitleEn: "Custom development based on an agreed specification", description: "Обсуждаем функции, роли пользователей и интеграции. После оценки фиксируем состав, сроки, стоимость и этапы работы.", descriptionEn: "We review features, user roles and integrations, then confirm scope, deadlines, price and milestones.", price: "По расчёту", amount: 0, pricing: "quote", items: ["Оценка задачи и состава функций", "Согласование этапов и стоимости", "Разработка и проверка по заданию"], itemsEn: ["Feature and scope assessment", "Agreed milestones and price", "Development and verification against the specification"], searchTerms: ["веб приложение", "личный кабинет", "портал", "приложение", "разработка", "web app", "portal", "development"] },
   ]},
   { title: "Комплексная разработка для бизнеса", titleEn: "Business software & digital products",
-    note: "На новые комплексные проекты — скидка 5% от нашей базовой оценки работ. Цены ниже уже со скидкой. В предложении покажем базовую смету, скидку и итог. Это стартовая оценка за описанный объём; окончательные состав, цена и сроки — после обсуждения. Хостинг, лицензии, платные API, эквайринг и сопровождение оплачиваются отдельно; скидка на них не распространяется.",
-    noteEn: "New complex projects receive 5% off our base development estimate. Starting prices below already include the discount. Your proposal shows the base estimate, discount and final price. Final scope, price and timeline are confirmed after discussion. Hosting, licenses, paid APIs, payment fees and ongoing support are separate and excluded from the discount.",
+    note: "На новые комплексные проекты — скидка 5% от нашей базовой оценки работ. Цены в прайсе уже со скидкой. В предложении покажем базовую смету, скидку и итог. Это стартовая оценка за описанный объём; окончательные состав, цена и сроки — после обсуждения. Хостинг, лицензии, платные API, эквайринг и сопровождение оплачиваются отдельно; скидка на них не распространяется.",
+    noteEn: "New complex projects receive 5% off our base development estimate. Starting prices in the price list already include the discount. Your proposal shows the base estimate, discount and final price. Final scope, price and timeline are confirmed after discussion. Hosting, licenses, paid APIs, payment fees and ongoing support are separate and excluded from the discount.",
     packages: [
     {
         "n": "22",
@@ -268,6 +268,15 @@ export const serviceGroups: readonly { title: string; titleEn?: string; note?: s
 ];
 
 export const serviceCatalog = serviceGroups.flatMap((group) => group.packages);
+// Storage IDs remain stable so existing carts and links keep their meaning.
+export function serviceIdentity(item: ServiceItem, lang: "ru" | "en" = "ru") {
+  const development = Number(item.n) > 14;
+  const number = String(Number(item.n) - (development ? 14 : 0)).padStart(2, "0");
+  const direction = development ? (lang === "en" ? "Development" : "Разработка") : (lang === "en" ? "Advertising" : "Реклама");
+  const symbol = development ? "</>" : "📣";
+  return { development, number, direction, symbol, code: `${development ? "DEV" : "AD"}-${number}`, label: `${symbol} ${direction} · № ${number}` };
+}
+
 export const money = (value: number) => value.toLocaleString("ru-RU") + " ₽";
 
 export function servicePrice(item: ServiceItem, format: (value: number) => string, lang: "ru" | "en") {

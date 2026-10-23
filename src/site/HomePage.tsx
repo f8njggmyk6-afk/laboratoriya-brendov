@@ -1,6 +1,7 @@
+import { ServiceBadge } from "./ServiceBadge";
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState, type FormEvent } from "react";
-import { BackToTop, ContactBand, PhoneIcon, SectionCue, SiteHeader } from "./SiteShell";
+import { BackToTop, ScrollReminder, ContactBand, PhoneIcon, SectionCue, SiteHeader } from "./SiteShell";
 import { StructuredData } from "./StructuredData";
 import { serviceCatalog, servicePrice } from "./serviceCatalog";
 import { useLanguage } from "./i18n";
@@ -109,11 +110,11 @@ export function HomePage() {
 
     <section className="clear-section price-home">
       <header><p className="section-index">{t("04 / Прайс","04 / Pricing")}</p><h2>{t("Понятная стоимость.","Clear pricing.")}</h2></header>
-      {featured.map((p)=><Link to="/pricing" className="price-row" key={p.n}><b>{p.n}</b><span>{lang==="en"?(p.nameEn??p.name):p.name}</span><strong>{servicePrice(p,money,lang)}</strong><i>→</i></Link>)}
+      {featured.map((p)=><Link to="/pricing" className="price-row" key={p.n}><b><ServiceBadge item={p}/></b><span>{lang==="en"?(p.nameEn??p.name):p.name}</span><strong>{servicePrice(p,money,lang)}</strong><i>→</i></Link>)}
       <SectionCue label="Листайте дальше" labelEn="Keep scrolling"/>
     </section>
 
     <section className="clear-section faq-section"><header><p className="section-index">{t("05 / Вопросы","05 / Questions")}</p><h2>{t("Коротко о главном.","The essentials, briefly.")}</h2></header><div className="faq-list">{faq.map(([q,a],i)=><details key={q}><summary><span>0{i+1}</span>{q}</summary><p>{a}</p></details>)}</div></section>
     <ContactBand/>
-  </main><BackToTop/><footer className="home-footer"><p>{t("Лаборатория брендов","Brand Laboratory")}</p></footer></>;
+  </main><BackToTop/><ScrollReminder/><footer className="home-footer"><p>{t("Лаборатория брендов","Brand Laboratory")}</p></footer></>;
 }

@@ -2,6 +2,7 @@ import { useEffect,useState } from "react";
 import { PageIntro,SiteShell } from "./SiteShell";
 import { serviceGroups,servicePrice,summarizeServices } from "./serviceCatalog";
 import { useLanguage } from "./i18n";
+import { ServiceBadge } from "./ServiceBadge";
 import { SelectionSummary } from "./SelectionSummary";
 
 function PricingDirections() {
@@ -40,14 +41,14 @@ export function PricingPage(){
     <div className="selection-guide"><strong>{t("Выберите услуги","Choose services")}</strong><span>{hydrated ? t("Выбрано","Selected")+": "+chosen.length : t("Восстанавливаем выбор…","Restoring selection…")}</span></div>
     {serviceGroups.map((g,index)=><section className="pricing-category" id={"pricing-group-"+(index+1)} key={g.title}>
       <h2>{lang==="en"?(g.titleEn??g.title):g.title}</h2>
-      {g.note ? <p className="project-pricing-note">{lang==="en"?(g.noteEn??g.note):g.note}</p> : null}
       <div className="pricing-dossier">{g.packages.map(p=>{const active=selected.includes(p.n);return <article id={"price-"+p.n} key={p.n} className={active?"is-selected":""}>
-        <div className="package-head"><span className="package-number-badge">№ {p.n}</span><button type="button" className="package-check" onClick={()=>toggle(p.n)} aria-pressed={active}><b>{active?t("✓ Добавлено","✓ Added"):t("+ Добавить","+ Add")}</b></button></div>
+        <div className="package-head"><span className="package-number-badge"><ServiceBadge item={p}/></span><button type="button" className="package-check" onClick={()=>toggle(p.n)} aria-pressed={active}><b>{active?t("✓ Добавлено","✓ Added"):t("+ Добавить","+ Add")}</b></button></div>
         <div className="package-copy"><h3>{lang==="en"?(p.nameEn??p.name):p.name}</h3><p>{lang==="en"?(p.subtitleEn??p.subtitle):p.subtitle}</p>{p.items.length?<ul>{(lang==="en"?(p.itemsEn??p.items):p.items).map(x=><li key={x}>{x}</li>)}</ul>:null}</div>
         <div className="package-price-block">{p.discountPercent ? <span className="project-discount-badge">−{p.discountPercent}% {t("уже в цене","included")}</span> : null}<strong className="package-price">{servicePrice(p,money,lang)}</strong>{p.baseAmount ? <small className="project-base-price">{t("Базовая оценка: от ","Base estimate: from ")}{money(p.baseAmount)}</small> : null}{p.timeline ? <small>{lang==="en"?(p.timelineEn??p.timeline):p.timeline}</small> : null}{p.pricing ? <><small>{t("Срок и окончательная стоимость — после уточнения задачи.","Timeline and final price confirmed after reviewing the task.")}</small><a className="development-discuss" href={"/contacts?packages="+encodeURIComponent([...new Set([...chosen.map(item=>item.n),p.n])].join(","))}>{t("Обсудить задачу →","Discuss your task →")}</a></> : null}</div>
       </article>})}</div>
     </section>)}
     {hydrated&&chosen.length?<aside className="selection-dock" role="status" aria-live="polite"><div className="selection-dock-count"><b>{chosen.length}</b><span>{t("услуг выбрано","services selected")}</span></div><SelectionSummary selected={selected}/><div className="selection-dock-actions"><a href={href}>{t("Перейти к заявке →","Continue to contact →")}</a></div></aside>:null}
     <section className="pricing-note"><h2>{t("Оплата после согласования","Payment after approval")}</h2><p>{t("Для дизайна сначала обсуждаем задачу и фиксируем стоимость, показываем защищённые варианты, дорабатываем и принимаем оплату после утверждения.","For design, we confirm the scope and price, show protected previews, refine the result and accept payment after approval.")}</p><p>{t("Для разработки сначала согласуем задание, сроки и фиксированную стоимость. При необходимости покажем небольшой демонстрационный фрагмент. Крупные проекты делим на оплачиваемые этапы; новые пожелания оцениваем до выполнения. Хостинг, домен, платные сервисы и сопровождение рассчитываются отдельно.","For development, we agree on the specification, timeline and fixed price first. A small demo can be arranged. Larger projects use paid milestones; additional requests are quoted before implementation. Hosting, domains, paid services and ongoing support are priced separately.")}</p></section>
+    <section className="pricing-discount-terms" aria-label={t("Условия скидки на разработку", "Development discount terms")}>{serviceGroups.filter(g=>g.note).map(g=><p key={g.title}>{lang==="en"?(g.noteEn??g.note):g.note}</p>)}</section>
   </main></SiteShell>
 }

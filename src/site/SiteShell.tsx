@@ -103,8 +103,26 @@ export function BackToTop() {
   return <button type="button" className={`back-to-top${visible ? " is-visible" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label={t("Вернуться наверх","Back to top")} aria-hidden={!visible}><span>{t("Наверх","Top")}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 14 7-7 7 7"/></svg></button>;
 }
 
+export function ScrollReminder() {
+  const { t } = useLanguage();
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const update = () => setVisible(document.documentElement.scrollHeight - window.innerHeight - window.scrollY > 100);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(document.body);
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => { observer.disconnect(); window.removeEventListener("scroll", update); window.removeEventListener("resize", update); };
+  }, []);
+  if (!visible) return null;
+  return <button className="scroll-reminder" type="button" aria-label={t("Листать дальше вниз", "Scroll down for more")} title={t("Листайте дальше", "Scroll for more")} onClick={() => window.scrollBy({ top: window.innerHeight * .65, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" })}>
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 8 6 6 6-6m-12 6 6 6 6-6"/></svg>
+  </button>;
+}
+
 export function SiteShell({ children }: { children: ReactNode }) {
-  return <div className="site-frame"><SiteHeader />{children}<BackToTop/><SiteFooter /></div>;
+  return <div className="site-frame"><SiteHeader />{children}<ScrollReminder/><BackToTop/><SiteFooter /></div>;
 }
 
 function JourneyTrail({ current }: { current: string }) {

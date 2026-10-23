@@ -41,7 +41,12 @@ const request = new Request('http://localhost/api/contact', {method:'POST', head
 const result = await context.exports.Route.server.handlers.POST({request});
 assert.equal(result.status, 200);
 assert.match(message.text, /Сумма фиксированных услуг: 4\s000 ₽/u);
-assert.match(message.text, /№ 23 — Интернет-магазин \(стартовая цена от 237\s500 ₽; скидка 5% уже учтена, базовая оценка от 250\s000 ₽\)/u);
-assert.match(message.text, /№ 26 — ИИ-помощник по документам/u);
+assert.match(message.text, /Разработка · № 09 \[DEV-09\] — Интернет-магазин \(стартовая цена от 237\s500 ₽; скидка 5% уже учтена, базовая оценка от 250\s000 ₽\)/u);
+assert.match(message.text, /Разработка · № 12 \[DEV-12\] — ИИ-помощник по документам/u);
 assert(!message.text.includes('999999'));
+assert.match(message.text, /📣 Реклама · № 08 \[AD-08\] — Простой логотип/u);
+assert.equal(catalog.serviceIdentity(all.find(item=>item.n==='14')).code, 'AD-14');
+assert.equal(catalog.serviceIdentity(all.find(item=>item.n==='15')).code, 'DEV-01');
+assert.equal(catalog.serviceIdentity(all.find(item=>item.n==='27')).code, 'DEV-13');
+assert.equal(new Set(all.map(item=>catalog.serviceIdentity(item).code)).size, 27);
 console.log('PASS: six 5% discounts, localized catalog, stable existing prices, mixed-order totals and actual notification route. No emails sent.');

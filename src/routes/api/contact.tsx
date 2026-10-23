@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { money, summarizeServices } from "../../site/serviceCatalog";
+import { money, serviceIdentity, summarizeServices } from "../../site/serviceCatalog";
 
 type ContactPayload = { name?: unknown; email?: unknown; brief?: unknown; services?: unknown; total?: unknown };
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,10 +27,10 @@ export const Route = createFileRoute("/api/contact")({
     const lines = [
       "Новая заявка — Лаборатория брендов", `Имя: ${name}`, `Email: ${email}`,
       "Услуги по фиксированной цене:",
-      ...fixed.map(item => `№ ${item.n} — ${item.name}: ${money(item.amount)}`),
+      ...fixed.map(item => `${serviceIdentity(item).label} [${serviceIdentity(item).code}] — ${item.name}: ${money(item.amount)}`),
       fixed.length ? `Сумма фиксированных услуг: ${money(total)}` : "Не выбраны",
       "Разработка — требуется расчёт:",
-      ...development.map(item => `№ ${item.n} — ${item.name} (${item.pricing === "quote" ? "по расчёту" : "стартовая цена от " + money(item.amount)}${item.discountPercent ? `; скидка ${item.discountPercent}% уже учтена, базовая оценка от ${money(item.baseAmount!)}` : ""})`),
+      ...development.map(item => `${serviceIdentity(item).label} [${serviceIdentity(item).code}] — ${item.name} (${item.pricing === "quote" ? "по расчёту" : "стартовая цена от " + money(item.amount)}${item.discountPercent ? `; скидка ${item.discountPercent}% уже учтена, базовая оценка от ${money(item.baseAmount!)}` : ""})`),
       ...(development.length ? ["Окончательные стоимость, сроки и этапы разработки согласуем отдельно. Стартовые цены не включены в фиксированную сумму."] : ["Не выбрана"]),
       "Задача:", brief,
     ];
