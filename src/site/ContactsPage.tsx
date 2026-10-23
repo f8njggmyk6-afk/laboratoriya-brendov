@@ -18,10 +18,14 @@ export function ContactsPage() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const raw = new URLSearchParams(window.location.search).get("packages");
-    if (raw) setSelected(raw.split(",").filter(Boolean));
-    else try { const saved = JSON.parse(window.sessionStorage.getItem("lb-selected-services") ?? "[]"); if (Array.isArray(saved)) setSelected(saved); } catch {}
-    if (new URLSearchParams(window.location.search).get("request") === "custom") setMode("write");
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get("packages");
+    let saved: string[] = [];
+    try { const value = JSON.parse(window.sessionStorage.getItem("lb-selected-services") ?? "[]"); if (Array.isArray(value)) saved = value.filter((item): item is string => typeof item === "string"); } catch {}
+    const requested = raw?.split(",").filter(Boolean);
+    const customRequest = params.get("request") === "custom";
+    setSelected(customRequest ? [...new Set([...saved,...(requested ?? [])])] : requested ?? saved);
+    if (customRequest) setMode("write");
     setHydrated(true);
   }, []);
   useEffect(() => { if (hydrated) window.sessionStorage.setItem("lb-selected-services", JSON.stringify(selected)); }, [selected, hydrated]);

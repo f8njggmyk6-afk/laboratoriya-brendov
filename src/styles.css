@@ -685,3 +685,5 @@ body{background:var(--bg)}.site-header{background:rgba(11,18,32,.9)}.brand-mark{
 
 .custom-package-card>.custom-package-heading{grid-column:1/-1!important}
 @media(max-width:700px){.selection-dock .order-summary{grid-column:2}.site-frame:has(.selection-dock) .scroll-reminder{bottom:calc(205px + env(safe-area-inset-bottom))}}
+
+.selection-dock .custom-project-summary small{color:#526078}
