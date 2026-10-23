@@ -607,3 +607,24 @@ body{background:var(--bg)}.site-header{background:rgba(11,18,32,.9)}.brand-mark{
 .complex-project-offer{max-width:900px;margin:28px 0 0;padding:18px 22px;border:1px solid rgba(98,195,182,.3);border-radius:12px;background:rgba(98,195,182,.05);color:var(--muted);line-height:1.6}
 .complex-project-offer a{display:inline-block;margin-top:8px;color:#a4e5d9;font-weight:700}
 @media(max-width:700px){.pricing-category,.pricing-dossier>article{scroll-margin-top:145px}.project-pricing-note{font-size:14px}.complex-project-offer{padding:16px;font-size:14px}}
+
+/* Two clear entry points into the same complete price list. */
+.pricing-directions{width:min(1320px,calc(100% - 40px));margin:0 auto 32px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.pricing-direction-card{--direction-accent:#91a9ff;--direction-rgb:98,126,255;display:flex;flex-direction:column;position:relative;isolation:isolate;min-width:0;overflow:hidden;padding:clamp(22px,3vw,38px);border:1px solid rgba(var(--direction-rgb),.42);border-radius:20px;background:linear-gradient(140deg,rgba(var(--direction-rgb),.14),rgba(14,23,40,.98) 65%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 30px rgba(0,0,0,.12);text-decoration:none;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.pricing-direction-card:before{content:"";position:absolute;z-index:-1;right:-70px;top:-100px;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,rgba(var(--direction-rgb),.16),transparent 70%);pointer-events:none}
+.pricing-direction-card--development{--direction-accent:#9de2d8;--direction-rgb:98,195,182}
+.pricing-direction-top{display:flex;align-items:center;gap:12px;margin-bottom:26px;color:var(--direction-accent)}
+.pricing-direction-top>span:nth-child(2){font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.pricing-direction-icon{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border:1px solid rgba(var(--direction-rgb),.35);border-radius:13px;background:rgba(var(--direction-rgb),.08)}
+.pricing-direction-icon svg{width:27px;height:27px;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.pricing-direction-arrow{display:grid;place-items:center;margin-left:auto;width:34px;height:34px;border:1px solid rgba(var(--direction-rgb),.3);border-radius:50%;font-size:21px;transition:transform .2s ease}
+.pricing-direction-card h2{margin:0 0 14px;color:var(--ink);font-size:clamp(28px,3vw,39px);line-height:1.12;letter-spacing:-.035em;text-wrap:balance}
+.pricing-direction-services{margin:0 0 18px;max-width:42ch;color:#d4dbe8;font-size:16px;line-height:1.55}
+.pricing-direction-process{margin:0 0 28px;max-width:54ch;color:var(--muted);font-size:14px;line-height:1.65}
+.pricing-direction-cta{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:54px;margin-top:auto;padding:14px 18px;border:1px solid #6f91ff;border-radius:10px;background:linear-gradient(110deg,#456bff,#3454d3);color:#fff;font-size:14px;font-weight:800;box-shadow:0 8px 22px rgba(69,107,255,.18)}
+.pricing-direction-cta>span{font-size:24px;line-height:1;transition:transform .2s ease}
+.pricing-direction-card--development .pricing-direction-cta{border-color:#8ed9cc;background:linear-gradient(110deg,#a2e4d8,#74c7b9);color:#0c2426;box-shadow:0 8px 22px rgba(98,195,182,.12)}
+.pricing-direction-card:focus-visible{outline:3px solid var(--direction-accent);outline-offset:5px}
+.pricing-direction-card:active{transform:translateY(1px)}
+@media(hover:hover){.pricing-direction-card:hover{transform:translateY(-4px);border-color:var(--direction-accent);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 16px 36px rgba(var(--direction-rgb),.12)}.pricing-direction-card:hover .pricing-direction-arrow{transform:translate(2px,-2px)}.pricing-direction-card:hover .pricing-direction-cta>span{transform:translateY(3px)}}
+@media(max-width:700px){.pricing-directions{width:calc(100% - 28px);grid-template-columns:1fr;gap:14px;margin-bottom:24px}.pricing-direction-card{padding:23px;border-radius:17px}.pricing-direction-top{margin-bottom:20px}.pricing-direction-card h2{font-size:29px}.pricing-direction-services{font-size:15px;margin-bottom:14px}.pricing-direction-process{font-size:13px;margin-bottom:22px}.pricing-direction-cta{font-size:13px;min-height:52px;padding:13px 15px}}

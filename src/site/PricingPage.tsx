@@ -4,6 +4,26 @@ import { serviceGroups,servicePrice,summarizeServices } from "./serviceCatalog";
 import { useLanguage } from "./i18n";
 import { SelectionSummary } from "./SelectionSummary";
 
+function PricingDirections() {
+  const { t } = useLanguage();
+  return <nav className="pricing-directions" aria-label={t("Выберите направление прайса", "Choose a pricing direction")}>
+    <a className="pricing-direction-card pricing-direction-card--creative" href="#pricing-group-1">
+      <div className="pricing-direction-top"><span className="pricing-direction-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="m5 13 17-7v20L5 19v-6Zm17-1 5 2v4l-5 2M9 21l2 7h5l-2-5"/></svg></span><span>{t("01 / Бренд и продвижение", "01 / Brand & promotion")}</span><span className="pricing-direction-arrow" aria-hidden="true">↗</span></div>
+      <h2>{t("Реклама и дизайн", "Advertising & design")}</h2>
+      <p className="pricing-direction-services">{t("Названия, слоганы, логотипы, тексты и рекламные креативы.", "Names, slogans, logos, copy and advertising creatives.")}</p>
+      <p className="pricing-direction-process">{t("Слушаем задачу, обсуждаем идею, показываем варианты и доводим выбранное решение до готового результата.", "We listen, discuss the idea, present options and refine your chosen direction into a finished result.")}</p>
+      <span className="pricing-direction-cta">{t("К ценам на рекламу и дизайн", "See advertising & design pricing")}<span aria-hidden="true">↓</span></span>
+    </a>
+    <a className="pricing-direction-card pricing-direction-card--development" href="#pricing-group-5">
+      <div className="pricing-direction-top"><span className="pricing-direction-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="m10 9-7 7 7 7m12-14 7 7-7 7M19 5l-6 22"/></svg></span><span>{t("02 / Цифровые продукты", "02 / Digital products")}</span><span className="pricing-direction-arrow" aria-hidden="true">↗</span></div>
+      <h2>{t("Разработка и программирование", "Development & programming")}</h2>
+      <p className="pricing-direction-services">{t("Сайты, боты, приложения, CRM, ИИ и автоматизация бизнеса.", "Websites, bots, apps, CRM, AI and business automation.")}</p>
+      <p className="pricing-direction-process">{t("Разбираем задачу, согласуем функции, показываем рабочую версию, проверяем и доводим до запуска.", "We explore the task, agree on features, demonstrate a working version, test and refine it for launch.")}</p>
+      <span className="pricing-direction-cta">{t("К ценам на разработку", "See development pricing")}<span aria-hidden="true">↓</span></span>
+    </a>
+  </nav>;
+}
+
 export function PricingPage(){
   const { lang, t, money } = useLanguage();
   const[selected,setSelected]=useState<string[]>([]);
@@ -15,7 +35,8 @@ export function PricingPage(){
   const { chosen } = summarizeServices(selected);
 
   return <SiteShell><main className="pricing-page">
-    <PageIntro number="02" title="Цены" titleEn="Pricing" lead="Выберите одну или несколько услуг. Для разработки указаны стартовые цены; окончательные стоимость и сроки согласуем после уточнения задачи." leadEn="Choose one or more services. Development prices are starting estimates; we confirm the final price and timeline after reviewing the task."/>
+    <PageIntro number="02" title="Цены" titleEn="Pricing" lead="От первой идеи до готового результата. Выберите направление — перейдём к нужным услугам в общем прайсе." leadEn="From your first idea to a finished result. Choose a direction to jump to its services in the full price list."/>
+    <PricingDirections/>
     <div className="selection-guide"><strong>{t("Выберите услуги","Choose services")}</strong><span>{hydrated ? t("Выбрано","Selected")+": "+chosen.length : t("Восстанавливаем выбор…","Restoring selection…")}</span></div>
     {serviceGroups.map((g,index)=><section className="pricing-category" id={"pricing-group-"+(index+1)} key={g.title}>
       <h2>{lang==="en"?(g.titleEn??g.title):g.title}</h2>
