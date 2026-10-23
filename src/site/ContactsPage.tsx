@@ -1,3 +1,4 @@
+import { ContactScrollCue } from "./ContactScrollCue";
 import { ServiceBadge } from "./ServiceBadge";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
@@ -96,7 +97,7 @@ export function ContactsPage() {
     <SiteShell>
       <main className="contacts-page application-flow">
         <PageIntro number="05" title="Оформить заявку" titleEn="Contact" lead="Проверьте пакеты и общую стоимость. Дополнительные функции согласуем отдельно." leadEn="Review your packages and total. Additional features are agreed separately." />
-        <div className="application-scroll-cue" aria-hidden="true"><span>{t("Способы связи — ниже","Contact options below")}</span><b>↓</b></div>
+        <ContactScrollCue/>
 
         <section className="selected-services-first">
           <div className="application-section-head"><div><h2>{t("Выбранные услуги","Selected services")}</h2></div></div>
@@ -116,7 +117,7 @@ export function ContactsPage() {
           {!selected.length && hydrated ? <p className="form-note">{t("Не определились с услугой? Всё равно напишите — поможем выбрать подходящий вариант.","Not sure which service you need? Send us a message anyway — we’ll help you choose.")}</p> : null}
         </section>
 
-        <section className="application-choice-intro">
+        <section id="order-contact-options" className="application-choice-intro">
           <span>{t("Следующий шаг","Next step")}</span>
           <h2>{t("Как вам удобнее?","What works best for you?")}</h2>
           <p>{t("Напишите нам напрямую или оставьте заявку на предложение.","Email us directly or submit a request for a proposal.")}</p>
@@ -135,6 +136,11 @@ export function ContactsPage() {
             <div><label htmlFor="contact">{t("Email для ответа","Email for reply")}</label><input id="contact" name="contact" type="email" required placeholder="name@company.com" /></div>
             <div><label htmlFor="brief">{t("Коротко о задаче","Briefly about the task")}</label><textarea id="brief" name="brief" required rows={4} placeholder={t("Что нужно создать, для какого проекта и любые важные детали. При желании укажите номер телефона, Telegram или MAX для связи.","What needs to be created, for which project, and any important details. You can also include your phone, Telegram or MAX contact if you wish.")} /></div>
             <button type="submit" disabled={submitting}>{submitting ? t("Отправляем…", "Sending…") : t("Получить предложение","Get a proposal")} <span>→</span></button>
+            <section className="application-final-selection" aria-label={t("Ваш выбор перед отправкой", "Your selection before sending")}>
+              <div className="application-final-heading"><h3>{t("Ваш выбор", "Your selection")}</h3><span>{t("Услуг", "Services")}: {chosen.length}</span></div>
+              {chosen.length ? <ul className="application-final-items">{chosen.map(item=><li key={item.n}><ServiceBadge item={item}/><span>{lang === "en" ? item.nameEn ?? item.name : item.name}</span><strong>{servicePrice(item,money,lang)}</strong></li>)}</ul> : <p>{t("Опишите задачу — поможем подобрать услуги.","Describe your task and we’ll help choose the services.")}</p>}
+              {chosen.length ? <SelectionSummary selected={selected}/> : null}
+            </section>
             <p className="test-note">{t("Основной канал связи","Primary contact channel")}: laboratoriabrendov@gmail.com</p>
           </form>
         ) : null}

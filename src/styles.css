@@ -687,3 +687,25 @@ body{background:var(--bg)}.site-header{background:rgba(11,18,32,.9)}.brand-mark{
 @media(max-width:700px){.selection-dock .order-summary{grid-column:2}.site-frame:has(.selection-dock) .scroll-reminder{bottom:calc(205px + env(safe-area-inset-bottom))}}
 
 .selection-dock .custom-project-summary small{color:#526078}
+
+/* Keep the full order contact cue in view until the contact choices are reached. */
+.application-cue-slot{width:min(1080px,calc(100% - 40px));min-height:57px;margin:0 auto 20px}
+.application-scroll-cue.contact-follow-cue{width:100%;min-height:57px;margin:0;padding:12px 16px;text-align:left;border-radius:10px;background:#132333;color:#d4e5e9;cursor:pointer;box-shadow:0 6px 22px #0002;gap:18px}
+.contact-follow-cue>span{font-size:13px!important;line-height:1.5}
+.contact-follow-cue>b{flex:none}
+.contact-follow-cue.is-floating{position:fixed;z-index:45;left:50%;transform:translateX(-50%);width:min(1080px,calc(100% - 40px));box-shadow:0 8px 28px #0005}
+.contact-follow-cue.is-hidden{visibility:hidden;pointer-events:none}
+#order-contact-options,.application-form{scroll-margin-top:180px}
+.application-final-selection{grid-column:1/-1;padding:22px;border:1px solid #5c9c97;border-radius:12px;background:linear-gradient(135deg,#20354b,#142235);color:var(--ink)}
+.application-final-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}
+.application-final-heading h3{margin:0;font-size:22px}
+.application-final-heading>span{color:#a8c8ca;font-size:12px}
+.application-final-items{display:grid;gap:14px;list-style:none;padding:0;margin:0 0 20px}
+.application-final-items>li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:baseline;gap:10px 14px;padding-bottom:14px;border-bottom:1px solid #ffffff14;font-size:13px;line-height:1.5}
+.application-final-items>li>strong{font-size:13px;font-weight:700;line-height:1.5;font-family:inherit;text-align:right}
+.application-final-items .service-identity{font-size:12px}
+.application-final-items .service-identity svg{width:18px;height:18px}
+.application-final-selection .order-summary{width:100%;margin:0}
+.application-form .application-final-selection .order-summary>div{display:flex}
+.application-form .application-final-selection .order-summary .order-grand-total strong{font-size:26px!important}
+@media(max-width:700px){.application-cue-slot{width:calc(100% - 28px);margin-bottom:14px}.contact-follow-cue.is-floating{width:calc(100% - 28px)}.application-scroll-cue.contact-follow-cue{padding:11px 13px;gap:12px}.contact-follow-cue>span{font-size:12px!important;max-width:30ch}#order-contact-options,.application-form{scroll-margin-top:145px}.application-final-selection{padding:17px}.application-final-heading h3{font-size:20px}.application-final-items>li{grid-template-columns:auto minmax(0,1fr);gap:8px 12px}.application-final-items>li>strong{grid-column:2;text-align:left}.application-final-items .service-identity{gap:6px;font-size:11px}.application-final-items .service-identity svg{width:17px}.application-form .application-final-selection .order-summary .order-grand-total strong{font-size:23px!important}}
