@@ -10,3 +10,19 @@
 .contact-direct-call a{display:inline-block;padding:8px 10px;border:1px solid transparent;border-radius:8px;color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
 .contact-direct-call a:hover{border-color:#75bdb0}
 @media(max-width:700px){.contact-mode.contact-options-ranked{grid-template-columns:1fr}.contact-options-ranked .contact-max-link{padding:18px}.contact-direct-call{justify-content:flex-start}.contact-direct-call>span{width:100%}}
+.unified-order-form .application-section-head,.unified-order-form>.choice-prompt,.unified-brief,.order-channel-choice,.unified-email,.unified-order-form>.order-send-explanation,.unified-order-form>.contact-direct-call{grid-column:1/-1}
+.order-channel-choice{display:grid;grid-template-columns:1fr 1fr;gap:12px;border:0;padding:0;margin:0}
+.order-channel-choice legend{font-weight:700;margin-bottom:12px}
+.order-channel-choice label{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;border:1px solid var(--line);border-radius:10px;padding:18px;cursor:pointer;background:#111c30}
+.order-channel-choice label.is-selected{border-color:#7b8bff;background:linear-gradient(125deg,#213151,#292449);box-shadow:inset 0 0 0 1px #7b8bff55}
+.order-channel-choice input{grid-row:1/3;width:18px!important;min-height:0!important;align-self:center;accent-color:#788aff}
+.order-channel-choice label span{grid-column:2;color:var(--muted);font-size:13px;line-height:1.5}
+.unified-order-form>.order-send-explanation{font-size:14px;color:var(--muted);line-height:1.6;margin:0}
+.max-send-order{display:block;padding:18px 22px;background:linear-gradient(110deg,#466bff,#7047de);border:1px solid #8793ff;border-radius:10px;color:white;text-align:center;font-weight:700;margin:22px 0;text-decoration:none}
+.max-order-ready .handoff-note{font-size:14px;line-height:1.6;color:var(--muted)}
+.max-order-ready .handoff-note a{text-decoration:underline}
+.max-order-ready details{margin:20px 0;padding:16px;border:1px solid var(--line);border-radius:8px}
+.max-order-ready summary{cursor:pointer;font-size:14px}
+.max-order-ready textarea{width:100%;margin:14px 0;color:var(--ink);background:#0d1422;border:1px solid var(--line);padding:12px;line-height:1.6;box-sizing:border-box}
+.max-order-ready button{padding:12px 16px;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:8px;cursor:pointer}
+@media(max-width:700px){.order-channel-choice{grid-template-columns:1fr}}

@@ -16,7 +16,7 @@ export function TrackingReceipt({
   const { t } = useLanguage();
   const [feedback, setFeedback] = useState("");
   const numberLabel = orderNumber({ order_number: number });
-  const text = `${t("Заказ", "Order")} ${numberLabel}\n${t("Код отслеживания", "Tracking code")}: ${code}\nhttps://laboratoriyabrendov.com/order\n${t("Откройте «Статус заказа» и вставьте код. Регистрация не нужна.", "Open Order status and enter the code. No registration needed.")}`;
+  const text = `${t("Заказ", "Order")} ${numberLabel}\n${t("Код отслеживания", "Tracking code")}: ${code}\n${t("Откройте «Статус заказа» и вставьте код. Регистрация не нужна.", "Open Order status and enter the code. No registration needed.")}`;
   async function copy() {
     try {
       await navigator.clipboard.writeText(owner ? text : code);

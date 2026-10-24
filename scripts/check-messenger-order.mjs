@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import ts from 'typescript';
+import * as catalog from '../src/site/serviceCatalog.ts';
+const code=ts.transpileModule(fs.readFileSync('src/routes/api/contact.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
+let saved, mail=0, available=true;
+const context={exports:{},require:id=>id==='@tanstack/react-router'?{createFileRoute:()=>c=>c}:id.includes('admin.server')?{saveIncomingOrder:async input=>{saved=input;return available?{id:'test',order_number:42,tracking_code:'LB-'+'A'.repeat(32)}:null},markNotification:async()=>{}}:catalog,process:{env:{}},console,Response,fetch:async()=>{mail++;throw Error('Must not send mail')}};
+vm.runInNewContext(code,context);
+const post=payload=>context.exports.Route.server.handlers.POST({request:new Request('http://localhost/api/contact',{method:'POST',body:JSON.stringify(payload)})});
+const payload={channel:'max',name:'Test',brief:'Hoodie design',services:['ad-product-cards','15','dev-custom'],total:1};
+let r=await post(payload);assert.equal(r.status,200);let body=await r.json();assert.equal(saved.email,'');assert.match(saved.brief,/Канал связи: MAX/);assert.match(body.message,/ЛБ-00042/);assert.match(body.message,/LB-A{32}/);assert.match(body.message,/12\s000 ₽/);assert.match(body.message,/стоимость отдельно/);assert(!body.message.includes('https://'));assert.equal(mail,0);
+assert.equal((await post({...payload,channel:'email'})).status,400);
+assert.equal((await post({...payload,email:'bad'})).status,400);
+available=false;assert.equal((await post(payload)).status,503);
+console.log('Messenger order: saved before handoff; no email needed; canonical totals and plain tracking code; no mail; storage failure blocks handoff.');

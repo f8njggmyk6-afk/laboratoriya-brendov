@@ -104,7 +104,7 @@ export function validateOrderPatch(value: unknown): {
     typeof v[key] === "string" ? (v[key] as string).trim().slice(0, max) : "";
   const name = text("customer_name", 120),
     email = text("customer_email", 254).toLowerCase();
-  if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+  if (!name || (email !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)))
     return { error: "Укажите имя и корректный email" };
   if (!orderStatuses.includes(v.status as OrderStatus))
     return { error: "Неизвестный статус" };

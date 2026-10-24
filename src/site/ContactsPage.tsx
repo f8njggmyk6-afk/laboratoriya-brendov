@@ -11,7 +11,6 @@ import { serviceGroups, servicePrice, summarizeServices } from "./serviceCatalog
 import { SelectionSummary } from "./SelectionSummary";
 import { useLanguage } from "./i18n";
 
-type ContactMode = "write" | null;
 
 export function ContactsPage() {
   const { lang, t, money } = useLanguage();
@@ -19,9 +18,12 @@ export function ContactsPage() {
   const [highlightPhone, setHighlightPhone] = useState(false);
   const submission = useRef<{body:string;id:string}|null>(null);
   const [sent, setSent] = useState(false);
+  const [channel, setChannel] = useState<"max"|"email">("max");
+  const [preparedMessage, setPreparedMessage] = useState("");
+  const [copyState, setCopyState] = useState(false);
+  const [draft, setDraft] = useState({name:"",email:"",brief:""});
   const [receipt, setReceipt] = useState<{number:number;code:string}|null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [mode, setMode] = useState<ContactMode>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
@@ -33,16 +35,17 @@ export function ContactsPage() {
     const requested = raw?.split(",").filter(Boolean);
     const customRequest = params.get("request") === "custom";
     setSelected(customRequest ? [...new Set([...saved,...(requested ?? [])])] : requested ?? saved);
-    if (customRequest) setMode("write");
+    try {
+      const stored = JSON.parse(sessionStorage.getItem("lb-order-draft") ?? "null");
+      if (stored && typeof stored.name === "string" && typeof stored.email === "string" && typeof stored.brief === "string") setDraft(stored);
+      const ready = JSON.parse(sessionStorage.getItem("lb-max-order-ready") ?? "null");
+      if (!requested && !customRequest && ready && typeof ready.message === "string" && typeof ready.number === "number" && typeof ready.code === "string") {
+        setPreparedMessage(ready.message);setReceipt({number:ready.number,code:ready.code});setChannel("max");setSent(true);
+      }
+    } catch {}
     setHydrated(true);
   }, []);
   useEffect(() => { if (hydrated) window.sessionStorage.setItem("lb-selected-services", JSON.stringify(selected)); }, [selected, hydrated]);
-
-  useEffect(() => {
-    if (mode === "write" && new URLSearchParams(window.location.search).get("request") === "custom") {
-      document.getElementById("application-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, [mode]);
 
   useEffect(() => {
     if (!hydrated || location.hash !== "contact-phone") return;
@@ -59,22 +62,19 @@ export function ContactsPage() {
     return () => { cancelAnimationFrame(frame); clearTimeout(timer); };
   }, [hydrated, location.hash, location.state]);
 
+  useEffect(() => { if (hydrated) { try { sessionStorage.setItem("lb-order-draft",JSON.stringify(draft)); } catch {} } }, [draft,hydrated]);
+
   const { chosen, total } = summarizeServices(selected);
 
   const toggle = (number: string) => setSelected((current) => current.includes(number) ? current.filter((item) => item !== number) : [...current, number]);
 
-  const chooseMode = (next: ContactMode) => {
-    setMode(next);
-    window.setTimeout(() => document.getElementById("application-form")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
-  };
-
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!mode || submitting) return;
+    if (submitting) return;
     const form = new FormData(event.currentTarget);
     setSubmitting(true);
     try {
-    const body=JSON.stringify({name:String(form.get("name")??""),email:String(form.get("contact")??""),brief:String(form.get("brief")??""),services:chosen.map(item=>item.n),total});
+    const body=JSON.stringify({channel,name:String(form.get("name")??""),email:String(form.get("contact")??""),brief:String(form.get("brief")??""),services:chosen.map(item=>item.n),total});
     if(!submission.current || submission.current.body!==body) submission.current={body,id:window.crypto.randomUUID()};
     const response = await fetch("/api/contact", {
       method:"POST",headers:{"Content-Type":"application/json","Idempotency-Key":submission.current.id},body,
@@ -88,6 +88,12 @@ export function ContactsPage() {
       setReceipt({number:accepted.orderNumber,code:accepted.trackingCode});
       try { sessionStorage.setItem("lb-tracking-code",accepted.trackingCode); } catch {}
     }
+    if (channel === "max") {
+      if (!accepted.message || !accepted.trackingCode) throw new Error("Missing saved order");
+      setPreparedMessage(accepted.message);
+      try { sessionStorage.setItem("lb-max-order-ready",JSON.stringify({number:accepted.orderNumber,code:accepted.trackingCode,message:accepted.message})); } catch {}
+    }
+    if (channel === "email") { try { sessionStorage.removeItem("lb-max-order-ready"); } catch {} }
     setSent(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
@@ -96,6 +102,16 @@ export function ContactsPage() {
   }
 
   if (sent) {
+    if (channel === "max") return <SiteShell><main className="thanks-page"><section className="thanks-card max-order-ready">
+      <span>{t("Заказ сохранён", "Order saved")}</span><h1>{t("Передайте заказ в MAX", "Send your order on MAX")}</h1>
+      <p>{t("Текст заказа уже готов. В MAX выберите чат «Лаборатория Брендов» и нажмите «Отправить».", "Your order text is ready. In MAX, choose the Brand Laboratory chat and press Send.")}</p>
+      <a className="max-send-order" href={"https://max.ru/:share?text="+encodeURIComponent(preparedMessage)}>{t("Открыть MAX с заказом", "Open MAX with order")} →</a>
+      <p className="handoff-note">{t("Не находите наш чат? Сначала откройте профиль, затем вернитесь и отправьте заказ.", "Can’t find our chat? Open our profile first, then return to send your order.")} <a href={businessMax.href} target="_blank" rel="noopener noreferrer">{t("Открыть профиль MAX", "Open MAX profile")} ↗</a></p>
+      <details><summary>{t("Текст заказа и резервное копирование", "Order text and copy option")}</summary><textarea readOnly rows={8} aria-label={t("Готовый текст заказа", "Prepared order text")} value={preparedMessage}/><button type="button" onClick={async()=>{try{await navigator.clipboard.writeText(preparedMessage);setCopyState(true);}catch{setCopyState(false);}}}>{copyState?t("Скопировано", "Copied"):t("Скопировать заказ", "Copy order")}</button></details>
+      {receipt?<TrackingReceipt code={receipt.code} number={receipt.number}/>:null}
+      <p className="handoff-note">{t("Заказ сохранён на сайте. Переход в MAX ещё не означает отправку сообщения.", "Your order is saved on the website. Opening MAX does not send the message.")}</p>
+      <button type="button" onClick={()=>{setSent(false);setPreparedMessage("");submission.current=null;sessionStorage.removeItem("lb-max-order-ready");}}>{t("Вернуться к заказу", "Back to order")}</button>
+    </section></main></SiteShell>;
     return (
       <SiteShell>
         <main className="thanks-page">
@@ -142,34 +158,24 @@ export function ContactsPage() {
           {!selected.length && hydrated ? <p className="form-note">{t("Не определились с услугой? Всё равно напишите — поможем выбрать подходящий вариант.","Not sure which service you need? Send us a message anyway — we’ll help you choose.")}</p> : null}
         </section>
 
-        <section id="order-contact-options" className="application-choice-intro">
-          <span>{t("Следующий шаг","Next step")}</span>
-          <h2>{t("Оставьте заявку", "Get in touch")}</h2>
-          <p>{t("Выберите удобный способ связи.", "Choose how you’d like to contact us.")}</p>
-          <div className="contact-mode contact-mode-three contact-options-ranked" role="group" aria-label={t("Способ связи","Contact method")}>
-            <a className="contact-mode-link contact-max-link" href={businessMax.href} target="_blank" rel="noopener noreferrer"><i aria-hidden="true">MAX</i><b>{t("Написать в MAX","Message on MAX")} <em aria-hidden="true">↗</em></b><span>{t("Обсудим задачу и подготовим предложение","Let’s discuss your task and prepare a proposal")}</span></a>
-            <button type="button" onClick={() => chooseMode("write")}><i aria-hidden="true">02</i><b>{t("Заявка на сайте", "Website enquiry")}</b><span>{t("Заполните форму — ответим на email", "Complete the form for an email response")}</span></button>
-            <a className="contact-mode-link" href="mailto:laboratoriabrendov@gmail.com"><i aria-hidden="true">03</i><b>{t("Написать на почту", "Email us")}</b><span>laboratoriabrendov@gmail.com</span></a>
-          </div>
-          <div className="contact-direct-call"><span>{t("Или позвоните нам", "Or call us")}</span><a id="contact-phone" className={highlightPhone ? "phone-arrival-highlight" : ""} href={businessPhone.href}>{businessPhone.display} <span aria-hidden="true">↗</span></a></div>
-        </section>
-
-        {mode === "write" ? (
-          <form id="application-form" onSubmit={submit} className="contact-form application-form">
-            <div className="application-section-head"><div><span>{t("Заявка по email","Email enquiry")}</span><h2>{t("Расскажите о задаче","Tell us about your task")}</h2></div></div>
-            <p className="choice-prompt">{t("Укажите имя, email и коротко опишите задачу. Если удобнее обсудить детали по телефону, в Telegram или MAX, можете оставить контакт прямо в описании. Мы изучим запрос и ответим с предложением.","Tell us your name, email and a short description of the task. If you prefer to discuss details by phone, Telegram or MAX, you can leave that contact in the description. We’ll review your request and reply with a proposal.")}</p>
-            <div><label htmlFor="name">{t("Как к вам обращаться","Your name")}</label><input id="name" name="name" required placeholder={t("Ваше имя","Your name")} /></div>
-            <div><label htmlFor="contact">{t("Email для ответа","Email for reply")}</label><input id="contact" name="contact" type="email" required placeholder="name@company.com" /></div>
-            <div><label htmlFor="brief">{t("Коротко о задаче","Briefly about the task")}</label><textarea id="brief" name="brief" required rows={4} placeholder={t("Что нужно создать, для какого проекта и любые важные детали. При желании укажите номер телефона, Telegram или MAX для связи.","What needs to be created, for which project, and any important details. You can also include your phone, Telegram or MAX contact if you wish.")} /></div>
-            <button type="submit" disabled={submitting}>{submitting ? t("Отправляем…", "Sending…") : t("Получить предложение","Get a proposal")} <span>→</span></button>
-            <section className="application-final-selection" aria-label={t("Ваш выбор перед отправкой", "Your selection before sending")}>
-              <div className="application-final-heading"><h3>{t("Ваш выбор", "Your selection")}</h3><span>{t("Услуг", "Services")}: {chosen.length}</span></div>
-              {chosen.length ? <ul className="application-final-items">{chosen.map(item=><li key={item.n}><ServiceBadge item={item}/><span>{lang === "en" ? item.nameEn ?? item.name : item.name}</span><strong>{servicePrice(item,money,lang)}</strong></li>)}</ul> : <p>{t("Опишите задачу — поможем подобрать услуги.","Describe your task and we’ll help choose the services.")}</p>}
-              {chosen.length ? <SelectionSummary selected={selected}/> : null}
-            </section>
-            <p className="test-note">{t("Ответ на эту заявку придёт на указанный вами email. Наша почта","We’ll reply to this enquiry at the email you provided. Our email")}: laboratoriabrendov@gmail.com</p>
-          </form>
-        ) : null}
+        <form id="order-contact-options" onSubmit={submit} className="contact-form application-form unified-order-form">
+          <div className="application-section-head"><div><span>{t("Отправка заказа", "Send your order")}</span><h2>{t("Куда отправить заказ?", "Where shall we continue?")}</h2></div></div>
+          <p className="choice-prompt">{t("Опишите задачу и выберите канал. Передадим выбранные услуги, сумму и описание — обсуждение продолжим там же.", "Describe your task and choose a channel. Your selected services, total and brief go together; we’ll continue the discussion there.")}</p>
+          <div><label htmlFor="name">{t("Как к вам обращаться", "Your name")}</label><input id="name" name="name" required maxLength={120} value={draft.name} onChange={e=>setDraft(d=>({...d,name:e.target.value}))} autoComplete="name" /></div>
+          <div className="unified-brief"><label htmlFor="brief">{t("Коротко о задаче", "Your brief")}</label><textarea id="brief" name="brief" required maxLength={3900} rows={4} value={draft.brief} onChange={e=>setDraft(d=>({...d,brief:e.target.value}))} placeholder={t("Что нужно сделать и какие детали важно учесть", "What do you need and what should we consider?")}/></div>
+          <fieldset className="order-channel-choice"><legend>{t("Способ отправки", "Send via")}</legend>
+            <label className={channel==="max"?"is-selected":""}><input type="radio" name="channel" value="max" checked={channel==="max"} onChange={()=>setChannel("max")}/><b>MAX</b><span>{t("Заказ и обсуждение в чате", "Order and discussion in chat")}</span></label>
+            <label className={channel==="email"?"is-selected":""}><input type="radio" name="channel" value="email" checked={channel==="email"} onChange={()=>setChannel("email")}/><b>Email</b><span>{t("Заказ и ответ по почте", "Order and reply by email")}</span></label>
+          </fieldset>
+          {channel==="email"?<div className="unified-email"><label htmlFor="contact">{t("Email для ответа", "Reply email")}</label><input id="contact" name="contact" type="email" required maxLength={254} autoComplete="email" value={draft.email} onChange={e=>setDraft(d=>({...d,email:e.target.value}))}/></div>:null}
+          <section className="application-final-selection"><div className="application-final-heading"><h3>{t("Ваш заказ", "Your order")}</h3><span>{chosen.length}</span></div>
+            {chosen.length?<ul className="application-final-items">{chosen.map(item=><li key={item.n}><ServiceBadge item={item}/><span>{lang==="en"?item.nameEn??item.name:item.name}</span><strong>{servicePrice(item,money,lang)}</strong></li>)}</ul>:<p>{t("Подготовим предложение по вашему описанию.", "We’ll prepare a proposal based on your brief.")}</p>}
+            <SelectionSummary selected={selected}/>
+          </section>
+          <p className="order-send-explanation">{channel==="max"?t("Сначала сохраним заказ и подготовим сообщение. В MAX выберите «Лаборатория Брендов» и нажмите «Отправить».", "We’ll save your order and prepare the message. In MAX, choose Brand Laboratory and press Send."):t("Отправим весь заказ на нашу почту. Ответим на указанный вами email.", "We’ll send the complete order to our inbox and reply at your email.")}</p>
+          <button type="submit" disabled={submitting}>{submitting?t("Сохраняем…", "Saving…"):channel==="max"?t("Подготовить заказ для MAX", "Prepare order for MAX"):t("Отправить заказ по email", "Send order by email")} →</button>
+          <div className="contact-direct-call"><span>{t("Или позвоните нам", "Or call us")}</span><a id="contact-phone" className={highlightPhone?"phone-arrival-highlight":""} href={businessPhone.href}>{businessPhone.display}</a></div>
+        </form>
       </main>
     </SiteShell>
   );
