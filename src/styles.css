@@ -720,3 +720,8 @@ body{background:var(--bg)}.site-header{background:rgba(11,18,32,.9)}.brand-mark{
 .site-header .language-switch{grid-column:3;grid-row:1}
 @media(max-width:900px){.site-header{grid-template-columns:1fr auto}.site-header .main-nav{grid-column:1/-1;grid-row:2}.site-header .language-switch{grid-column:2;grid-row:1}}
 @media(max-width:700px){.site-header{gap:10px}.site-header .main-nav{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Scope and client materials for fixed creative packages. */
+.package-materials{margin-top:22px;padding:16px 18px;border:1px solid #40516b;border-left:2px solid #75bdb0;border-radius:8px;background:#16263a66}.package-materials>b{font-size:12px;color:#addbd0;letter-spacing:.02em}.package-copy .package-materials>p{font-size:14px;line-height:1.65;margin:8px 0 0;color:#b7c3d5}.service-group,.pricing-category{scroll-margin-top:165px}.service-category-nav a{white-space:normal}
+
+.contact-service-group{min-width:0;padding:20px 0 8px}.contact-service-group>h4{font-size:20px;line-height:1.35;margin:0 0 16px;color:#f1f0e8}.contact-service-options{display:grid;gap:10px}.contact-service-direction{font-size:clamp(23px,3vw,30px);line-height:1.25;margin:0 0 24px;padding-bottom:16px;border-bottom:1px solid #496580;color:#a6dacf}.contact-service-group .contact-service-options label{margin:0}.service-category-nav a:focus-visible{outline:2px solid #a5dfd0;outline-offset:4px}

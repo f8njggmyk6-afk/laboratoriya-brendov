@@ -9,9 +9,9 @@ export function ServicesPage(){
   return <SiteShell><main>
     <PageIntro number="01" title="Услуги" titleEn="Services" lead="Выберите направление, изучите состав работы и перейдите к соответствующей позиции в прайсе." leadEn="Choose a direction, review what is included and move to the matching package in the pricing section."/>
     <nav className="service-category-nav" aria-label={t("Категории услуг","Service categories")}>
-      {serviceGroups.map((g,i)=><a key={g.title} href={`#service-group-${i+1}`}>{lang==="en"?(g.titleEn??g.title):g.title}</a>)}
+      {serviceGroups.map((g,i)=><a key={g.title} href={`#service-group-${g.id}`}>{lang==="en"?(g.titleEn??g.title):g.title}</a>)}
     </nav>
-    {serviceGroups.map((g,i)=><section className="service-group" id={`service-group-${i+1}`} key={g.title}>
+    {serviceGroups.map((g,i)=><section className="service-group" id={`service-group-${g.id}`} key={g.title}>
       <header><span>0{i+1}</span><h2>{lang==="en"?(g.titleEn??g.title):g.title}</h2></header>
       <div className="editorial-list service-catalog-list">{g.packages.map(s=>s.customRequest ? <CustomPackageCard key={s.n} item={s}/> : <article id={"service-"+s.n} key={s.n}>
         <span><ServiceBadge item={s}/></span><h3>{lang==="en"?(s.nameEn??s.name):s.name}</h3>

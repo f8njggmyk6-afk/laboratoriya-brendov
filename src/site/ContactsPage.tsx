@@ -4,11 +4,10 @@ import { ServiceBadge } from "./ServiceBadge";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, useRef, type FormEvent } from "react";
 import { PageIntro, SiteShell } from "./SiteShell";
-import { serviceCatalog, servicePrice, summarizeServices } from "./serviceCatalog";
+import { serviceGroups, servicePrice, summarizeServices } from "./serviceCatalog";
 import { SelectionSummary } from "./SelectionSummary";
 import { useLanguage } from "./i18n";
 
-const options = serviceCatalog;
 type ContactMode = "write" | null;
 
 export function ContactsPage() {
@@ -108,13 +107,16 @@ export function ContactsPage() {
           <div className="application-total application-total-overview"><span>{hydrated ? <>{t("Выбрано","Selected")}: <b>{chosen.length}</b></> : t("Восстанавливаем выбор…","Restoring selection…")}</span>{hydrated ? <SelectionSummary selected={selected}/> : null}</div>
           <fieldset className="multi-service">
             <legend className="sr-only">{t("Услуги","Services")}</legend>
-            {options.map((item) => (
+            {serviceGroups.map((group,index) => <section className="contact-service-group" key={group.id}>
+              {index === 0 || group.direction !== serviceGroups[index-1].direction ? <h3 className="contact-service-direction">{group.direction === "development" ? t("Разработка и программирование", "Development & programming") : t("Реклама и дизайн", "Advertising & design")}</h3> : null}
+              <h4>{lang === "en" ? group.titleEn : group.title}</h4>
+              <div className="contact-service-options">{group.packages.map((item) => (
               <label key={item.n} className={selected.includes(item.n) ? "is-selected" : ""}>
                 <input type="checkbox" name="packages" value={item.n} checked={selected.includes(item.n)} onChange={() => toggle(item.n)} />
                 <span><b><ServiceBadge item={item}/></b>{lang==="en"?(item.nameEn??item.name):item.name}<small>{servicePrice(item,money,lang)}{item.discountPercent ? t(" · скидка "," · ")+item.discountPercent+t("% уже учтена","% discount included") : ""}{item.pricing === "quote" ? t(" · стоимость отдельно", " · priced separately") : ""}</small></span>
                 <em>{selected.includes(item.n) ? t("Убрать","Remove") : t("Добавить","Add")}</em>
               </label>
-            ))}
+            ))}</div></section>)}
           </fieldset>
           <div className="application-total application-total-bottom"><span>{t("Выбрано","Selected")}: <b>{chosen.length}</b></span><SelectionSummary selected={selected}/></div>
           {!selected.length && hydrated ? <p className="form-note">{t("Не определились с услугой? Всё равно напишите — поможем выбрать подходящий вариант.","Not sure which service you need? Send us a message anyway — we’ll help you choose.")}</p> : null}

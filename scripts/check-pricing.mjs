@@ -6,7 +6,7 @@ import * as catalog from '../src/site/serviceCatalog.ts';
 
 const all = catalog.serviceCatalog;
 const premium = all.filter(item => item.discountPercent);
-assert.equal(all.length, 29);
+assert.equal(all.length, 36);
 assert.equal(new Set(all.map(item => item.n)).size, all.length);
 assert.equal(premium.length, 6);
 const expected = {'22':190000, '23':237500, '24':142500, '25':285000, '26':142500, '27':475000};
@@ -46,14 +46,14 @@ assert.match(message.text, /Разработка · № 12 \[DEV-12\] — ИИ-�
 assert(!message.text.includes('999999'));
 assert.match(message.text, /Реклама и дизайн: 4\s000 ₽/u);
 assert.match(message.text, /Разработка: 380\s000 ₽/u);
-assert.match(message.text, /AD-15.*стоимость по индивидуальному заданию/u);
+assert.match(message.text, /AD-22.*стоимость по индивидуальному заданию/u);
 assert.match(message.text, /DEV-14.*стоимость по индивидуальному заданию/u);
 const mixed = catalog.summarizeServices(['08','23','26','ad-custom','dev-custom','23']);
 assert.equal(mixed.advertisingTotal,4000);
 assert.equal(mixed.developmentTotal,380000);
 assert.equal(mixed.total,mixed.advertisingTotal+mixed.developmentTotal);
 assert.equal(mixed.custom.length,2);
-assert.equal(catalog.serviceGroups[3].packages.at(-1).n,'ad-custom');
+assert.equal(catalog.serviceGroups.filter(g=>g.direction==='advertising').at(-1).packages.at(-1).n,'ad-custom');
 assert.equal(catalog.serviceGroups.at(-1).packages.at(-1).n,'dev-custom');
 assert.match(message.text, /В стоимость входит: Каталог до 100 товаров/u);
 assert.match(message.text, /DEV-07.*стоимость по индивидуальному заданию, в итог не включена/u);
@@ -69,5 +69,26 @@ assert.match(message.text, /📣 Реклама · № 08 \[AD-08\] — Прос
 assert.equal(catalog.serviceIdentity(all.find(item=>item.n==='14')).code, 'AD-14');
 assert.equal(catalog.serviceIdentity(all.find(item=>item.n==='15')).code, 'DEV-01');
 assert.equal(catalog.serviceIdentity(all.find(item=>item.n==='27')).code, 'DEV-13');
-assert.equal(new Set(all.map(item=>catalog.serviceIdentity(item).code)).size, 29);
+assert.equal(new Set(all.map(item=>catalog.serviceIdentity(item).code)).size, 36);
 console.log('PASS: six 5% discounts, localized catalog, stable existing prices, fixed package totals, custom-project exclusion and actual notification route. No emails sent.');
+
+// New creative scopes must keep legacy cart IDs, direction totals and group links intact.
+const creative = all.filter(item=>item.n.startsWith('ad-') && !item.customRequest);
+assert.equal(creative.length,7);
+assert.equal(catalog.serviceGroups.length,9);
+assert.equal(new Set(catalog.serviceGroups.map(g=>g.id)).size,9);
+assert.equal(catalog.serviceGroups.find(g=>g.id==='5').title,'Разработка и автоматизация');
+assert.equal(catalog.serviceGroups.find(g=>g.id==='6').title,'Комплексная разработка для бизнеса');
+for(const [index,item] of creative.entries()) {
+ assert.equal(catalog.serviceIdentity(item).code,`AD-${15+index}`);
+ assert.equal(item.pricing,'fixed'); assert(item.requirements && item.requirementsEn);
+ assert(item.items.length>=4 && item.items.length===item.itemsEn.length);
+ assert(item.nameEn && item.subtitleEn && item.descriptionEn && item.timelineEn);
+}
+const updatedCart=catalog.summarizeServices(['ad-presentation','ad-copywriting','23','ad-custom','ad-presentation']);
+assert.equal(updatedCart.advertisingTotal,20000);assert.equal(updatedCart.developmentTotal,237500);assert.equal(updatedCart.total,257500);
+const nextRequest=new Request('http://localhost/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'Test',email:'test@example.com',brief:'New creative scopes',services:['ad-presentation','ad-product-cards','15'],total:1})});
+assert.equal((await context.exports.Route.server.handlers.POST({request:nextRequest})).status,200);
+assert.match(message.text,/AD-15.*Бизнес-презентация под ключ/u);assert.match(message.text,/AD-21.*Карточка товара для маркетплейса/u);assert.match(message.text,/DEV-01.*Исправление ошибки/u);
+assert.match(message.text,/Реклама и дизайн: 24\s000 ₽/u);assert.match(message.text,/Итого за выбранные пакеты: 27\s000 ₽/u);
+console.log('PASS: seven creative packages, stable development anchors and IDs, AD numbering, mixed cart totals and actual notification contents.');
