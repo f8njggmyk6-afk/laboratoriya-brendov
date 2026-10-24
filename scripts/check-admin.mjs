@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url);
 const config = {
   LB_ADMIN_ENABLED: "true",
   LB_SUPABASE_URL: "https://unit-test.supabase.co",
-  LB_SUPABASE_SERVICE_ROLE_KEY: "unit-test-server-key",
+  LB_ADMIN_GATEWAY_TOKEN: "unit-test-server-key",
   LB_ADMIN_EMAIL: "owner@example.com",
   RESEND_API_KEY: "unit-test",
   RESEND_FROM_EMAIL: "Lab <lab@example.com>",

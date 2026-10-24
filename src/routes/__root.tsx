@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Outlet, Link, createRootRouteWithContext, useRouter, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRouteWithContext, useRouter, useRouterState, HeadContent, Scripts } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import appMetaJson from "../app-meta.json";
@@ -54,7 +54,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: appMeta.favicon_url ?? "/assets/head/favicon.svg" },
       { rel: "apple-touch-icon", href: "/assets/head/apple-touch-icon.png" },
-      { rel: "manifest", href: "/site.webmanifest" },
     ],
   }),
   shellComponent: RootShell,
@@ -64,7 +63,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
-  return <html lang="ru" style={{ colorScheme: "dark" }}><head><HeadContent /></head><body>{children}<Scripts /></body></html>;
+  const isAdmin = useRouterState({ select: (state) => state.location.pathname === "/admin" });
+  return <html lang="ru" style={{ colorScheme: "dark" }}><head><HeadContent /><link rel="manifest" href={isAdmin ? "/admin.webmanifest" : "/site.webmanifest"} /></head><body>{children}<Scripts /></body></html>;
 }
 
 function RootComponent() {

@@ -17,7 +17,7 @@ export function adminConfigured() {
   return !!(
     process.env.LB_ADMIN_ENABLED === "true" &&
     process.env.LB_SUPABASE_URL &&
-    process.env.LB_SUPABASE_SERVICE_ROLE_KEY &&
+    process.env.LB_ADMIN_GATEWAY_TOKEN &&
     process.env.LB_ADMIN_EMAIL
   );
 }
@@ -29,8 +29,9 @@ function database() {
     );
   return createClient(
     process.env.LB_SUPABASE_URL!,
-    process.env.LB_SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.LB_ADMIN_GATEWAY_TOKEN!,
     {
+      global: { fetch: gatewayFetch },
       auth: {
         persistSession: false,
         autoRefreshToken: false,
@@ -38,6 +39,28 @@ function database() {
       },
     },
   );
+}
+// The project service key stays inside Supabase. Only this server holds the gateway token.
+async function gatewayFetch(input: RequestInfo | URL, init?: RequestInit) {
+  const request = new Request(input, init);
+  const project = new URL(process.env.LB_SUPABASE_URL!);
+  const target = new URL(request.url);
+  if (target.origin !== project.origin) throw new Error("Unexpected database host");
+  return fetch(new URL("/functions/v1/lb-admin-gateway", project), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-LB-Gateway-Token": process.env.LB_ADMIN_GATEWAY_TOKEN!,
+    },
+    body: JSON.stringify({
+      path: target.pathname + target.search,
+      method: request.method,
+      headers: Object.fromEntries(request.headers),
+      body: request.method === "GET" || request.method === "HEAD" ? null : await request.text(),
+    }),
+    signal: request.signal,
+    redirect: "error",
+  });
 }
 const ownerEmail = () => process.env.LB_ADMIN_EMAIL?.trim().toLowerCase();
 export function assertOrigin(request: Request) {
