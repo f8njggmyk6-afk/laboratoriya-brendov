@@ -641,9 +641,8 @@ function OrderEditor({
             />
           </label>
           <label>
-            Email клиента
+            Email клиента (если есть)
             <input
-              required
               type="email"
               value={draft.customer_email}
               onChange={(e) => change("customer_email", e.target.value)}
