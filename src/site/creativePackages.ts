@@ -127,9 +127,9 @@ export const creativeServiceGroups: readonly ServiceGroup[] = [
           "Two revision rounds; PDF and an editable layout",
         ],
         requirements:
-          "Нужны готовый логотип и вводные о бренде. Новый логотип, бренд-стратегия и дополнительные носители в пакет не входят; лицензии шрифтов оплачиваются отдельно.",
+          "Нужны готовый логотип и вводные о бренде. Новый логотип, бренд-стратегия и дополнительные носители в пакет не входят. Подбираем шрифты с бесплатным коммерческим использованием. Платные шрифты — только по вашему желанию и после согласования стоимости.",
         requirementsEn:
-          "Requires an existing logo and brand brief. A new logo, brand strategy and additional applications are excluded; font licences are separate.",
+          "Requires an existing logo and brand brief. A new logo, brand strategy and additional applications are excluded. We select fonts that are free for commercial use. Paid fonts are used only at your request, with the cost agreed in advance.",
         searchTerms: [
           "брендбук",
           "гайдлайн",
@@ -164,9 +164,9 @@ export const creativeServiceGroups: readonly ServiceGroup[] = [
           "Two revision rounds; printer-ready PDF and an editable layout",
         ],
         requirements:
-          "Клиент предоставляет логотип, развёртку, требования печати и утверждённые обязательные сведения. Конструкция упаковки, новые артикулы, печать и сертификация — отдельно.",
+          "В стоимость входят дизайн и подготовка макета к печати. Логотип, развёртку и требования типографии, утверждённые тексты и маркировку предоставляет клиент. Разработка конструкции, дополнительные товары и изготовление упаковки в стоимость не входят.",
         requirementsEn:
-          "Client supplies the logo, dieline, print specifications and approved mandatory information. Structural design, additional SKUs, printing and certification are separate.",
+          "The price includes design and preparation of print-ready artwork. The client supplies the logo, printer’s dieline and specifications, approved text and product marks. Structural design, additional products and manufacturing are not included.",
         searchTerms: [
           "упаковка",
           "этикетка",
