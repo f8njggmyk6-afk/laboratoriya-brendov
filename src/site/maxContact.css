@@ -1,0 +1,8 @@
+.contact-mode.contact-mode-four{grid-template-columns:repeat(2,minmax(0,1fr))}
+.contact-mode-link.contact-max-link{border-color:#6a78dc;background:linear-gradient(125deg,#1e2c50,#262344);border-radius:8px;transition:border-color .2s,box-shadow .2s,background .2s}
+.contact-max-link:hover{border-color:#b2baff;box-shadow:0 6px 24px #455aff26}
+.contact-mode-link.contact-max-link i{background:linear-gradient(140deg,#438aff,#7346e8);border-color:#929eff;color:#fff;font-size:9px}
+.contact-max-link b{display:flex;justify-content:space-between;gap:10px}
+.contact-max-link b em{font-style:normal;color:#bac4ff}
+.contact-mode-link:focus-visible{outline:2px solid #a3cfff;outline-offset:4px}
+@media(max-width:700px){.contact-mode.contact-mode-four{grid-template-columns:1fr}}

@@ -1,4 +1,4 @@
-import { businessPhone } from "./contactDetails";
+import { businessPhone, businessMax } from "./contactDetails";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLanguage } from "./i18n";
@@ -39,9 +39,9 @@ export function SiteFooter() {
       <div className="footer-mark">ЛБ</div>
       <div><p className="footer-title">{t("Лаборатория брендов","Brand Laboratory")}</p><p>{t("Нейминг, дизайн, презентации, упаковка, контент, сайты и автоматизация.","Naming, design, presentations, packaging, content, websites and automation.")}</p></div>
       <div><p className="footer-label">{t("География","Geography")}</p><p>{t("Россия и онлайн","Worldwide · online")}</p></div>
-      <div><p className="footer-label">{t("Связаться","Contact")}</p><p><a href={businessPhone.href}>{businessPhone.display}</a></p><p><a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a></p></div>
+      <div><p className="footer-label">{t("Связаться","Contact")}</p><p><a href={businessMax.href} target="_blank" rel="noopener noreferrer">{t("Написать в MAX", "Message on MAX")} ↗</a></p><p><a href={businessPhone.href}>{businessPhone.display}</a></p><p><a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a></p></div>
       <Link to="/order" className="footer-order-link">{t("Статус заказа", "Order status")} ↗</Link>
-      <p className="footer-note">{t("Связаться с нами можно по телефону или email.","Contact us by phone or email.")}</p>
+      <p className="footer-note">{t("MAX, телефон и email — выберите удобный способ связи.","Choose MAX, phone or email to contact us.")}</p>
     </footer>
   );
 }
