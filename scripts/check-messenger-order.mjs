@@ -12,5 +12,8 @@ const payload={channel:'max',name:'Test',brief:'Hoodie design',services:['ad-pro
 let r=await post(payload);assert.equal(r.status,200);let body=await r.json();assert.equal(saved.email,'');assert.match(saved.brief,/Канал связи: MAX/);assert.match(body.message,/ЛБ-00042/);assert.match(body.message,/LB-A{32}/);assert.match(body.message,/12\s000 ₽/);assert.match(body.message,/стоимость отдельно/);assert(!body.message.includes('https://'));assert.equal(mail,0);
 assert.equal((await post({...payload,channel:'email'})).status,400);
 assert.equal((await post({...payload,email:'bad'})).status,400);
+r=await post({channel:'max',services:['ad-product-cards'],name:'',brief:''});assert.equal(r.status,200);body=await r.json();assert.equal(saved.name,'Клиент');assert.match(saved.brief,/Заказ по выбранным услугам/);assert(!body.message.includes('Имя:'));assert(!body.message.includes('Пожелания:'));assert.match(body.message,/9\s000 ₽/);
+assert.equal((await post({channel:'max',name:'',brief:'',services:['unknown']})).status,400);
+assert.equal((await post({channel:'max',brief:'An individual task',services:[]})).status,200);
 available=false;assert.equal((await post(payload)).status,503);
 console.log('Messenger order: saved before handoff; no email needed; canonical totals and plain tracking code; no mail; storage failure blocks handoff.');

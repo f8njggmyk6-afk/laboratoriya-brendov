@@ -11,3 +11,6 @@ Drafts and the prepared message are retained in session storage so returning fro
 SQL change: `docs/messenger-orders.sql` permits an empty email for messenger orders; existing email orders and RLS remain unchanged. The API still validates mandatory email for the email channel.
 
 Validation: check-messenger-order.mjs covers persistence before handoff, blank-email MAX orders, canonical totals, no email transport, plain tracking code and storage failures. Existing pricing/admin/tracking checks must also pass.
+
+
+Checkout simplification: a selected catalog service can be submitted without a name or brief. Optional notes are collapsed under «Добавить пожелания — необязательно». Selecting a channel scrolls to the send controls. Without valid selected services, a brief is required; email submission still requires a reply address. Server validation uses canonical selected services and stores a neutral name and brief when omitted.

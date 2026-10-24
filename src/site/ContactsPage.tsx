@@ -68,13 +68,23 @@ export function ContactsPage() {
 
   const toggle = (number: string) => setSelected((current) => current.includes(number) ? current.filter((item) => item !== number) : [...current, number]);
 
+  function chooseChannel(next: "max" | "email") {
+    setChannel(next);
+    requestAnimationFrame(() => {
+      const target = document.getElementById("order-send-actions");
+      if (!target) return;
+      const header = document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0;
+      target.style.scrollMarginTop = `${Math.max(0, header) + 20}px`;
+      target.scrollIntoView({behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start"});
+    });
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting) return;
-    const form = new FormData(event.currentTarget);
     setSubmitting(true);
     try {
-    const body=JSON.stringify({channel,name:String(form.get("name")??""),email:String(form.get("contact")??""),brief:String(form.get("brief")??""),services:chosen.map(item=>item.n),total});
+    const body=JSON.stringify({channel,name:draft.name,email:channel==="email"?draft.email:"",brief:draft.brief,services:chosen.map(item=>item.n),total});
     if(!submission.current || submission.current.body!==body) submission.current={body,id:window.crypto.randomUUID()};
     const response = await fetch("/api/contact", {
       method:"POST",headers:{"Content-Type":"application/json","Idempotency-Key":submission.current.id},body,
@@ -160,20 +170,25 @@ export function ContactsPage() {
 
         <form id="order-contact-options" onSubmit={submit} className="contact-form application-form unified-order-form">
           <div className="application-section-head"><div><span>{t("Отправка заказа", "Send your order")}</span><h2>{t("Куда отправить заказ?", "Where shall we continue?")}</h2></div></div>
-          <p className="choice-prompt">{t("Опишите задачу и выберите канал. Передадим выбранные услуги, сумму и описание — обсуждение продолжим там же.", "Describe your task and choose a channel. Your selected services, total and brief go together; we’ll continue the discussion there.")}</p>
-          <div><label htmlFor="name">{t("Как к вам обращаться", "Your name")}</label><input id="name" name="name" required maxLength={120} value={draft.name} onChange={e=>setDraft(d=>({...d,name:e.target.value}))} autoComplete="name" /></div>
-          <div className="unified-brief"><label htmlFor="brief">{t("Коротко о задаче", "Your brief")}</label><textarea id="brief" name="brief" required maxLength={3900} rows={4} value={draft.brief} onChange={e=>setDraft(d=>({...d,brief:e.target.value}))} placeholder={t("Что нужно сделать и какие детали важно учесть", "What do you need and what should we consider?")}/></div>
+          <p className="choice-prompt">{t("Выберите, куда отправить собранный заказ. Имя и пожелания можно добавить по желанию — обсуждение продолжим в выбранном канале.", "Choose where to send your selected services. Your name and notes are optional; we’ll continue in your chosen channel.")}</p>
           <fieldset className="order-channel-choice"><legend>{t("Способ отправки", "Send via")}</legend>
-            <label className={channel==="max"?"is-selected":""}><input type="radio" name="channel" value="max" checked={channel==="max"} onChange={()=>setChannel("max")}/><b>MAX</b><span>{t("Заказ и обсуждение в чате", "Order and discussion in chat")}</span></label>
-            <label className={channel==="email"?"is-selected":""}><input type="radio" name="channel" value="email" checked={channel==="email"} onChange={()=>setChannel("email")}/><b>Email</b><span>{t("Заказ и ответ по почте", "Order and reply by email")}</span></label>
+            <label onClick={()=>chooseChannel("max")} className={channel==="max"?"is-selected":""}><input type="radio" name="channel" value="max" checked={channel==="max"} onChange={()=>setChannel("max")}/><b>MAX</b><span>{t("Заказ и обсуждение в чате", "Order and discussion in chat")}</span></label>
+            <label onClick={()=>chooseChannel("email")} className={channel==="email"?"is-selected":""}><input type="radio" name="channel" value="email" checked={channel==="email"} onChange={()=>setChannel("email")}/><b>Email</b><span>{t("Заказ и ответ по почте", "Order and reply by email")}</span></label>
           </fieldset>
-          {channel==="email"?<div className="unified-email"><label htmlFor="contact">{t("Email для ответа", "Reply email")}</label><input id="contact" name="contact" type="email" required maxLength={254} autoComplete="email" value={draft.email} onChange={e=>setDraft(d=>({...d,email:e.target.value}))}/></div>:null}
           <section className="application-final-selection"><div className="application-final-heading"><h3>{t("Ваш заказ", "Your order")}</h3><span>{chosen.length}</span></div>
             {chosen.length?<ul className="application-final-items">{chosen.map(item=><li key={item.n}><ServiceBadge item={item}/><span>{lang==="en"?item.nameEn??item.name:item.name}</span><strong>{servicePrice(item,money,lang)}</strong></li>)}</ul>:<p>{t("Подготовим предложение по вашему описанию.", "We’ll prepare a proposal based on your brief.")}</p>}
             <SelectionSummary selected={selected}/>
           </section>
+          <div id="order-send-actions" className="order-send-actions">
+          {channel==="email"?<div className="unified-email"><label htmlFor="contact">{t("Email для ответа", "Reply email")}</label><input id="contact" name="contact" type="email" required maxLength={254} autoComplete="email" value={draft.email} onChange={e=>setDraft(d=>({...d,email:e.target.value}))}/></div>:null}
+          <details className="order-optional-details" open={!chosen.length || undefined}>
+            <summary>{chosen.length ? t("Добавить пожелания — необязательно", "Add notes — optional") : t("Опишите задачу, если услуги ещё не выбраны", "Describe your task if no services are selected")}</summary>
+          <div><label htmlFor="name">{t("Как к вам обращаться — необязательно", "Your name — optional")}</label><input id="name" name="name" maxLength={120} value={draft.name} onChange={e=>setDraft(d=>({...d,name:e.target.value}))} autoComplete="name" /></div>
+          <div className="unified-brief"><label htmlFor="brief">{chosen.length ? t("Пожелания к заказу — необязательно", "Order notes — optional") : t("Коротко о задаче", "Your brief")}</label><textarea id="brief" name="brief" required={!chosen.length} maxLength={3900} rows={4} value={draft.brief} onChange={e=>setDraft(d=>({...d,brief:e.target.value}))} placeholder={t("Что нужно сделать и какие детали важно учесть", "What do you need and what should we consider?")}/></div>
+          </details>
           <p className="order-send-explanation">{channel==="max"?t("Сначала сохраним заказ и подготовим сообщение. В MAX выберите «Лаборатория Брендов» и нажмите «Отправить».", "We’ll save your order and prepare the message. In MAX, choose Brand Laboratory and press Send."):t("Отправим весь заказ на нашу почту. Ответим на указанный вами email.", "We’ll send the complete order to our inbox and reply at your email.")}</p>
-          <button type="submit" disabled={submitting}>{submitting?t("Сохраняем…", "Saving…"):channel==="max"?t("Подготовить заказ для MAX", "Prepare order for MAX"):t("Отправить заказ по email", "Send order by email")} →</button>
+          <button type="submit" disabled={submitting}>{submitting?t("Сохраняем…", "Saving…"):channel==="max"?t("Отправить заказ в MAX", "Send order via MAX"):t("Отправить заказ по email", "Send order by email")} →</button>
+          </div>
           <div className="contact-direct-call"><span>{t("Или позвоните нам", "Or call us")}</span><a id="contact-phone" className={highlightPhone?"phone-arrival-highlight":""} href={businessPhone.href}>{businessPhone.display}</a></div>
         </form>
       </main>

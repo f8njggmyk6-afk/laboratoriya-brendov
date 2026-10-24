@@ -26,3 +26,13 @@
 .max-order-ready textarea{width:100%;margin:14px 0;color:var(--ink);background:#0d1422;border:1px solid var(--line);padding:12px;line-height:1.6;box-sizing:border-box}
 .max-order-ready button{padding:12px 16px;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:8px;cursor:pointer}
 @media(max-width:700px){.order-channel-choice{grid-template-columns:1fr}}
+
+.unified-order-form>.order-send-actions{grid-column:1/-1;display:grid;gap:22px;min-width:0}
+.order-send-actions>button{width:100%;padding:18px;background:#4b64ff;color:#fff;font-weight:700;border:1px solid #7184ff;cursor:pointer}
+.order-send-actions>button:disabled{opacity:.6;cursor:wait}
+.order-optional-details{border:1px solid var(--line);border-radius:10px;padding:18px}
+.order-optional-details summary{cursor:pointer;color:#a6dcd5;font-weight:600;line-height:1.5}
+.order-optional-details>div{margin-top:18px}
+.order-optional-details label{display:block;margin-bottom:8px}
+.order-optional-details input,.order-optional-details textarea{width:100%;box-sizing:border-box}
+.order-send-actions .order-send-explanation{font-size:14px;line-height:1.6;color:var(--muted);margin:0}
