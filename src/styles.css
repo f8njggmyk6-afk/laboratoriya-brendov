@@ -713,3 +713,10 @@ body{background:var(--bg)}.site-header{background:rgba(11,18,32,.9)}.brand-mark{
 /* Client order lookup stays separate from the five-step service journey. */
 .main-nav .order-nav{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;margin:-7px 0;border:1px solid #659e95;border-radius:7px;color:#b7e6dc;white-space:nowrap;background:#6bbfac0a}.order-nav i{font-style:normal}.main-nav .order-nav:hover,.main-nav .order-nav.is-active{background:#25433e;color:#e2fff5}.footer-order-link{align-self:start;display:inline-flex;gap:10px;color:#a1dfd1;font-weight:700}.footer-order-link:focus-visible{outline:2px solid #9de0d1;outline-offset:4px}
 @media(max-width:700px){.site-header .main-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px 10px;width:100%;overflow:visible;padding-bottom:3px}.site-header .main-nav a{text-align:center;font-size:12px;white-space:nowrap}.site-header .main-nav .order-nav{justify-content:center;padding:5px 7px;margin:-5px 0;font-size:11px}.footer-order-link{grid-column:2}}
+/* Keep the client lookup and language switch in the header without extra desktop rows. */
+.site-header{grid-template-columns:auto minmax(0,1fr) auto;gap:clamp(12px,2vw,28px)}
+.site-header .brand-lockup{grid-column:1;grid-row:1}
+.site-header .main-nav{grid-column:2;grid-row:1;order:0}
+.site-header .language-switch{grid-column:3;grid-row:1}
+@media(max-width:900px){.site-header{grid-template-columns:1fr auto}.site-header .main-nav{grid-column:1/-1;grid-row:2}.site-header .language-switch{grid-column:2;grid-row:1}}
+@media(max-width:700px){.site-header{gap:10px}.site-header .main-nav{grid-template-columns:repeat(3,minmax(0,1fr))}}

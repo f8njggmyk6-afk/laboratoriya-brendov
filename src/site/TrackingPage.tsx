@@ -145,6 +145,20 @@ export function TrackingPage() {
     setActiveCode("");
     void load(code.trim().toUpperCase());
   }
+  function resetOrder() {
+    sequence.current++;
+    controller.current?.abort();
+    setOrder(null);
+    setActiveCode("");
+    setCode("");
+    setError("");
+    setBusy(false);
+    setCheckedAt(null);
+    try {
+      sessionStorage.removeItem("lb-tracking-code");
+    } catch {}
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
   const current = order ? orderStatuses.indexOf(order.status) : -1;
   return (
     <SiteShell>
@@ -347,18 +361,29 @@ export function TrackingPage() {
                       " " +
                       checkedAt.toLocaleTimeString(
                         lang === "en" ? "en-GB" : "ru-RU",
-                        { hour: "2-digit", minute: "2-digit" },
-                      )
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          timeZone: "Europe/Moscow",
+                        },
+                      ) +
+                      " " +
+                      t("МСК", "MSK")
                     : ""}
                 </small>
               </div>
-              <button
-                type="button"
-                disabled={busy}
-                onClick={() => void load(activeCode, true)}
-              >
-                {t("Обновить статус", "Refresh status")} ↻
-              </button>
+              <div className="tracking-footer-actions">
+                <button type="button" onClick={resetOrder}>
+                  {t("Другой заказ", "Another order")}
+                </button>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void load(activeCode, true)}
+                >
+                  {t("Обновить статус", "Refresh status")} ↻
+                </button>
+              </div>
             </footer>
           </section>
         ) : (

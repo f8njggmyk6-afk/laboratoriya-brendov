@@ -1,5 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { handleTracking } from "../../server/admin.server";
+import { privateJson, handleTracking } from "../../server/admin.server";
 export const Route = createFileRoute("/api/tracking")({
-  server: { handlers: { POST: ({ request }) => handleTracking(request) } },
+  server: {
+    handlers: {
+      GET: () =>
+        privateJson(
+          { error: "Используйте форму отслеживания заказа" },
+          405,
+          new Headers({ Allow: "POST" }),
+        ),
+      POST: ({ request }) => handleTracking(request),
+    },
+  },
 });
