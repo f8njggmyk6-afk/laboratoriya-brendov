@@ -30,16 +30,6 @@ export function TrackingReceipt({
       );
     }
   }
-  function download() {
-    const url = URL.createObjectURL(
-      new Blob([text], { type: "text/plain;charset=utf-8" }),
-    );
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `LB-order-${number}.txt`;
-    link.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
   function remember() {
     try {
       sessionStorage.setItem("lb-tracking-code", code);
@@ -59,8 +49,8 @@ export function TrackingReceipt({
         {owner
           ? "Этот код открывает клиентскую карточку. Отправьте его клиенту в вашей переписке. Внутренние заметки в карточку не попадают."
           : t(
-              "Сохраните код или скачайте подтверждение. По коду вы сможете смотреть этапы работы без регистрации.",
-              "Save the code or download the confirmation. Use it to track progress without registering.",
+              "Следите за этапами работы без регистрации. Скопируйте код или откройте статус заказа.",
+              "Follow your order without registering. Copy the code or open your order status.",
             )}
       </p>
       <div className="tracking-receipt-actions">
@@ -68,9 +58,6 @@ export function TrackingReceipt({
           {owner
             ? "Скопировать для клиента"
             : t("Скопировать код", "Copy code")}
-        </button>
-        <button type="button" onClick={download}>
-          {t("Скачать подтверждение", "Download confirmation")}
         </button>
         <Link to="/order" onClick={remember}>
           {owner ? "Клиентский вид ↗" : t("Открыть статус →", "View status →")}
