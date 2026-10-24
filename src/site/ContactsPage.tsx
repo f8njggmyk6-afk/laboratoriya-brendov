@@ -21,6 +21,7 @@ export function ContactsPage() {
   const [channel, setChannel] = useState<"max"|"email">("max");
   const [preparedMessage, setPreparedMessage] = useState("");
   const [copyState, setCopyState] = useState(false);
+  const [copyError, setCopyError] = useState(false);
   const [draft, setDraft] = useState({name:"",email:"",brief:""});
   const [receipt, setReceipt] = useState<{number:number;code:string}|null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -68,17 +69,6 @@ export function ContactsPage() {
 
   const toggle = (number: string) => setSelected((current) => current.includes(number) ? current.filter((item) => item !== number) : [...current, number]);
 
-  function chooseChannel(next: "max" | "email") {
-    setChannel(next);
-    requestAnimationFrame(() => {
-      const target = document.getElementById("order-send-actions");
-      if (!target) return;
-      const header = document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0;
-      target.style.scrollMarginTop = `${Math.max(0, header) + 20}px`;
-      target.scrollIntoView({behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start"});
-    });
-  }
-
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting) return;
@@ -113,14 +103,26 @@ export function ContactsPage() {
 
   if (sent) {
     if (channel === "max") return <SiteShell><main className="thanks-page"><section className="thanks-card max-order-ready">
-      <span>{t("Заказ сохранён", "Order saved")}</span><h1>{t("Передайте заказ в MAX", "Send your order on MAX")}</h1>
-      <p>{t("Текст заказа уже готов. В MAX выберите чат «Лаборатория Брендов» и нажмите «Отправить».", "Your order text is ready. In MAX, choose the Brand Laboratory chat and press Send.")}</p>
-      <a className="max-send-order" href={"https://max.ru/:share?text="+encodeURIComponent(preparedMessage)}>{t("Открыть MAX с заказом", "Open MAX with order")} →</a>
-      <p className="handoff-note">{t("Не находите наш чат? Сначала откройте профиль, затем вернитесь и отправьте заказ.", "Can’t find our chat? Open our profile first, then return to send your order.")} <a href={businessMax.href} target="_blank" rel="noopener noreferrer">{t("Открыть профиль MAX", "Open MAX profile")} ↗</a></p>
-      <details><summary>{t("Текст заказа и резервное копирование", "Order text and copy option")}</summary><textarea readOnly rows={8} aria-label={t("Готовый текст заказа", "Prepared order text")} value={preparedMessage}/><button type="button" onClick={async()=>{try{await navigator.clipboard.writeText(preparedMessage);setCopyState(true);}catch{setCopyState(false);}}}>{copyState?t("Скопировано", "Copied"):t("Скопировать заказ", "Copy order")}</button></details>
+      <span>{t("Заказ подготовлен", "Order prepared")}</span><h1>{t("Ваш заказ готов к отправке", "Your order is ready to send")}</h1>
+      <p>{t("Скопируйте весь заказ, откройте MAX, вставьте текст и отправьте. Обсуждение продолжим в этом же чате.", "Copy the complete order, open MAX, paste the text and send it. We’ll continue in the same chat.")}</p>
+      <section className="prepared-order-package" aria-label={t("Полный пакет заказа", "Complete order package")}>
+        <h2>{t("Все данные заказа", "Complete order details")}</h2>
+        <p className="handoff-note">{t("Услуги, стоимость, номер заказа, код отслеживания и ваши пожелания — в одном тексте.", "Services, price, order number, tracking code and your notes — in one message.")}</p>
+        <textarea className="prepared-order-text" readOnly rows={Math.min(22, Math.max(10,preparedMessage.split("\n").length))} aria-label={t("Готовый текст заказа", "Prepared order text")} value={preparedMessage}/>
+        <button className="copy-complete-order" type="button" onClick={async()=>{setCopyError(false);try{await navigator.clipboard.writeText(preparedMessage);setCopyState(true);}catch{const field=document.querySelector<HTMLTextAreaElement>(".prepared-order-text");field?.focus();field?.select();try{if(!document.execCommand("copy"))throw new Error("Copy failed");setCopyState(true);}catch{setCopyState(false);setCopyError(true);}}}}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
+          {copyState?t("Весь заказ скопирован", "Complete order copied"):t("Скопировать весь заказ", "Copy complete order")}
+        </button>
+        <p className="order-copy-feedback" role="status">{copyError?t("Текст выделен. Нажмите «Скопировать» в меню телефона.", "The text is selected. Choose Copy in your phone’s menu."):copyState?t("Теперь откройте MAX, вставьте текст в чат и отправьте.", "Now open MAX, paste the text in the chat and send it."):""}</p>
+      </section>
+      <nav className="prepared-order-channels" aria-label={t("Куда отправить заказ", "Where to send your order")}>
+        <h2>{t("Куда отправить заказ", "Send your order via")}</h2>
+        <a className="max-send-order" href={businessMax.href} target="_blank" rel="noopener noreferrer"><b>{t("Открыть MAX", "Open MAX")} ↗</b><small>{t("Вставьте скопированный заказ и отправьте нам", "Paste your copied order and send it to us")}</small></a>
+        <a className="prepared-email-link" href={"mailto:laboratoriabrendov@gmail.com?subject="+encodeURIComponent("Заказ — Лаборатория брендов")+"&body="+encodeURIComponent(preparedMessage)}>{t("Отправить по email", "Send by email")} ↗</a>
+      </nav>
       {receipt?<TrackingReceipt code={receipt.code} number={receipt.number}/>:null}
-      <p className="handoff-note">{t("Заказ сохранён на сайте. Переход в MAX ещё не означает отправку сообщения.", "Your order is saved on the website. Opening MAX does not send the message.")}</p>
-      <button type="button" onClick={()=>{setSent(false);setPreparedMessage("");submission.current=null;sessionStorage.removeItem("lb-max-order-ready");}}>{t("Вернуться к заказу", "Back to order")}</button>
+      <p className="handoff-note">{t("Заказ сохранён. Чтобы мы получили его в MAX, вставьте текст в чат и нажмите «Отправить».", "Your order is saved. To send it to us on MAX, paste the text in the chat and press Send.")}</p>
+      <button type="button" onClick={()=>{setSent(false);setPreparedMessage("");setCopyState(false);setCopyError(false);submission.current=null;sessionStorage.removeItem("lb-max-order-ready");}}>{t("Вернуться к заказу", "Back to order")}</button>
     </section></main></SiteShell>;
     return (
       <SiteShell>
@@ -169,25 +171,20 @@ export function ContactsPage() {
         </section>
 
         <form id="order-contact-options" onSubmit={submit} className="contact-form application-form unified-order-form">
-          <div className="application-section-head"><div><span>{t("Отправка заказа", "Send your order")}</span><h2>{t("Куда отправить заказ?", "Where shall we continue?")}</h2></div></div>
-          <p className="choice-prompt">{t("Выберите, куда отправить собранный заказ. Имя и пожелания можно добавить по желанию — обсуждение продолжим в выбранном канале.", "Choose where to send your selected services. Your name and notes are optional; we’ll continue in your chosen channel.")}</p>
-          <fieldset className="order-channel-choice"><legend>{t("Способ отправки", "Send via")}</legend>
-            <label onClick={()=>chooseChannel("max")} className={channel==="max"?"is-selected":""}><input type="radio" name="channel" value="max" checked={channel==="max"} onChange={()=>setChannel("max")}/><b>MAX</b><span>{t("Заказ и обсуждение в чате", "Order and discussion in chat")}</span></label>
-            <label onClick={()=>chooseChannel("email")} className={channel==="email"?"is-selected":""}><input type="radio" name="channel" value="email" checked={channel==="email"} onChange={()=>setChannel("email")}/><b>Email</b><span>{t("Заказ и ответ по почте", "Order and reply by email")}</span></label>
-          </fieldset>
+          <div className="application-section-head"><div><span>{t("Отправка заказа", "Send your order")}</span><h2>{t("Подготовьте заказ к отправке", "Prepare your order")}</h2></div></div>
+          <p className="choice-prompt">{t("Проверьте выбранные услуги. При желании добавьте имя и пожелания. Подготовим полный текст заказа — его можно скопировать и отправить в MAX или по почте.", "Check your selected services and optionally add your name and notes. We’ll prepare the complete order to copy and send on MAX or by email.")}</p>
           <section className="application-final-selection"><div className="application-final-heading"><h3>{t("Ваш заказ", "Your order")}</h3><span>{chosen.length}</span></div>
             {chosen.length?<ul className="application-final-items">{chosen.map(item=><li key={item.n}><ServiceBadge item={item}/><span>{lang==="en"?item.nameEn??item.name:item.name}</span><strong>{servicePrice(item,money,lang)}</strong></li>)}</ul>:<p>{t("Подготовим предложение по вашему описанию.", "We’ll prepare a proposal based on your brief.")}</p>}
             <SelectionSummary selected={selected}/>
           </section>
           <div id="order-send-actions" className="order-send-actions">
-          {channel==="email"?<div className="unified-email"><label htmlFor="contact">{t("Email для ответа", "Reply email")}</label><input id="contact" name="contact" type="email" required maxLength={254} autoComplete="email" value={draft.email} onChange={e=>setDraft(d=>({...d,email:e.target.value}))}/></div>:null}
           <details className="order-optional-details" open={!chosen.length || undefined}>
             <summary>{chosen.length ? t("Добавить пожелания — необязательно", "Add notes — optional") : t("Опишите задачу, если услуги ещё не выбраны", "Describe your task if no services are selected")}</summary>
           <div><label htmlFor="name">{t("Как к вам обращаться — необязательно", "Your name — optional")}</label><input id="name" name="name" maxLength={120} value={draft.name} onChange={e=>setDraft(d=>({...d,name:e.target.value}))} autoComplete="name" /></div>
           <div className="unified-brief"><label htmlFor="brief">{chosen.length ? t("Пожелания к заказу — необязательно", "Order notes — optional") : t("Коротко о задаче", "Your brief")}</label><textarea id="brief" name="brief" required={!chosen.length} maxLength={3900} rows={4} value={draft.brief} onChange={e=>setDraft(d=>({...d,brief:e.target.value}))} placeholder={t("Что нужно сделать и какие детали важно учесть", "What do you need and what should we consider?")}/></div>
           </details>
-          <p className="order-send-explanation">{channel==="max"?t("Сначала сохраним заказ и подготовим сообщение. В MAX выберите «Лаборатория Брендов» и нажмите «Отправить».", "We’ll save your order and prepare the message. In MAX, choose Brand Laboratory and press Send."):t("Отправим весь заказ на нашу почту. Ответим на указанный вами email.", "We’ll send the complete order to our inbox and reply at your email.")}</p>
-          <button type="submit" disabled={submitting}>{submitting?t("Сохраняем…", "Saving…"):channel==="max"?t("Отправить заказ в MAX", "Send order via MAX"):t("Отправить заказ по email", "Send order by email")} →</button>
+          <p className="order-send-explanation">{t("На следующем шаге — весь заказ, копирование одним нажатием и способы отправки.", "Next: your complete order, one-click copying and send options.")}</p>
+          <button type="submit" disabled={submitting}>{submitting?t("Подготавливаем…", "Preparing…"):t("Подготовить заказ", "Prepare order")} →</button>
           </div>
           <div className="contact-direct-call"><span>{t("Или позвоните нам", "Or call us")}</span><a id="contact-phone" className={highlightPhone?"phone-arrival-highlight":""} href={businessPhone.href}>{businessPhone.display}</a></div>
         </form>

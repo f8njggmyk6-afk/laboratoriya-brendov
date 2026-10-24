@@ -36,3 +36,15 @@
 .order-optional-details label{display:block;margin-bottom:8px}
 .order-optional-details input,.order-optional-details textarea{width:100%;box-sizing:border-box}
 .order-send-actions .order-send-explanation{font-size:14px;line-height:1.6;color:var(--muted);margin:0}
+
+.prepared-order-package{margin:24px 0;padding:20px;border:1px solid #568d87;border-radius:12px;background:#15243a}
+.max-order-ready h2{font-size:20px;line-height:1.35;margin:0 0 12px}
+.max-order-ready .prepared-order-text{display:block;width:100%;margin:16px 0;color:#e5ebe9;background:#0d1422;border:1px solid var(--line);border-radius:8px;padding:14px;font-size:14px;line-height:1.65;resize:vertical;box-sizing:border-box}
+.max-order-ready .copy-complete-order{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:17px 14px;background:linear-gradient(110deg,#466bff,#7047de);border-color:#8793ff;font-weight:700;color:#fff}
+.prepared-order-channels{display:grid;gap:12px;margin:26px 0}
+.prepared-order-channels .max-send-order{margin:0;display:grid;gap:7px}
+.prepared-order-channels small{font-weight:400;font-size:13px;line-height:1.5}
+.prepared-order-channels .prepared-email-link{padding:15px 18px;text-align:center;border:1px solid var(--line);border-radius:10px;text-decoration:none}
+.order-copy-feedback:empty{display:none}
+.max-order-ready .order-copy-feedback{font-size:14px;color:#b9eedc;margin:12px 0 0}
+@media(max-width:700px){.prepared-order-package{padding:16px}.max-order-ready .prepared-order-text{font-size:13px}}

@@ -14,3 +14,6 @@ Validation: check-messenger-order.mjs covers persistence before handoff, blank-e
 
 
 Checkout simplification: a selected catalog service can be submitted without a name or brief. Optional notes are collapsed under «Добавить пожелания — необязательно». Selecting a channel scrolls to the send controls. Without valid selected services, a brief is required; email submission still requires a reply address. Server validation uses canonical selected services and stores a neutral name and brief when omitted.
+
+
+Manual MAX handoff: checkout now prepares the saved order first, with an expanded complete message and a prominent copy-all button. The next step offers the verified personal MAX profile first and email second. Customer copies, opens the profile, pastes and sends. The recipient chooser share link is no longer used. Tracking receipt retains its separate code-copy convenience.
