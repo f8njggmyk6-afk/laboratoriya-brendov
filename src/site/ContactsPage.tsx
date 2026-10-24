@@ -1,7 +1,7 @@
 import { ContactScrollCue } from "./ContactScrollCue";
 import { ServiceBadge } from "./ServiceBadge";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, useRef, type FormEvent } from "react";
 import { PageIntro, SiteShell } from "./SiteShell";
 import { serviceCatalog, servicePrice, summarizeServices } from "./serviceCatalog";
 import { SelectionSummary } from "./SelectionSummary";
@@ -12,6 +12,7 @@ type ContactMode = "write" | null;
 
 export function ContactsPage() {
   const { lang, t, money } = useLanguage();
+  const submission = useRef<{body:string;id:string}|null>(null);
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [mode, setMode] = useState<ContactMode>(null);
@@ -52,16 +53,10 @@ export function ContactsPage() {
     const form = new FormData(event.currentTarget);
     setSubmitting(true);
     try {
+    const body=JSON.stringify({name:String(form.get("name")??""),email:String(form.get("contact")??""),brief:String(form.get("brief")??""),services:chosen.map(item=>item.n),total});
+    if(!submission.current || submission.current.body!==body) submission.current={body,id:window.crypto.randomUUID()};
     const response = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: String(form.get("name") ?? ""),
-        email: String(form.get("contact") ?? ""),
-        brief: String(form.get("brief") ?? ""),
-        services: chosen.map(item => item.n),
-        total,
-      }),
+      method:"POST",headers:{"Content-Type":"application/json","Idempotency-Key":submission.current.id},body,
     });
     if (!response.ok) {
       alert(t("Не получилось отправить заявку. Напишите нам на laboratoriabrendov@gmail.com","We couldn't send the request. Please email us at laboratoriabrendov@gmail.com"));

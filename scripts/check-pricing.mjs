@@ -31,7 +31,7 @@ const code = ts.transpileModule(source, {compilerOptions:{module:ts.ModuleKind.C
 let message;
 const context = {
   exports: {},
-  require: id => id === '@tanstack/react-router' ? {createFileRoute: () => config => config} : catalog,
+  require: id => id === '@tanstack/react-router' ? {createFileRoute: () => config => config} : id.includes('admin.server') ? {saveIncomingOrder:async()=>null,markNotification:async()=>{}} : catalog,
   process: {env:{RESEND_API_KEY:'test', RESEND_FROM_EMAIL:'test@example.com', NOTIFY_TO_EMAIL:'owner@example.com'}},
   console, Response,
   fetch: async (_url, options) => { message = JSON.parse(options.body); return Response.json({id:'mock'}); },

@@ -2,3 +2,7 @@ node_modules/
 .vercel/
 .tanstack/
 src/routeTree.gen.ts
+
+.env
+.env.*
+!.env.example
