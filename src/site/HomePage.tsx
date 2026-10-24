@@ -84,7 +84,7 @@ export function HomePage() {
         <p className="hero-lead">{t("Айдентика, презентации, упаковка, контент, сайты и автоматизация для бизнеса по всей России.","Brand identity, presentations, packaging, content, websites and automation for businesses worldwide.")}</p>
         <p className="hero-method">{t("Слушаем задачу, предлагаем сильные варианты и вместе доводим решение до результата.","We listen, propose strong directions and refine the selected solution together.")}</p>
         <ServiceFinder />
-        <div className="hero-actions hero-actions-single"><Link to="/contacts">{t("Обсудить задачу","Discuss project")} <PhoneIcon className="is-pulsing"/></Link></div>
+        <div className="hero-actions hero-actions-single"><Link to="/contacts" hash="contact-phone">{t("Обсудить задачу","Discuss project")} <PhoneIcon className="is-pulsing"/></Link></div>
         <p className="payment-last">{t("Дизайн — без предоплаты. Разработка — по согласованному объёму и этапам.","Design — no advance payment. Development — agreed scope and milestones.")}</p>
       </div>
       <SectionCue label="Листайте дальше" labelEn="Keep scrolling"/>

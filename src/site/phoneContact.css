@@ -1,0 +1,6 @@
+#contact-phone{scroll-margin-top:180px;border-radius:8px}
+#contact-phone:focus-visible{outline:2px solid #a6e1d7;outline-offset:4px}
+#contact-phone.phone-arrival-highlight{border-color:#80d5c5;background:#1b3542;animation:phone-arrival 1s ease-in-out 4}
+#contact-phone.phone-arrival-highlight>span{color:#d0fff4;font-weight:700}
+@keyframes phone-arrival{0%,100%{box-shadow:0 0 0 0 #80d5c500}50%{box-shadow:0 0 0 5px #80d5c53d}}
+@media(prefers-reduced-motion:reduce){#contact-phone.phone-arrival-highlight{animation:none;box-shadow:0 0 0 3px #80d5c53d}}

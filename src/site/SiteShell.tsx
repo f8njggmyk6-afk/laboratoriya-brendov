@@ -158,7 +158,7 @@ export function ContactBand() {
         <h2>{t("Разберём задачу и предложим решение.","We’ll review the task and propose a solution.")}</h2>
         <p><a href={businessPhone.href}>{t("Позвонить", "Call us")}: {businessPhone.display}</a></p>
       </div>
-      <Link to="/contacts" className="contact-seal" aria-label={t("Обсудить задачу","Discuss your project")}>
+      <Link to="/contacts" hash="contact-phone" className="contact-seal" aria-label={t("Обсудить задачу","Discuss your project")}>
         <span>{t("Обсудить задачу","Discuss project")}</span>
         <PhoneIcon className="is-pulsing"/>
       </Link>

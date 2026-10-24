@@ -2,7 +2,8 @@ import { businessPhone } from "./contactDetails";
 import { TrackingReceipt } from "./TrackingReceipt";
 import { ContactScrollCue } from "./ContactScrollCue";
 import { ServiceBadge } from "./ServiceBadge";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
+import "./phoneContact.css";
 import { useEffect, useState, useRef, type FormEvent } from "react";
 import { PageIntro, SiteShell } from "./SiteShell";
 import { serviceGroups, servicePrice, summarizeServices } from "./serviceCatalog";
@@ -13,6 +14,8 @@ type ContactMode = "write" | null;
 
 export function ContactsPage() {
   const { lang, t, money } = useLanguage();
+  const location = useLocation();
+  const [highlightPhone, setHighlightPhone] = useState(false);
   const submission = useRef<{body:string;id:string}|null>(null);
   const [sent, setSent] = useState(false);
   const [receipt, setReceipt] = useState<{number:number;code:string}|null>(null);
@@ -39,6 +42,21 @@ export function ContactsPage() {
       document.getElementById("application-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [mode]);
+
+  useEffect(() => {
+    if (!hydrated || location.hash !== "contact-phone") return;
+    const frame = requestAnimationFrame(() => {
+      const phone = document.getElementById("contact-phone");
+      if (!phone) return;
+      const headerBottom = document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0;
+      phone.style.scrollMarginTop = `${Math.max(0, headerBottom) + 20}px`;
+      phone.scrollIntoView({ behavior: "instant", block: "start" });
+      phone.focus({ preventScroll: true });
+      setHighlightPhone(true);
+    });
+    const timer = window.setTimeout(() => setHighlightPhone(false), 4000);
+    return () => { cancelAnimationFrame(frame); clearTimeout(timer); };
+  }, [hydrated, location.hash, location.state]);
 
   const { chosen, total } = summarizeServices(selected);
 
@@ -129,7 +147,7 @@ export function ContactsPage() {
           <p>{t("Позвоните, напишите нам или оставьте заявку на предложение.","Call us, email us or submit a request for a proposal.")}</p>
           <div className="contact-mode contact-mode-three" role="group" aria-label={t("Способ связи","Contact method")}>
             <a className="contact-mode-link" href="mailto:laboratoriabrendov@gmail.com?subject=Brand%20Laboratory%20request"><i>01</i><b>{t("Написать нам","Email us")}</b><span>laboratoriabrendov@gmail.com</span></a>
-            <a className="contact-mode-link" href={businessPhone.href}><i>02</i><b>{t("Позвонить сейчас","Call now")}</b><span>{businessPhone.display}</span></a>
+            <a id="contact-phone" className={`contact-mode-link${highlightPhone ? " phone-arrival-highlight" : ""}`} href={businessPhone.href}><i>02</i><b>{t("Позвонить сейчас","Call now")}</b><span>{businessPhone.display}</span></a>
             <button type="button" className={mode === "write" ? "is-active" : ""} onClick={() => chooseMode("write")}><i>03</i><b>{t("Получить предложение","Get a proposal")}</b><span>{t("Оставьте email и коротко опишите задачу","Leave your email and briefly describe the task")}</span></button>
           </div>
           <p className="contact-email-line">{t("Почта ЛБ","Brand Laboratory email")}: <a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a></p>
