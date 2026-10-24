@@ -11,7 +11,8 @@ export function ContactScrollCue() {
     const target = document.getElementById("order-contact-options");
     const update = () => {
       if (!slot.current || !button.current || !target) return;
-      const top = (header?.getBoundingClientRect().bottom ?? 0) + 10;
+      const top = Math.max(0, header?.getBoundingClientRect().bottom ?? 0) + 10;
+      target.style.scrollMarginTop = `${top + 14}px`;
       const height = button.current.getBoundingClientRect().height;
       const visible = target.getBoundingClientRect().top > Math.max(top + height + 24, window.innerHeight * .65);
       const floating = slot.current.getBoundingClientRect().top <= top;
@@ -27,7 +28,13 @@ export function ContactScrollCue() {
     return () => { observer.disconnect(); window.removeEventListener("scroll", update); window.removeEventListener("resize", update); };
   }, []);
   return <div ref={slot} className="application-cue-slot" style={state.height ? { height: state.height } : undefined}>
-    <button ref={button} type="button" className={`application-scroll-cue contact-follow-cue${state.floating ? " is-floating" : ""}${state.visible ? "" : " is-hidden"}`} style={state.floating ? { top: state.top } : undefined} tabIndex={state.visible ? 0 : -1} aria-hidden={!state.visible} onClick={() => document.getElementById("order-contact-options")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" })}>
+    <button ref={button} type="button" className={`application-scroll-cue contact-follow-cue${state.floating ? " is-floating" : ""}${state.visible ? "" : " is-hidden"}`} style={state.floating ? { top: state.top } : undefined} tabIndex={state.visible ? 0 : -1} aria-hidden={!state.visible} onClick={() => {
+      const target = document.getElementById("order-contact-options");
+      if (!target) return;
+      const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
+      window.scrollTo({top: Math.max(0, window.scrollY + target.getBoundingClientRect().top - headerBottom - 24), behavior:"instant"});
+      target.focus({preventScroll:true});
+    }}>
       <span>{t("Способы связи для оформления заказа — ниже", "Contact options for placing your order are below")}</span><b aria-hidden="true">↓</b>
     </button>
   </div>;
