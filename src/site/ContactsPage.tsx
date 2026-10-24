@@ -118,7 +118,7 @@ export function ContactsPage() {
   return (
     <SiteShell>
       <main className="contacts-page application-flow">
-        <PageIntro number="05" title="Оформить заявку" titleEn="Contact" lead="Выберите услуги и напишите нам в MAX — обсудим задачу и подготовим предложение." leadEn="Choose your services and message us on MAX to discuss your project and receive a proposal." />
+        <PageIntro number="05" title="Оформить заявку" titleEn="Contact" lead="Выберите услуги и удобный способ связи — обсудим задачу и подготовим предложение." leadEn="Choose your services and a contact method to discuss your project and receive a proposal." />
         <ContactScrollCue/>
 
         <section className="selected-services-first">
@@ -144,18 +144,14 @@ export function ContactsPage() {
 
         <section id="order-contact-options" className="application-choice-intro">
           <span>{t("Следующий шаг","Next step")}</span>
-          <h2>{t("Как вам удобнее?","What works best for you?")}</h2>
-          <p>{t("Напишите в MAX: обсудим задачу, уточним детали и подготовим предложение.","Message us on MAX: we’ll discuss the task, clarify the details and prepare a proposal.")}</p>
-          <div className="contact-mode contact-mode-three contact-mode-four" role="group" aria-label={t("Способ связи","Contact method")}>
-            <a className="contact-mode-link contact-max-link" href={businessMax.href} target="_blank" rel="noopener noreferrer"><i aria-hidden="true">MAX</i><b>{t("Написать в MAX","Message on MAX")} <em aria-hidden="true">↗</em></b><span>{t("Отправьте задачу — получите предложение в чате","Send your brief and receive a proposal in chat")}</span></a>
-            <a id="contact-phone" className={`contact-mode-link${highlightPhone ? " phone-arrival-highlight" : ""}`} href={businessPhone.href}><i>02</i><b>{t("Позвонить сейчас","Call now")}</b><span>{businessPhone.display}</span></a>
+          <h2>{t("Оставьте заявку", "Get in touch")}</h2>
+          <p>{t("Выберите удобный способ связи.", "Choose how you’d like to contact us.")}</p>
+          <div className="contact-mode contact-mode-three contact-options-ranked" role="group" aria-label={t("Способ связи","Contact method")}>
+            <a className="contact-mode-link contact-max-link" href={businessMax.href} target="_blank" rel="noopener noreferrer"><i aria-hidden="true">MAX</i><b>{t("Написать в MAX","Message on MAX")} <em aria-hidden="true">↗</em></b><span>{t("Обсудим задачу и подготовим предложение","Let’s discuss your task and prepare a proposal")}</span></a>
+            <button type="button" onClick={() => chooseMode("write")}><i aria-hidden="true">02</i><b>{t("Заявка на сайте", "Website enquiry")}</b><span>{t("Заполните форму — ответим на email", "Complete the form for an email response")}</span></button>
+            <a className="contact-mode-link" href="mailto:laboratoriabrendov@gmail.com"><i aria-hidden="true">03</i><b>{t("Написать на почту", "Email us")}</b><span>laboratoriabrendov@gmail.com</span></a>
           </div>
-          <details className="formal-contact-options">
-            <summary>{t("Email и официальная заявка", "Email and formal enquiry")}</summary>
-            <p>{t("Для документов, подробного задания или ответа по электронной почте.", "For documents, a detailed brief or an email response.")}</p>
-            <a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a>
-            <button type="button" onClick={() => chooseMode("write")}>{t("Оставить заявку по email", "Submit an email enquiry")} →</button>
-          </details>
+          <div className="contact-direct-call"><span>{t("Или позвоните нам", "Or call us")}</span><a id="contact-phone" className={highlightPhone ? "phone-arrival-highlight" : ""} href={businessPhone.href}>{businessPhone.display} <span aria-hidden="true">↗</span></a></div>
         </section>
 
         {mode === "write" ? (
@@ -171,7 +167,7 @@ export function ContactsPage() {
               {chosen.length ? <ul className="application-final-items">{chosen.map(item=><li key={item.n}><ServiceBadge item={item}/><span>{lang === "en" ? item.nameEn ?? item.name : item.name}</span><strong>{servicePrice(item,money,lang)}</strong></li>)}</ul> : <p>{t("Опишите задачу — поможем подобрать услуги.","Describe your task and we’ll help choose the services.")}</p>}
               {chosen.length ? <SelectionSummary selected={selected}/> : null}
             </section>
-            <p className="test-note">{t("Основной канал связи","Primary contact channel")}: laboratoriabrendov@gmail.com</p>
+            <p className="test-note">{t("Ответ на эту заявку придёт на указанный вами email. Наша почта","We’ll reply to this enquiry at the email you provided. Our email")}: laboratoriabrendov@gmail.com</p>
           </form>
         ) : null}
       </main>

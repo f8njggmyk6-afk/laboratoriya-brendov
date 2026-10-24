@@ -1,16 +1,12 @@
-.contact-mode.contact-mode-four{grid-template-columns:repeat(2,minmax(0,1fr))}
-.contact-mode-link.contact-max-link{border-color:#6a78dc;background:linear-gradient(125deg,#1e2c50,#262344);border-radius:8px;transition:border-color .2s,box-shadow .2s,background .2s}
+.contact-mode.contact-options-ranked{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.contact-options-ranked .contact-max-link{grid-column:1/-1;padding:22px;border-color:#6a78dc;background:linear-gradient(125deg,#1e2c50,#262344);border-radius:8px;transition:border-color .2s,box-shadow .2s}
 .contact-max-link:hover{border-color:#b2baff;box-shadow:0 6px 24px #455aff26}
 .contact-mode-link.contact-max-link i{background:linear-gradient(140deg,#438aff,#7346e8);border-color:#929eff;color:#fff;font-size:9px}
 .contact-max-link b{display:flex;justify-content:space-between;gap:10px}
 .contact-max-link b em{font-style:normal;color:#bac4ff}
-.contact-mode-link:focus-visible{outline:2px solid #a3cfff;outline-offset:4px}
-@media(max-width:700px){.contact-mode.contact-mode-four{grid-template-columns:1fr}}
-
-.formal-contact-options{margin-top:22px;border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:14px}
-.formal-contact-options summary{cursor:pointer;font-weight:600;width:fit-content;padding:8px 0}
-.formal-contact-options summary:focus-visible{outline:2px solid #a3cfff;outline-offset:4px}
-.formal-contact-options p{font-size:14px!important;line-height:1.6!important;margin:12px 0!important}
-.formal-contact-options a{display:block;width:fit-content;overflow-wrap:anywhere;color:var(--muted);text-decoration:underline;text-underline-offset:4px}
-.formal-contact-options button{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:6px;color:var(--muted);background:transparent;cursor:pointer}
-.contact-mode-four .contact-max-link{padding:22px 18px}
+.contact-options-ranked>.contact-mode-link,.contact-options-ranked>button{border-radius:8px}
+.contact-mode-link:focus-visible,.contact-direct-call a:focus-visible{outline:2px solid #a3cfff;outline-offset:4px}
+.contact-direct-call{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:22px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+.contact-direct-call a{display:inline-block;padding:8px 10px;border:1px solid transparent;border-radius:8px;color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.contact-direct-call a:hover{border-color:#75bdb0}
+@media(max-width:700px){.contact-mode.contact-options-ranked{grid-template-columns:1fr}.contact-options-ranked .contact-max-link{padding:18px}.contact-direct-call{justify-content:flex-start}.contact-direct-call>span{width:100%}}
