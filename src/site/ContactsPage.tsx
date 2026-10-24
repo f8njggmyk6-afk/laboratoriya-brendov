@@ -12,10 +12,20 @@ import { SelectionSummary } from "./SelectionSummary";
 import { useLanguage } from "./i18n";
 
 
+function revealOrderStep(id: string) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  const headerBottom = document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0;
+  const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - Math.max(0, headerBottom) - 18);
+  window.scrollTo({top, behavior:"instant"});
+  target.focus({preventScroll:true});
+}
+
 export function ContactsPage() {
   const { lang, t, money } = useLanguage();
   const location = useLocation();
   const [highlightPhone, setHighlightPhone] = useState(false);
+  const hasPrepared = useRef(false);
   const submission = useRef<{body:string;id:string}|null>(null);
   const [sent, setSent] = useState(false);
   const [channel, setChannel] = useState<"max"|"email">("max");
@@ -65,6 +75,26 @@ export function ContactsPage() {
 
   useEffect(() => { if (hydrated) { try { sessionStorage.setItem("lb-order-draft",JSON.stringify(draft)); } catch {} } }, [draft,hydrated]);
 
+  useEffect(() => {
+    if (!sent && !hasPrepared.current) return;
+    if (sent) hasPrepared.current = true;
+    const frame = requestAnimationFrame(() => revealOrderStep(sent ? "copy-complete-order" : "order-contact-options"));
+    return () => cancelAnimationFrame(frame);
+  }, [sent]);
+
+  async function copyOrderPackage() {
+    setCopyError(false);
+    let copied = false;
+    try { await navigator.clipboard.writeText(preparedMessage); copied = true; }
+    catch {
+      const field = document.querySelector<HTMLTextAreaElement>(".prepared-order-text");
+      field?.focus(); field?.select();
+      try { copied = document.execCommand("copy"); } catch {}
+    }
+    setCopyState(copied); setCopyError(!copied);
+    if (copied) requestAnimationFrame(() => revealOrderStep("order-send-channels"));
+  }
+
   const { chosen, total } = summarizeServices(selected);
 
   const toggle = (number: string) => setSelected((current) => current.includes(number) ? current.filter((item) => item !== number) : [...current, number]);
@@ -95,7 +125,6 @@ export function ContactsPage() {
     }
     if (channel === "email") { try { sessionStorage.removeItem("lb-max-order-ready"); } catch {} }
     setSent(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       alert(t("Не получилось отправить заявку. Напишите нам на laboratoriabrendov@gmail.com", "We couldn’t send your request. Please email laboratoriabrendov@gmail.com"));
     } finally { setSubmitting(false); }
@@ -103,20 +132,22 @@ export function ContactsPage() {
 
   if (sent) {
     if (channel === "max") return <SiteShell><main className="thanks-page"><section className="thanks-card max-order-ready">
-      <span>{t("Заказ подготовлен", "Order prepared")}</span><h1>{t("Ваш заказ готов к отправке", "Your order is ready to send")}</h1>
+      <span>{t("Заказ подготовлен", "Order prepared")}</span><h1>{t("Заказ готов", "Order ready")}</h1>
       <p>{t("Скопируйте весь заказ, откройте MAX, вставьте текст и отправьте. Обсуждение продолжим в этом же чате.", "Copy the complete order, open MAX, paste the text and send it. We’ll continue in the same chat.")}</p>
       <section className="prepared-order-package" aria-label={t("Полный пакет заказа", "Complete order package")}>
         <h2>{t("Все данные заказа", "Complete order details")}</h2>
         <p className="handoff-note">{t("Услуги, стоимость, номер заказа, код отслеживания и ваши пожелания — в одном тексте.", "Services, price, order number, tracking code and your notes — in one message.")}</p>
-        <textarea className="prepared-order-text" readOnly rows={Math.min(22, Math.max(10,preparedMessage.split("\n").length))} aria-label={t("Готовый текст заказа", "Prepared order text")} value={preparedMessage}/>
-        <button className="copy-complete-order" type="button" onClick={async()=>{setCopyError(false);try{await navigator.clipboard.writeText(preparedMessage);setCopyState(true);}catch{const field=document.querySelector<HTMLTextAreaElement>(".prepared-order-text");field?.focus();field?.select();try{if(!document.execCommand("copy"))throw new Error("Copy failed");setCopyState(true);}catch{setCopyState(false);setCopyError(true);}}}}>
+
+        <button id="copy-complete-order" className="copy-complete-order" type="button" onClick={copyOrderPackage}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
           {copyState?t("Весь заказ скопирован", "Complete order copied"):t("Скопировать весь заказ", "Copy complete order")}
         </button>
         <p className="order-copy-feedback" role="status">{copyError?t("Текст выделен. Нажмите «Скопировать» в меню телефона.", "The text is selected. Choose Copy in your phone’s menu."):copyState?t("Теперь откройте MAX, вставьте текст в чат и отправьте.", "Now open MAX, paste the text in the chat and send it."):""}</p>
+        <textarea className="prepared-order-text" readOnly rows={Math.min(22, Math.max(10,preparedMessage.split("\n").length))} aria-label={t("Готовый текст заказа", "Prepared order text")} value={preparedMessage}/>
       </section>
-      <nav className="prepared-order-channels" aria-label={t("Куда отправить заказ", "Where to send your order")}>
+      <nav id="order-send-channels" tabIndex={-1} className="prepared-order-channels" aria-label={t("Куда отправить заказ", "Where to send your order")}>
         <h2>{t("Куда отправить заказ", "Send your order via")}</h2>
+        {copyState ? <p className="order-copy-feedback" role="status">{t("Весь заказ скопирован. Откройте MAX и вставьте текст в чат.", "Complete order copied. Open MAX and paste the text in the chat.")}</p> : null}
         <a className="max-send-order" href={businessMax.href} target="_blank" rel="noopener noreferrer"><b>{t("Открыть MAX", "Open MAX")} ↗</b><small>{t("Вставьте скопированный заказ и отправьте нам", "Paste your copied order and send it to us")}</small></a>
         <a className="prepared-email-link" href={"mailto:laboratoriabrendov@gmail.com?subject="+encodeURIComponent("Заказ — Лаборатория брендов")+"&body="+encodeURIComponent(preparedMessage)}>{t("Отправить по email", "Send by email")} ↗</a>
       </nav>
@@ -170,7 +201,7 @@ export function ContactsPage() {
           {!selected.length && hydrated ? <p className="form-note">{t("Не определились с услугой? Всё равно напишите — поможем выбрать подходящий вариант.","Not sure which service you need? Send us a message anyway — we’ll help you choose.")}</p> : null}
         </section>
 
-        <form id="order-contact-options" onSubmit={submit} className="contact-form application-form unified-order-form">
+        <form id="order-contact-options" tabIndex={-1} onSubmit={submit} className="contact-form application-form unified-order-form">
           <div className="application-section-head"><div><span>{t("Отправка заказа", "Send your order")}</span><h2>{t("Подготовьте заказ к отправке", "Prepare your order")}</h2></div></div>
           <p className="choice-prompt">{t("Проверьте выбранные услуги. При желании добавьте имя и пожелания. Подготовим полный текст заказа — его можно скопировать и отправить в MAX или по почте.", "Check your selected services and optionally add your name and notes. We’ll prepare the complete order to copy and send on MAX or by email.")}</p>
           <section className="application-final-selection"><div className="application-final-heading"><h3>{t("Ваш заказ", "Your order")}</h3><span>{chosen.length}</span></div>

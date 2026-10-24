@@ -48,3 +48,8 @@
 .order-copy-feedback:empty{display:none}
 .max-order-ready .order-copy-feedback{font-size:14px;color:#b9eedc;margin:12px 0 0}
 @media(max-width:700px){.prepared-order-package{padding:16px}.max-order-ready .prepared-order-text{font-size:13px}}
+
+.max-order-ready>h1{font-size:clamp(28px,6vw,42px);line-height:1.15;margin:12px 0 16px}
+.max-order-ready>p{font-size:16px;line-height:1.6}
+#order-send-channels:focus,#order-contact-options:focus{outline:none}
+#copy-complete-order:focus-visible{outline:2px solid #b9eedc;outline-offset:4px}
