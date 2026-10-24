@@ -1,3 +1,4 @@
+import { businessPhone } from "./contactDetails";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLanguage } from "./i18n";
@@ -38,9 +39,9 @@ export function SiteFooter() {
       <div className="footer-mark">ЛБ</div>
       <div><p className="footer-title">{t("Лаборатория брендов","Brand Laboratory")}</p><p>{t("Нейминг, дизайн, презентации, упаковка, контент, сайты и автоматизация.","Naming, design, presentations, packaging, content, websites and automation.")}</p></div>
       <div><p className="footer-label">{t("География","Geography")}</p><p>{t("Россия и онлайн","Worldwide · online")}</p></div>
-      <div><p className="footer-label">{t("Связаться","Contact")}</p><p><a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a></p></div>
+      <div><p className="footer-label">{t("Связаться","Contact")}</p><p><a href={businessPhone.href}>{businessPhone.display}</a></p><p><a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a></p></div>
       <Link to="/order" className="footer-order-link">{t("Статус заказа", "Order status")} ↗</Link>
-      <p className="footer-note">{t("Основной канал связи — email.","Primary contact channel — email.")}</p>
+      <p className="footer-note">{t("Связаться с нами можно по телефону или email.","Contact us by phone or email.")}</p>
     </footer>
   );
 }
@@ -155,6 +156,7 @@ export function ContactBand() {
       <div className="contact-band-copy">
         <p>{t("Есть задача для бренда?","Have a brand task?")}</p>
         <h2>{t("Разберём задачу и предложим решение.","We’ll review the task and propose a solution.")}</h2>
+        <p><a href={businessPhone.href}>{t("Позвонить", "Call us")}: {businessPhone.display}</a></p>
       </div>
       <Link to="/contacts" className="contact-seal" aria-label={t("Обсудить задачу","Discuss your project")}>
         <span>{t("Обсудить задачу","Discuss project")}</span>

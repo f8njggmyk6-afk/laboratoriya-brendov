@@ -1,3 +1,4 @@
+import { businessPhone } from "./contactDetails";
 import { ServiceBadge } from "./ServiceBadge";
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState, type FormEvent } from "react";
@@ -6,7 +7,7 @@ import { StructuredData } from "./StructuredData";
 import { serviceCatalog, servicePrice } from "./serviceCatalog";
 import { useLanguage } from "./i18n";
 
-const schema = JSON.stringify({"@context":"https://schema.org","@type":"ProfessionalService","name":"Brand Laboratory","serviceType":"Naming, brand identity, presentations, packaging, copywriting, photo editing, marketplace design, websites and automation","url":"https://laboratoriyabrendov.com"});
+const schema = JSON.stringify({"@context":"https://schema.org","@type":"ProfessionalService","name":"Brand Laboratory","serviceType":"Naming, brand identity, presentations, packaging, copywriting, photo editing, marketplace design, websites and automation","url":"https://laboratoriyabrendov.com","telephone":businessPhone.href.slice(4)});
 
 const clean = (value: string) => value.toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 const distance = (a: string, b: string) => {

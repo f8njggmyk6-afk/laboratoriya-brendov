@@ -1,3 +1,4 @@
+import { businessPhone } from "./contactDetails";
 import { TrackingReceipt } from "./TrackingReceipt";
 import { ContactScrollCue } from "./ContactScrollCue";
 import { ServiceBadge } from "./ServiceBadge";
@@ -125,10 +126,11 @@ export function ContactsPage() {
         <section id="order-contact-options" className="application-choice-intro">
           <span>{t("Следующий шаг","Next step")}</span>
           <h2>{t("Как вам удобнее?","What works best for you?")}</h2>
-          <p>{t("Напишите нам напрямую или оставьте заявку на предложение.","Email us directly or submit a request for a proposal.")}</p>
-          <div className="contact-mode contact-mode-three contact-mode-two" role="group" aria-label={t("Способ связи","Contact method")}>
+          <p>{t("Позвоните, напишите нам или оставьте заявку на предложение.","Call us, email us or submit a request for a proposal.")}</p>
+          <div className="contact-mode contact-mode-three" role="group" aria-label={t("Способ связи","Contact method")}>
             <a className="contact-mode-link" href="mailto:laboratoriabrendov@gmail.com?subject=Brand%20Laboratory%20request"><i>01</i><b>{t("Написать нам","Email us")}</b><span>laboratoriabrendov@gmail.com</span></a>
-            <button type="button" className={mode === "write" ? "is-active" : ""} onClick={() => chooseMode("write")}><i>02</i><b>{t("Получить предложение","Get a proposal")}</b><span>{t("Оставьте email и коротко опишите задачу","Leave your email and briefly describe the task")}</span></button>
+            <a className="contact-mode-link" href={businessPhone.href}><i>02</i><b>{t("Позвонить сейчас","Call now")}</b><span>{businessPhone.display}</span></a>
+            <button type="button" className={mode === "write" ? "is-active" : ""} onClick={() => chooseMode("write")}><i>03</i><b>{t("Получить предложение","Get a proposal")}</b><span>{t("Оставьте email и коротко опишите задачу","Leave your email and briefly describe the task")}</span></button>
           </div>
           <p className="contact-email-line">{t("Почта ЛБ","Brand Laboratory email")}: <a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a></p>
         </section>
