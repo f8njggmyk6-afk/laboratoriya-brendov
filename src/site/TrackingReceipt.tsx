@@ -17,9 +17,9 @@ export function TrackingReceipt({
   const [feedback, setFeedback] = useState("");
   const numberLabel = orderNumber({ order_number: number });
   const text = `${t("Заказ", "Order")} ${numberLabel}\n${t("Код отслеживания", "Tracking code")}: ${code}\n${t("Откройте «Статус заказа» и вставьте код. Регистрация не нужна.", "Open Order status and enter the code. No registration needed.")}`;
-  async function copy() {
+  async function copy(codeOnly = false) {
     try {
-      await navigator.clipboard.writeText(owner ? text : code);
+      await navigator.clipboard.writeText(owner && !codeOnly ? text : code);
       setFeedback(t("Скопировано", "Copied"));
     } catch {
       setFeedback(
@@ -44,7 +44,12 @@ export function TrackingReceipt({
         {t("Заказ", "Order")} {numberLabel}
       </b>
       <span>{t("Код отслеживания", "Tracking code")}</span>
-      <code>{code}</code>
+      <div className="tracking-code-row">
+        <code>{code}</code>
+        <button type="button" className="tracking-copy-icon" onClick={() => copy(true)} aria-label={t("Скопировать код отслеживания", "Copy tracking code")} title={t("Скопировать код", "Copy code")}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
+        </button>
+      </div>
       <p>
         {owner
           ? "Этот код открывает клиентскую карточку. Отправьте его клиенту в вашей переписке. Внутренние заметки в карточку не попадают."
@@ -54,7 +59,7 @@ export function TrackingReceipt({
             )}
       </p>
       <div className="tracking-receipt-actions">
-        <button type="button" onClick={copy}>
+        <button type="button" onClick={() => copy()}>
           {owner
             ? "Скопировать для клиента"
             : t("Скопировать код", "Copy code")}

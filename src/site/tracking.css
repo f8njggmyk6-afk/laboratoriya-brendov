@@ -456,3 +456,8 @@
     flex: 1;
   }
 }
+
+.tracking-code-row{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:10px;min-width:0}
+.tracking-code-row code{min-width:0;user-select:all}
+.tracking-receipt .tracking-copy-icon{display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;flex-shrink:0;background:#193b36;border:1px solid #70b4a7;color:#b9eedc;border-radius:9px}
+.tracking-receipt .tracking-copy-icon:hover{background:#24554d}
