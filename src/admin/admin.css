@@ -464,3 +464,5 @@
     font-size: 10px;
   }
 }
+
+.admin-client-update{padding:20px;border:1px solid #4f837b;border-radius:12px;display:grid;gap:16px}.admin-client-update legend{font-weight:700;padding:0 8px;color:#b3e1d7}.admin-notice-presets{display:flex;flex-wrap:wrap;gap:8px}.lb-admin .admin-notice-presets button{border:1px solid #536a87;border-radius:8px;padding:9px 12px;background:#17283e;color:#dce7f1;font:600 12px/1.4 inherit;cursor:pointer}.lb-admin .admin-notice-presets button:hover{border-color:#a7decd;background:#214139}.admin-client-preview{padding:18px;border-radius:10px;background:#73cbb310;border:1px solid #548c7f;display:grid;gap:8px}.admin-client-preview>span{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#9bcabe}.admin-client-preview p{white-space:pre-wrap;margin:0;font-size:14px;color:#c3d0e1}.status-payment,.status-handover{color:#c8d1ff;border-color:#6272b2}

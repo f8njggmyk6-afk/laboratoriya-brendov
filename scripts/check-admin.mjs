@@ -334,7 +334,7 @@ const contactContext = {
         ? {
             saveIncomingOrder: async () => {
               if (failStorage) throw Error("storage");
-              return { id: fakeRow.id, order_number: 7 };
+              return { id: fakeRow.id, order_number: 7, tracking_code: "LB-"+"C".repeat(32) };
             },
             markNotification: async (_id, status) => {
               notificationStatus = status;
@@ -374,7 +374,10 @@ response = await contactContext.exports.Route.server.handlers.POST({
   request: submit(),
 });
 assert.equal(response.status, 200);
-assert.equal((await response.json()).orderNumber, 7);
+const receipt = await response.json();
+assert.equal(receipt.orderNumber, 7);
+assert.equal(receipt.trackingCode, "LB-"+"C".repeat(32));
+assert.match(response.headers.get("cache-control"), /no-store/);
 assert.equal(notificationStatus, "failed");
 failStorage = true;
 response = await contactContext.exports.Route.server.handlers.POST({

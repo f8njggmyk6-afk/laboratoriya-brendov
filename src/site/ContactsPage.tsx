@@ -1,3 +1,4 @@
+import { TrackingReceipt } from "./TrackingReceipt";
 import { ContactScrollCue } from "./ContactScrollCue";
 import { ServiceBadge } from "./ServiceBadge";
 import { Link } from "@tanstack/react-router";
@@ -14,6 +15,7 @@ export function ContactsPage() {
   const { lang, t, money } = useLanguage();
   const submission = useRef<{body:string;id:string}|null>(null);
   const [sent, setSent] = useState(false);
+  const [receipt, setReceipt] = useState<{number:number;code:string}|null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [mode, setMode] = useState<ContactMode>(null);
   const [selected, setSelected] = useState<string[]>([]);
@@ -62,6 +64,11 @@ export function ContactsPage() {
       alert(t("Не получилось отправить заявку. Напишите нам на laboratoriabrendov@gmail.com","We couldn't send the request. Please email us at laboratoriabrendov@gmail.com"));
       return;
     }
+    const accepted = await response.json();
+    if (accepted.trackingCode) {
+      setReceipt({number:accepted.orderNumber,code:accepted.trackingCode});
+      try { sessionStorage.setItem("lb-tracking-code",accepted.trackingCode); } catch {}
+    }
     setSent(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
@@ -77,6 +84,7 @@ export function ContactsPage() {
             <span>{t("Заявка принята","Request received")}</span>
             <h1>{t("Спасибо!","Thank you!")}</h1>
             <p>{t("Мы получили вашу заявку и ответим на указанный email в течение рабочего дня.","We received your request and will reply to the email you provided within one business day.")}</p>
+            {receipt ? <TrackingReceipt code={receipt.code} number={receipt.number}/> : null}
             <div className="thanks-summary">
               <b>{t("Выбрано","Selected")}: {chosen.length}</b><SelectionSummary selected={selected}/>
               <small>{t("Заявка сохранена. Мы ответим на указанный email.","Your request has been saved. We’ll reply by email.")}</small>

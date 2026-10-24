@@ -1,3 +1,5 @@
+import { TrackingReceipt } from "../site/TrackingReceipt";
+import { noticePresets, noticePreset } from "./notices";
 import { useEffect, useState, type FormEvent } from "react";
 import {
   fieldLabels,
@@ -354,9 +356,13 @@ export function AdminPage() {
                 <span>В работе</span>
                 <b>
                   {
-                    orders.filter(
-                      (o) =>
-                        o.status === "in_progress" || o.status === "approval",
+                    orders.filter((o) =>
+                      [
+                        "in_progress",
+                        "approval",
+                        "payment",
+                        "handover",
+                      ].includes(o.status),
                     ).length
                   }
                 </b>
@@ -548,6 +554,8 @@ function OrderEditor({
       terms_confirmed: o.terms_confirmed,
       paid: o.paid,
       delivered: o.delivered,
+      public_notice: o.public_notice ?? "",
+      public_notice_until: o.public_notice_until ?? null,
     };
   }
   const change = <K extends keyof OrderPatch>(key: K, value: OrderPatch[K]) =>
@@ -557,6 +565,13 @@ function OrderEditor({
       <section className="admin-panel admin-source">
         <span className="admin-kicker">Исходная заявка</span>
         <h2>Что запросил клиент</h2>
+        {order.tracking_code ? (
+          <TrackingReceipt
+            code={order.tracking_code}
+            number={order.order_number}
+            owner
+          />
+        ) : null}
         <p className="admin-preserve-lines">{order.brief}</p>
         <ul>
           {order.services.map((service) => (
@@ -704,6 +719,73 @@ function OrderEditor({
               Файлы переданы
             </label>
           </div>
+          <fieldset className="admin-client-update">
+            <legend>Что увидит клиент</legend>
+            <p className="admin-help">
+              Этап выше и сообщение ниже появятся в клиентской карточке после
+              сохранения. Внутренние заметки остаются только здесь.
+            </p>
+            <div className="admin-notice-presets">
+              {noticePresets.map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() =>
+                    setDraft((prev) => ({ ...prev, ...noticePreset(key) }))
+                  }
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <label>
+              Сообщение клиенту
+              <textarea
+                rows={4}
+                maxLength={600}
+                value={draft.public_notice}
+                onChange={(e) => change("public_notice", e.target.value)}
+                placeholder="Короткое обновление по заказу…"
+              />
+            </label>
+            <label>
+              Показывать до (время вашего устройства)
+              <input
+                type="datetime-local"
+                value={
+                  draft.public_notice_until
+                    ? new Date(
+                        Date.parse(draft.public_notice_until) -
+                          new Date(
+                            draft.public_notice_until,
+                          ).getTimezoneOffset() *
+                            60000,
+                      )
+                        .toISOString()
+                        .slice(0, 16)
+                    : ""
+                }
+                onChange={(e) =>
+                  change(
+                    "public_notice_until",
+                    e.target.value
+                      ? new Date(e.target.value).toISOString()
+                      : null,
+                  )
+                }
+              />
+            </label>
+            <p className="admin-help">
+              Без даты сообщение действует до следующего изменения. Пресет
+              перерыва скрывается через 2 часа; этап заказа при этом не
+              меняется.
+            </p>
+            <div className="admin-client-preview">
+              <span>Предпросмотр для клиента</span>
+              <strong>{statusLabels[draft.status]}</strong>
+              <p>{draft.public_notice || "Дополнительного сообщения нет."}</p>
+            </div>
+          </fieldset>
           <label>
             Внутренние заметки
             <textarea

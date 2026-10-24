@@ -24,6 +24,7 @@ export function SiteHeader() {
             <span>{index}</span>{lang === "en" ? ({ "Услуги":"Services","Цены":"Pricing","Работы":"Work","Процесс":"Process","Заявка":"Contact" } as Record<string,string>)[label] : label}
           </Link>
         ))}
+        <Link to="/order" className="order-nav" activeProps={{ className: "order-nav is-active" }}>{t("Статус заказа", "Order status")} <i aria-hidden="true">↗</i></Link>
       </nav>
       <div className="language-switch" role="group" aria-label="Language"><button type="button" className={lang==="ru"?"is-active":""} onClick={()=>setLang("ru")}>RU</button><button type="button" className={lang==="en"?"is-active":""} onClick={()=>setLang("en")}>EN</button></div>
     </header>
@@ -38,6 +39,7 @@ export function SiteFooter() {
       <div><p className="footer-title">{t("Лаборатория брендов","Brand Laboratory")}</p><p>{t("Нейминг, дизайн, реклама, сайты, боты и автоматизация.","Naming, design, advertising, websites, bots and automation.")}</p></div>
       <div><p className="footer-label">{t("География","Geography")}</p><p>{t("Россия и онлайн","Worldwide · online")}</p></div>
       <div><p className="footer-label">{t("Связаться","Contact")}</p><p><a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a></p></div>
+      <Link to="/order" className="footer-order-link">{t("Статус заказа", "Order status")} ↗</Link>
       <p className="footer-note">{t("Основной канал связи — email.","Primary contact channel — email.")}</p>
     </footer>
   );

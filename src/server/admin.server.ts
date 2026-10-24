@@ -45,7 +45,8 @@ async function gatewayFetch(input: RequestInfo | URL, init?: RequestInit) {
   const request = new Request(input, init);
   const project = new URL(process.env.LB_SUPABASE_URL!);
   const target = new URL(request.url);
-  if (target.origin !== project.origin) throw new Error("Unexpected database host");
+  if (target.origin !== project.origin)
+    throw new Error("Unexpected database host");
   return fetch(new URL("/functions/v1/lb-admin-gateway", project), {
     method: "POST",
     headers: {
@@ -56,7 +57,10 @@ async function gatewayFetch(input: RequestInfo | URL, init?: RequestInit) {
       path: target.pathname + target.search,
       method: request.method,
       headers: Object.fromEntries(request.headers),
-      body: request.method === "GET" || request.method === "HEAD" ? null : await request.text(),
+      body:
+        request.method === "GET" || request.method === "HEAD"
+          ? null
+          : await request.text(),
     }),
     signal: request.signal,
     redirect: "error",
@@ -383,18 +387,23 @@ export async function saveIncomingOrder(input: {
       },
       { onConflict: "request_id", ignoreDuplicates: true },
     )
-    .select("id,order_number")
+    .select("id,order_number,tracking_code")
     .maybeSingle();
   if (error) throw new AdminError(503, "Не удалось сохранить заявку");
-  if (data) return data as { id: string; order_number: number };
+  if (data)
+    return data as { id: string; order_number: number; tracking_code: string };
   const existing = await db
     .from("lb_orders")
-    .select("id,order_number")
+    .select("id,order_number,tracking_code")
     .eq("request_id", requestId)
     .single();
   if (existing.error)
     throw new AdminError(503, "Не удалось проверить сохранение заявки");
-  return existing.data as { id: string; order_number: number };
+  return existing.data as {
+    id: string;
+    order_number: number;
+    tracking_code: string;
+  };
 }
 export async function markNotification(id: string, status: "sent" | "failed") {
   const { error } = await database()
@@ -402,4 +411,60 @@ export async function markNotification(id: string, status: "sent" | "failed") {
     .update({ notification_status: status })
     .eq("id", id);
   if (error) console.error("Order notification status was not updated");
+}
+
+// A capability code grants read-only access to this limited public projection only.
+export async function handleTracking(request: Request) {
+  try {
+    assertOrigin(request);
+    const body = await readBody(request, 2000);
+    const code =
+      typeof body.code === "string"
+        ? body.code.trim().toUpperCase().replace(/\s/g, "")
+        : "";
+    if (!/^LB-[0-9A-F]{32}$/.test(code))
+      throw new AdminError(404, "Заказ не найден. Проверьте код отслеживания.");
+    const ip =
+      request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() ??
+      "unknown";
+    await rateLimit("tracking:" + ip, 30, 600);
+    const { data, error } = await database()
+      .from("lb_orders")
+      .select(
+        "order_number,status,services,terms_confirmed,agreed_amount,due_date,paid,delivered,public_notice,public_notice_until,public_updated_at",
+      )
+      .eq("tracking_code", code)
+      .maybeSingle();
+    if (error)
+      throw new AdminError(
+        503,
+        "Не удалось обновить статус. Попробуйте позже.",
+      );
+    if (!data)
+      throw new AdminError(404, "Заказ не найден. Проверьте код отслеживания.");
+    return privateJson({
+      order: {
+        number: data.order_number,
+        status: data.status,
+        services: (Array.isArray(data.services) ? data.services : []).map(
+          (s: { code: string; name: string }) => ({
+            code: s.code,
+            name: s.name,
+          }),
+        ),
+        amount: data.terms_confirmed ? data.agreed_amount : null,
+        dueDate: data.terms_confirmed ? data.due_date : null,
+        paid: data.paid,
+        delivered: data.delivered,
+        notice:
+          !data.public_notice_until ||
+          Date.parse(data.public_notice_until) > Date.now()
+            ? data.public_notice
+            : "",
+        updatedAt: data.public_updated_at,
+      },
+    });
+  } catch (error) {
+    return handleError(error);
+  }
 }
