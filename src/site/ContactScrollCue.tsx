@@ -1,3 +1,4 @@
+import { revealCheckoutSection } from "./checkoutScroll";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "./i18n";
 
@@ -28,15 +29,7 @@ export function ContactScrollCue() {
     return () => { observer.disconnect(); window.removeEventListener("scroll", update); window.removeEventListener("resize", update); };
   }, []);
   return <div ref={slot} className="application-cue-slot" style={state.height ? { height: state.height } : undefined}>
-    <button ref={button} type="button" className={`application-scroll-cue contact-follow-cue${state.floating ? " is-floating" : ""}${state.visible ? "" : " is-hidden"}`} style={state.floating ? { top: state.top } : undefined} tabIndex={state.visible ? 0 : -1} aria-hidden={!state.visible} onClick={() => {
-      const target = document.getElementById("order-contact-options");
-      if (!target) return;
-      const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
-      target.focus({preventScroll:true});
-      const align = () => window.scrollTo({top: Math.max(0, window.scrollY + target.getBoundingClientRect().top - headerBottom - 24), behavior:"instant"});
-      align();
-      requestAnimationFrame(align);
-    }}>
+    <button ref={button} type="button" className={`application-scroll-cue contact-follow-cue${state.floating ? " is-floating" : ""}${state.visible ? "" : " is-hidden"}`} style={state.floating ? { top: state.top } : undefined} tabIndex={state.visible ? 0 : -1} aria-hidden={!state.visible} onClick={() => revealCheckoutSection("order-contact-options")}>
       <span>{t("Способы связи для оформления заказа — ниже", "Contact options for placing your order are below")}</span><b aria-hidden="true">↓</b>
     </button>
   </div>;

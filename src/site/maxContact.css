@@ -66,3 +66,6 @@
 .max-order-ready .compact-order-handoff .order-copy-feedback{font-size:12px;margin:0;line-height:1.4}
 .max-order-ready:has(.compact-order-handoff){padding:16px}
 .max-order-ready .handoff-tracking{margin:16px 0}
+
+/* Avoid hidden nested scroll containers when mobile Safari moves focus. */
+.site-frame:has(.application-flow),.site-frame:has(.max-order-ready){overflow:clip}

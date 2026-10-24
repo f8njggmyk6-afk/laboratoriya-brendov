@@ -1,3 +1,4 @@
+import "./pricingResponsive.css";
 import { CustomPackageCard } from "./CustomPackageCard";
 import { useEffect,useState } from "react";
 import { PageIntro,SiteShell } from "./SiteShell";

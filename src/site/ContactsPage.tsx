@@ -1,3 +1,4 @@
+import { revealCheckoutSection as revealOrderStep } from "./checkoutScroll";
 import { businessPhone, businessMax } from "./contactDetails";
 import { TrackingReceipt } from "./TrackingReceipt";
 import { ContactScrollCue } from "./ContactScrollCue";
@@ -11,16 +12,6 @@ import { serviceGroups, servicePrice, summarizeServices } from "./serviceCatalog
 import { SelectionSummary } from "./SelectionSummary";
 import { useLanguage } from "./i18n";
 
-
-function revealOrderStep(id: string) {
-  const target = document.getElementById(id);
-  if (!target) return;
-  const headerBottom = document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0;
-  const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - Math.max(0, headerBottom) - 18);
-  target.focus({preventScroll:true});
-  window.scrollTo({top, behavior:"instant"});
-  document.documentElement.style.setProperty("--checkout-header-size", `${Math.max(0, headerBottom)}px`);
-}
 
 export function ContactsPage() {
   const { lang, t, money } = useLanguage();
