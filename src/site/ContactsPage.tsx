@@ -118,7 +118,7 @@ export function ContactsPage() {
   return (
     <SiteShell>
       <main className="contacts-page application-flow">
-        <PageIntro number="05" title="Оформить заявку" titleEn="Contact" lead="Проверьте пакеты и общую стоимость. Дополнительные функции согласуем отдельно." leadEn="Review your packages and total. Additional features are agreed separately." />
+        <PageIntro number="05" title="Оформить заявку" titleEn="Contact" lead="Выберите услуги и напишите нам в MAX — обсудим задачу и подготовим предложение." leadEn="Choose your services and message us on MAX to discuss your project and receive a proposal." />
         <ContactScrollCue/>
 
         <section className="selected-services-first">
@@ -145,19 +145,22 @@ export function ContactsPage() {
         <section id="order-contact-options" className="application-choice-intro">
           <span>{t("Следующий шаг","Next step")}</span>
           <h2>{t("Как вам удобнее?","What works best for you?")}</h2>
-          <p>{t("Позвоните, напишите нам или оставьте заявку на предложение.","Call us, email us or submit a request for a proposal.")}</p>
+          <p>{t("Напишите в MAX: обсудим задачу, уточним детали и подготовим предложение.","Message us on MAX: we’ll discuss the task, clarify the details and prepare a proposal.")}</p>
           <div className="contact-mode contact-mode-three contact-mode-four" role="group" aria-label={t("Способ связи","Contact method")}>
-            <a className="contact-mode-link contact-max-link" href={businessMax.href} target="_blank" rel="noopener noreferrer"><i aria-hidden="true">MAX</i><b>{t("Написать в MAX","Message on MAX")} <em aria-hidden="true">↗</em></b><span>{t("Обсудим вашу задачу в переписке","Let’s discuss your project in chat")}</span></a>
+            <a className="contact-mode-link contact-max-link" href={businessMax.href} target="_blank" rel="noopener noreferrer"><i aria-hidden="true">MAX</i><b>{t("Написать в MAX","Message on MAX")} <em aria-hidden="true">↗</em></b><span>{t("Отправьте задачу — получите предложение в чате","Send your brief and receive a proposal in chat")}</span></a>
             <a id="contact-phone" className={`contact-mode-link${highlightPhone ? " phone-arrival-highlight" : ""}`} href={businessPhone.href}><i>02</i><b>{t("Позвонить сейчас","Call now")}</b><span>{businessPhone.display}</span></a>
-            <a className="contact-mode-link" href="mailto:laboratoriabrendov@gmail.com?subject=Brand%20Laboratory%20request"><i>03</i><b>{t("Написать на почту","Email us")}</b><span>laboratoriabrendov@gmail.com</span></a>
-            <button type="button" className={mode === "write" ? "is-active" : ""} onClick={() => chooseMode("write")}><i>04</i><b>{t("Получить предложение","Get a proposal")}</b><span>{t("Оставьте email и коротко опишите задачу","Leave your email and briefly describe the task")}</span></button>
           </div>
-          <p className="contact-email-line">{t("Почта ЛБ","Brand Laboratory email")}: <a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a></p>
+          <details className="formal-contact-options">
+            <summary>{t("Email и официальная заявка", "Email and formal enquiry")}</summary>
+            <p>{t("Для документов, подробного задания или ответа по электронной почте.", "For documents, a detailed brief or an email response.")}</p>
+            <a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a>
+            <button type="button" onClick={() => chooseMode("write")}>{t("Оставить заявку по email", "Submit an email enquiry")} →</button>
+          </details>
         </section>
 
         {mode === "write" ? (
           <form id="application-form" onSubmit={submit} className="contact-form application-form">
-            <div className="application-section-head"><div><span>{t("Получить предложение","Get a proposal")}</span><h2>{t("Расскажите о задаче","Tell us about your task")}</h2></div></div>
+            <div className="application-section-head"><div><span>{t("Заявка по email","Email enquiry")}</span><h2>{t("Расскажите о задаче","Tell us about your task")}</h2></div></div>
             <p className="choice-prompt">{t("Укажите имя, email и коротко опишите задачу. Если удобнее обсудить детали по телефону, в Telegram или MAX, можете оставить контакт прямо в описании. Мы изучим запрос и ответим с предложением.","Tell us your name, email and a short description of the task. If you prefer to discuss details by phone, Telegram or MAX, you can leave that contact in the description. We’ll review your request and reply with a proposal.")}</p>
             <div><label htmlFor="name">{t("Как к вам обращаться","Your name")}</label><input id="name" name="name" required placeholder={t("Ваше имя","Your name")} /></div>
             <div><label htmlFor="contact">{t("Email для ответа","Email for reply")}</label><input id="contact" name="contact" type="email" required placeholder="name@company.com" /></div>
