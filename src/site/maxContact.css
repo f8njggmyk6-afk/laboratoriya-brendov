@@ -53,3 +53,16 @@
 .max-order-ready>p{font-size:16px;line-height:1.6}
 #order-send-channels:focus,#order-contact-options:focus{outline:none}
 #copy-complete-order:focus-visible{outline:2px solid #b9eedc;outline-offset:4px}
+
+.max-order-ready .compact-order-handoff{display:grid;gap:10px;margin:0;padding:16px;outline:none}
+.max-order-ready .compact-order-handoff h1{font-size:24px;line-height:1.2;margin:0;color:var(--ink)}
+.compact-order-handoff .handoff-instruction{font-size:13px;line-height:1.4;margin:0;color:var(--muted)}
+.max-order-ready .compact-order-handoff .prepared-order-text{height:clamp(90px,calc((100dvh - var(--checkout-header-size,160px) - 260px)*.5),180px);min-height:90px;max-height:180px;margin:0;padding:10px;font-size:12px;line-height:1.5;resize:none;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.max-order-ready .compact-order-handoff .copy-complete-order{min-height:44px;padding:10px 12px;font-size:14px}
+.compact-order-handoff .prepared-order-channels{margin:0;gap:8px}
+.compact-order-handoff .prepared-order-channels h2{font-size:14px;margin:0}
+.compact-order-handoff .prepared-order-channels .max-send-order{min-height:44px;padding:11px 12px;box-sizing:border-box;font-size:14px}
+.compact-order-handoff .prepared-order-channels .prepared-email-link{padding:8px 12px;font-size:13px}
+.max-order-ready .compact-order-handoff .order-copy-feedback{font-size:12px;margin:0;line-height:1.4}
+.max-order-ready:has(.compact-order-handoff){padding:16px}
+.max-order-ready .handoff-tracking{margin:16px 0}

@@ -17,8 +17,9 @@ function revealOrderStep(id: string) {
   if (!target) return;
   const headerBottom = document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0;
   const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - Math.max(0, headerBottom) - 18);
-  window.scrollTo({top, behavior:"instant"});
   target.focus({preventScroll:true});
+  window.scrollTo({top, behavior:"instant"});
+  document.documentElement.style.setProperty("--checkout-header-size", `${Math.max(0, headerBottom)}px`);
 }
 
 export function ContactsPage() {
@@ -78,7 +79,7 @@ export function ContactsPage() {
   useEffect(() => {
     if (!sent && !hasPrepared.current) return;
     if (sent) hasPrepared.current = true;
-    const frame = requestAnimationFrame(() => revealOrderStep(sent ? "copy-complete-order" : "order-contact-options"));
+    const frame = requestAnimationFrame(() => revealOrderStep(sent ? "order-handoff" : "order-contact-options"));
     return () => cancelAnimationFrame(frame);
   }, [sent]);
 
@@ -92,7 +93,7 @@ export function ContactsPage() {
       try { copied = document.execCommand("copy"); } catch {}
     }
     setCopyState(copied); setCopyError(!copied);
-    if (copied) requestAnimationFrame(() => revealOrderStep("order-send-channels"));
+
   }
 
   const { chosen, total } = summarizeServices(selected);
@@ -132,27 +133,25 @@ export function ContactsPage() {
 
   if (sent) {
     if (channel === "max") return <SiteShell><main className="thanks-page"><section className="thanks-card max-order-ready">
-      <span>{t("Заказ подготовлен", "Order prepared")}</span><h1>{t("Заказ готов", "Order ready")}</h1>
-      <p>{t("Скопируйте весь заказ, откройте MAX, вставьте текст и отправьте. Обсуждение продолжим в этом же чате.", "Copy the complete order, open MAX, paste the text and send it. We’ll continue in the same chat.")}</p>
-      <section className="prepared-order-package" aria-label={t("Полный пакет заказа", "Complete order package")}>
-        <h2>{t("Все данные заказа", "Complete order details")}</h2>
-        <p className="handoff-note">{t("Услуги, стоимость, номер заказа, код отслеживания и ваши пожелания — в одном тексте.", "Services, price, order number, tracking code and your notes — in one message.")}</p>
 
+      <section id="order-handoff" tabIndex={-1} className="prepared-order-package compact-order-handoff" aria-label={t("Полный пакет заказа", "Complete order package")}>
+        <h1>{t("Ваш заказ готов", "Your order is ready")}</h1>
+        <p className="handoff-instruction">{t("Скопируйте → откройте MAX → вставьте и отправьте.", "Copy → open MAX → paste and send.")}</p>
+
+        <textarea className="prepared-order-text" readOnly rows={6} aria-label={t("Готовый текст заказа", "Prepared order text")} value={preparedMessage}/>
         <button id="copy-complete-order" className="copy-complete-order" type="button" onClick={copyOrderPackage}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
           {copyState?t("Весь заказ скопирован", "Complete order copied"):t("Скопировать весь заказ", "Copy complete order")}
         </button>
         <p className="order-copy-feedback" role="status">{copyError?t("Текст выделен. Нажмите «Скопировать» в меню телефона.", "The text is selected. Choose Copy in your phone’s menu."):copyState?t("Теперь откройте MAX, вставьте текст в чат и отправьте.", "Now open MAX, paste the text in the chat and send it."):""}</p>
-        <textarea className="prepared-order-text" readOnly rows={Math.min(22, Math.max(10,preparedMessage.split("\n").length))} aria-label={t("Готовый текст заказа", "Prepared order text")} value={preparedMessage}/>
-      </section>
+
       <nav id="order-send-channels" tabIndex={-1} className="prepared-order-channels" aria-label={t("Куда отправить заказ", "Where to send your order")}>
-        <h2>{t("Куда отправить заказ", "Send your order via")}</h2>
-        {copyState ? <p className="order-copy-feedback" role="status">{t("Весь заказ скопирован. Откройте MAX и вставьте текст в чат.", "Complete order copied. Open MAX and paste the text in the chat.")}</p> : null}
-        <a className="max-send-order" href={businessMax.href} target="_blank" rel="noopener noreferrer"><b>{t("Открыть MAX", "Open MAX")} ↗</b><small>{t("Вставьте скопированный заказ и отправьте нам", "Paste your copied order and send it to us")}</small></a>
+        <h2>{t("Куда отправить", "Send via")}</h2>
+        <a className="max-send-order" href={businessMax.href} target="_blank" rel="noopener noreferrer"><b>{t("Открыть MAX", "Open MAX")} ↗</b></a>
         <a className="prepared-email-link" href={"mailto:laboratoriabrendov@gmail.com?subject="+encodeURIComponent("Заказ — Лаборатория брендов")+"&body="+encodeURIComponent(preparedMessage)}>{t("Отправить по email", "Send by email")} ↗</a>
       </nav>
-      {receipt?<TrackingReceipt code={receipt.code} number={receipt.number}/>:null}
-      <p className="handoff-note">{t("Заказ сохранён. Чтобы мы получили его в MAX, вставьте текст в чат и нажмите «Отправить».", "Your order is saved. To send it to us on MAX, paste the text in the chat and press Send.")}</p>
+      </section>
+      {receipt?<details className="handoff-tracking"><summary>{t("Код и статус заказа", "Tracking code and status")}</summary><TrackingReceipt code={receipt.code} number={receipt.number}/></details>:null}
       <button type="button" onClick={()=>{setSent(false);setPreparedMessage("");setCopyState(false);setCopyError(false);submission.current=null;sessionStorage.removeItem("lb-max-order-ready");}}>{t("Вернуться к заказу", "Back to order")}</button>
     </section></main></SiteShell>;
     return (

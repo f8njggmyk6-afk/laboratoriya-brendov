@@ -32,8 +32,10 @@ export function ContactScrollCue() {
       const target = document.getElementById("order-contact-options");
       if (!target) return;
       const headerBottom = Math.max(0, document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0);
-      window.scrollTo({top: Math.max(0, window.scrollY + target.getBoundingClientRect().top - headerBottom - 24), behavior:"instant"});
       target.focus({preventScroll:true});
+      const align = () => window.scrollTo({top: Math.max(0, window.scrollY + target.getBoundingClientRect().top - headerBottom - 24), behavior:"instant"});
+      align();
+      requestAnimationFrame(align);
     }}>
       <span>{t("Способы связи для оформления заказа — ниже", "Contact options for placing your order are below")}</span><b aria-hidden="true">↓</b>
     </button>
