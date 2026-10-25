@@ -208,12 +208,11 @@ export function AdminPage() {
       setBusy(false);
     }
   }
-  async function deleteOrder() {
+  async function deleteOrder(order: OrderRow) {
     if (
-      !current ||
       busy ||
       !window.confirm(
-        `Удалить заказ ${orderNumber(current)}? Он исчезнет из списка и отслеживания клиента.`,
+        `Удалить заказ ${orderNumber(order)}? Он исчезнет из списка и отслеживания клиента.`,
       )
     )
       return;
@@ -222,12 +221,15 @@ export function AdminPage() {
     setMessage("");
     try {
       await api("orders", "DELETE", {
-        id: current.id,
-        version: current.version,
+        id: order.id,
+        version: order.version,
         confirm: "delete",
       });
-      setCurrent(null);
-      setHistory([]);
+      if (current?.id === order.id) {
+        setCurrent(null);
+        setHistory([]);
+      }
+      setOrders((previous) => previous.filter((item) => item.id !== order.id));
       await loadOrders();
       setMessage("Заказ удалён.");
     } catch (reason) {
@@ -462,35 +464,47 @@ export function AdminPage() {
             ) : (
               <div className="admin-order-list">
                 {filtered.map((order) => (
-                  <button
-                    key={order.id}
-                    className="admin-order-row"
-                    onClick={() => openOrder(order.id)}
-                    disabled={busy}
-                  >
-                    <div>
-                      <small>
-                        {orderNumber(order)} · {dateLabel(order.created_at)}
-                      </small>
-                      <strong>{order.customer_name}</strong>
-                      <span>{order.customer_email}</span>
+                  <article key={order.id} className="admin-order-card">
+                    <button
+                      className="admin-order-row"
+                      onClick={() => openOrder(order.id)}
+                      disabled={busy}
+                    >
+                      <div>
+                        <small>
+                          {orderNumber(order)} · {dateLabel(order.created_at)}
+                        </small>
+                        <strong>{order.customer_name}</strong>
+                        <span>{order.customer_email}</span>
+                      </div>
+                      <span className={"admin-status status-" + order.status}>
+                        {statusLabels[order.status]}
+                      </span>
+                      <div className="admin-order-money">
+                        <b>
+                          {order.agreed_amount === null
+                            ? "Сумма не согласована"
+                            : formatMoney(order.agreed_amount)}
+                        </b>
+                        <small>Срок: {dateLabel(order.due_date)}</small>
+                        {order.has_custom ? (
+                          <small>Есть индивидуальная задача</small>
+                        ) : null}
+                      </div>
+                      <span aria-hidden="true">↗</span>
+                    </button>
+                    <div className="admin-order-card-actions">
+                      <button
+                        type="button"
+                        className="admin-danger"
+                        aria-label={`Удалить заказ ${orderNumber(order)}`}
+                        disabled={busy}
+                        onClick={() => deleteOrder(order)}
+                      >
+                        Удалить
+                      </button>
                     </div>
-                    <span className={"admin-status status-" + order.status}>
-                      {statusLabels[order.status]}
-                    </span>
-                    <div className="admin-order-money">
-                      <b>
-                        {order.agreed_amount === null
-                          ? "Сумма не согласована"
-                          : formatMoney(order.agreed_amount)}
-                      </b>
-                      <small>Срок: {dateLabel(order.due_date)}</small>
-                      {order.has_custom ? (
-                        <small>Есть индивидуальная задача</small>
-                      ) : null}
-                    </div>
-                    <span aria-hidden="true">↗</span>
-                  </button>
+                  </article>
                 ))}
               </div>
             )}
@@ -527,7 +541,7 @@ export function AdminPage() {
               <button
                 type="button"
                 className="admin-danger"
-                onClick={deleteOrder}
+                onClick={() => deleteOrder(current)}
                 disabled={busy}
               >
                 Удалить заказ

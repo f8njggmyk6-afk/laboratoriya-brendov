@@ -542,3 +542,25 @@
 .admin-client-preview strong {
   overflow-wrap: anywhere;
 }
+
+.admin-order-card {
+  min-width: 0;
+  border: 1px solid #485c7a;
+  border-radius: 9px;
+  background: #142137;
+  overflow: hidden;
+}
+.lb-admin .admin-order-card .admin-order-row {
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+}
+.admin-order-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 20px 16px;
+}
+.lb-admin .admin-order-card-actions button {
+  min-height: 44px;
+  padding: 10px 18px;
+}
