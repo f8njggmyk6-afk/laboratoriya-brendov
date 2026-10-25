@@ -64,6 +64,9 @@ function table(name) {
       selected++;
       return this;
     },
+    is() {
+      return this;
+    },
     eq() {
       return this;
     },
@@ -241,6 +244,59 @@ response = await admin.handleOrders(
 );
 assert.equal(response.status, 409);
 rpcError = null;
+for (const authenticated of [false, true]) {
+  const result = await admin.handleOrders(
+    request(
+      "orders",
+      "DELETE",
+      { id: fakeRow.id, version: 1, confirm: "delete" },
+      authenticated,
+    ),
+  );
+  assert.equal(result.status, authenticated ? 200 : 401);
+}
+assert.equal(rpcCalls.at(-1).args.p_patch.deleted, true);
+assert.equal(
+  (
+    await admin.handleOrders(
+      request("orders", "DELETE", { id: fakeRow.id, version: 1 }, true),
+    )
+  ).status,
+  400,
+);
+assert.equal(
+  (
+    await admin.handleOrders(
+      request(
+        "orders",
+        "DELETE",
+        { id: fakeRow.id, version: 1, confirm: "delete" },
+        true,
+        "https://other.example",
+      ),
+    )
+  ).status,
+  403,
+);
+assert.ok(
+  model.validateOrderPatch({ ...basePatch, progress_percent: 101 }).error,
+);
+assert.ok(
+  model.validateOrderPatch({ ...basePatch, progress_percent: 1.5 }).error,
+);
+assert.ok(
+  model.validateOrderPatch({
+    ...basePatch,
+    service_progress: { DEV01: "invalid" },
+  }).error,
+);
+assert.ok(
+  model.validateOrderPatch({
+    ...basePatch,
+    progress_percent: 35,
+    service_progress: { DEV01: "completed" },
+  }).patch,
+);
 response = await admin.handleAdminAuth(
   request("auth", "POST", { action: "request", email: "stranger@example.com" }),
 );
@@ -334,7 +390,11 @@ const contactContext = {
         ? {
             saveIncomingOrder: async () => {
               if (failStorage) throw Error("storage");
-              return { id: fakeRow.id, order_number: 7, tracking_code: "LB-"+"C".repeat(32) };
+              return {
+                id: fakeRow.id,
+                order_number: 7,
+                tracking_code: "LB-" + "C".repeat(32),
+              };
             },
             markNotification: async (_id, status) => {
               notificationStatus = status;
@@ -376,7 +436,7 @@ response = await contactContext.exports.Route.server.handlers.POST({
 assert.equal(response.status, 200);
 const receipt = await response.json();
 assert.equal(receipt.orderNumber, 7);
-assert.equal(receipt.trackingCode, "LB-"+"C".repeat(32));
+assert.equal(receipt.trackingCode, "LB-" + "C".repeat(32));
 assert.match(response.headers.get("cache-control"), /no-store/);
 assert.equal(notificationStatus, "failed");
 failStorage = true;

@@ -17,6 +17,8 @@ let row = {
   customer_email: "private@example.com",
   notes: "PRIVATE NOTES",
   brief: "PRIVATE BRIEF",
+  progress_percent: 30,
+  service_progress: { DEV01: "completed" },
   order_number: 42,
   status: "in_progress",
   services: [
@@ -39,6 +41,11 @@ const db = {
     return {
       select(value) {
         fields = value;
+        return this;
+      },
+      is(key, value) {
+        assert.equal(key, "deleted_at");
+        assert.equal(value, null);
         return this;
       },
       eq(key, value) {
@@ -104,6 +111,8 @@ assert.equal(response.status, 200);
 assert.match(response.headers.get("cache-control"), /no-store/);
 let data = await response.json();
 assert.equal(data.order.number, 42);
+assert.equal(data.order.progress, 30);
+assert.equal(data.order.services[0].status, "completed");
 assert.equal(data.order.amount, 5000);
 assert.equal(data.order.notice, "Work continues");
 const raw = JSON.stringify(data);
@@ -120,6 +129,7 @@ for (const secret of [
 assert.deepEqual(
   Object.keys(data.order).sort(),
   [
+    "progress",
     "number",
     "status",
     "services",

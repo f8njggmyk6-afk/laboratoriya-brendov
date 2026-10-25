@@ -276,7 +276,12 @@ export async function handleOrders(request: Request) {
           throw new AdminError(400, "Некорректный номер заказа");
         const db = database();
         const [order, history] = await Promise.all([
-          db.from("lb_orders").select("*").eq("id", id).single(),
+          db
+            .from("lb_orders")
+            .select("*")
+            .eq("id", id)
+            .is("deleted_at", null)
+            .single(),
           db
             .from("lb_order_history")
             .select("*")
@@ -302,6 +307,7 @@ export async function handleOrders(request: Request) {
         .select(
           "id,order_number,customer_name,customer_email,status,agreed_amount,due_date,created_at,updated_at,version,catalog_total,has_custom,terms_confirmed,notification_status",
         )
+        .is("deleted_at", null)
         .order("created_at", { ascending: false })
         .limit(300);
       if (error) throw new AdminError(503, "Не удалось загрузить заявки");
@@ -315,6 +321,24 @@ export async function handleOrders(request: Request) {
       !Number.isInteger(body.version)
     )
       throw new AdminError(400, "Некорректный заказ");
+    if (request.method === "DELETE") {
+      if (body.confirm !== "delete")
+        throw new AdminError(400, "Подтвердите удаление заказа");
+      const result = await database().rpc("lb_admin_update_order", {
+        p_id: body.id,
+        p_version: body.version,
+        p_patch: { deleted: true },
+        p_actor: admin.email,
+      });
+      if (result.error)
+        throw new AdminError(
+          result.error.message.includes("version_conflict") ? 409 : 503,
+          result.error.message.includes("version_conflict")
+            ? "Заказ изменился. Обновите карточку перед удалением."
+            : "Не удалось удалить заказ",
+        );
+      return privateJson({ ok: true }, 200, headers);
+    }
     const { patch, error } = validateOrderPatch(body.patch);
     if (error || !patch)
       throw new AdminError(400, error ?? "Некорректные данные");
@@ -431,9 +455,10 @@ export async function handleTracking(request: Request) {
     const { data, error } = await database()
       .from("lb_orders")
       .select(
-        "order_number,status,services,terms_confirmed,agreed_amount,due_date,paid,delivered,public_notice,public_notice_until,public_updated_at",
+        "order_number,status,services,terms_confirmed,agreed_amount,due_date,paid,delivered,public_notice,public_notice_until,public_updated_at,progress_percent,service_progress",
       )
       .eq("tracking_code", code)
+      .is("deleted_at", null)
       .maybeSingle();
     if (error)
       throw new AdminError(
@@ -446,10 +471,12 @@ export async function handleTracking(request: Request) {
       order: {
         number: data.order_number,
         status: data.status,
+        progress: data.progress_percent ?? 0,
         services: (Array.isArray(data.services) ? data.services : []).map(
           (s: { code: string; name: string }) => ({
             code: s.code,
             name: s.name,
+            status: data.service_progress?.[s.code] ?? "pending",
           }),
         ),
         amount: data.terms_confirmed ? data.agreed_amount : null,

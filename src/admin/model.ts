@@ -17,6 +17,13 @@ export const statusLabels: Record<OrderStatus, string> = {
   handover: "Передача файлов",
   completed: "Завершена",
 };
+export const serviceStatuses = ["pending", "in_progress", "completed"] as const;
+export type ServiceStatus = (typeof serviceStatuses)[number];
+export const serviceStatusLabels: Record<ServiceStatus, string> = {
+  pending: "Ожидает начала",
+  in_progress: "В работе",
+  completed: "Готово",
+};
 export type OrderService = {
   id: string;
   code: string;
@@ -50,6 +57,8 @@ export type Order = {
   delivered: boolean;
   notification_status: string;
   tracking_code: string;
+  progress_percent: number;
+  service_progress: Record<string, ServiceStatus>;
   public_notice: string;
   public_notice_until: string | null;
   public_updated_at: string;
@@ -72,6 +81,8 @@ export type OrderPatch = Pick<
   | "terms_confirmed"
   | "paid"
   | "delivered"
+  | "progress_percent"
+  | "service_progress"
   | "public_notice"
   | "public_notice_until"
 >;
@@ -80,6 +91,9 @@ export const orderNumber = (order: Pick<Order, "order_number">) =>
 export const formatMoney = (n: number) =>
   n.toLocaleString("ru-RU", { maximumFractionDigits: 2 }) + " ₽";
 export const fieldLabels: Record<string, string> = {
+  progress_percent: "Готовность, %",
+  service_progress: "Готовность услуг",
+  deleted_at: "Удаление заказа",
   customer_name: "Имя",
   customer_email: "Email",
   agreed_amount: "Согласованная сумма",
@@ -143,7 +157,29 @@ export function validateOrderPatch(value: unknown): {
     return { error: "Укажите корректное время окончания сообщения" };
   if (typeof v.public_notice === "string" && v.public_notice.length > 600)
     return { error: "Сообщение клиенту — до 600 символов" };
+  const progress = v.progress_percent ?? 0;
+  if (
+    !Number.isInteger(progress) ||
+    Number(progress) < 0 ||
+    Number(progress) > 100
+  )
+    return { error: "Готовность — целое число от 0 до 100" };
+  const serviceProgress = v.service_progress ?? {};
+  if (
+    !serviceProgress ||
+    typeof serviceProgress !== "object" ||
+    Array.isArray(serviceProgress) ||
+    Object.keys(serviceProgress).length > 100 ||
+    Object.entries(serviceProgress).some(
+      ([key, state]) =>
+        !/^[A-Za-z0-9_-]{1,80}$/.test(key) ||
+        !serviceStatuses.includes(state as ServiceStatus),
+    )
+  )
+    return { error: "Некорректная готовность услуг" };
   const patch: OrderPatch = {
+    progress_percent: progress as number,
+    service_progress: serviceProgress as Record<string, ServiceStatus>,
     customer_name: name,
     customer_email: email,
     agreed_amount: amount as number | null,

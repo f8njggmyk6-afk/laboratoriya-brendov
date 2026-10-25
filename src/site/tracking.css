@@ -457,7 +457,82 @@
   }
 }
 
-.tracking-code-row{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:10px;min-width:0}
-.tracking-code-row code{min-width:0;user-select:all}
-.tracking-receipt .tracking-copy-icon{display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;flex-shrink:0;background:#193b36;border:1px solid #70b4a7;color:#b9eedc;border-radius:9px}
-.tracking-receipt .tracking-copy-icon:hover{background:#24554d}
+.tracking-code-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.tracking-code-row code {
+  min-width: 0;
+  user-select: all;
+}
+.tracking-receipt .tracking-copy-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  flex-shrink: 0;
+  background: #193b36;
+  border: 1px solid #70b4a7;
+  color: #b9eedc;
+  border-radius: 9px;
+}
+.tracking-receipt .tracking-copy-icon:hover {
+  background: #24554d;
+}
+
+.tracking-work-progress {
+  padding: 20px;
+  border: 1px solid #38516a;
+  border-radius: 16px;
+  margin: 20px 0;
+  display: grid;
+  gap: 12px;
+}
+.tracking-work-progress > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.tracking-work-progress strong {
+  color: #a4e2d7;
+  font-size: 24px;
+}
+.tracking-work-progress progress {
+  width: 100%;
+  height: 10px;
+  border: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #23334b;
+  accent-color: #80d8c6;
+}
+.tracking-work-progress progress::-webkit-progress-bar {
+  background: #23334b;
+}
+.tracking-work-progress progress::-webkit-progress-value {
+  background: #80d8c6;
+  border-radius: 20px;
+}
+.tracking-work-progress progress::-moz-progress-bar {
+  background: #80d8c6;
+}
+.tracking-work-progress small {
+  color: #adbccc;
+}
+.tracking-service-state {
+  display: block;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #aab9ca;
+}
+.tracking-service-state.service-completed {
+  color: #a4e2d7;
+}
+.tracking-service-state.service-in_progress {
+  color: #b2baff;
+}

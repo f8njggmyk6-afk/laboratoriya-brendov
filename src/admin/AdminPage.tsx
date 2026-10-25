@@ -2,6 +2,9 @@ import { TrackingReceipt } from "../site/TrackingReceipt";
 import { noticePresets, noticePreset } from "./notices";
 import { useEffect, useState, type FormEvent } from "react";
 import {
+  serviceStatuses,
+  serviceStatusLabels,
+  type ServiceStatus,
   fieldLabels,
   formatMoney,
   orderNumber,
@@ -65,17 +68,24 @@ const dateLabel = (date: string | null) =>
       }).format(new Date(date.length === 10 ? date + "T12:00:00Z" : date))
     : "Не назначен";
 const historyValue = (key: string, value: unknown) =>
-  value === null || value === ""
-    ? "Не указано"
-    : typeof value === "boolean"
-      ? value
-        ? "Да"
-        : "Нет"
-      : key === "status"
-        ? (statusLabels[value as OrderStatus] ?? String(value))
-        : key === "agreed_amount"
-          ? formatMoney(Number(value))
-          : String(value);
+  key === "service_progress" && value && typeof value === "object"
+    ? Object.entries(value)
+        .map(
+          ([code, state]) =>
+            `${code}: ${serviceStatusLabels[state as ServiceStatus] ?? state}`,
+        )
+        .join("; ") || "Ожидает начала"
+    : value === null || value === ""
+      ? "Не указано"
+      : typeof value === "boolean"
+        ? value
+          ? "Да"
+          : "Нет"
+        : key === "status"
+          ? (statusLabels[value as OrderStatus] ?? String(value))
+          : key === "agreed_amount"
+            ? formatMoney(Number(value))
+            : String(value);
 
 export function AdminPage() {
   const [session, setSession] = useState<"loading" | "anonymous" | "owner">(
@@ -192,6 +202,34 @@ export function AdminPage() {
       setHistory(data.history);
       await loadOrders();
       setMessage("Изменения сохранены. Общий прайс сайта не изменился.");
+    } catch (reason) {
+      showError(reason);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function deleteOrder() {
+    if (
+      !current ||
+      busy ||
+      !window.confirm(
+        `Удалить заказ ${orderNumber(current)}? Он исчезнет из списка и отслеживания клиента.`,
+      )
+    )
+      return;
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      await api("orders", "DELETE", {
+        id: current.id,
+        version: current.version,
+        confirm: "delete",
+      });
+      setCurrent(null);
+      setHistory([]);
+      await loadOrders();
+      setMessage("Заказ удалён.");
     } catch (reason) {
       showError(reason);
     } finally {
@@ -485,6 +523,16 @@ export function AdminPage() {
               </button>
             </div>
             <OrderEditor order={current} busy={busy} save={saveOrder} />
+            <section className="admin-panel admin-delete-panel">
+              <button
+                type="button"
+                className="admin-danger"
+                onClick={deleteOrder}
+                disabled={busy}
+              >
+                Удалить заказ
+              </button>
+            </section>
             <section className="admin-panel admin-history">
               <h2>История изменений</h2>
               {history.length ? (
@@ -554,6 +602,8 @@ function OrderEditor({
       terms_confirmed: o.terms_confirmed,
       paid: o.paid,
       delivered: o.delivered,
+      progress_percent: o.progress_percent ?? 0,
+      service_progress: o.service_progress ?? {},
       public_notice: o.public_notice ?? "",
       public_notice_until: o.public_notice_until ?? null,
     };
@@ -721,9 +771,58 @@ function OrderEditor({
           <fieldset className="admin-client-update">
             <legend>Что увидит клиент</legend>
             <p className="admin-help">
-              Этап выше и сообщение ниже появятся в клиентской карточке после
-              сохранения. Внутренние заметки остаются только здесь.
+              Этап, готовность услуг и сообщение появятся в клиентской карточке
+              после сохранения. Внутренние заметки остаются только здесь.
             </p>
+            <label>
+              Общая готовность, %
+              <input
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                required
+                value={
+                  Number.isFinite(draft.progress_percent)
+                    ? draft.progress_percent
+                    : ""
+                }
+                onChange={(e) =>
+                  change(
+                    "progress_percent",
+                    e.target.value === "" ? NaN : Number(e.target.value),
+                  )
+                }
+              />
+            </label>
+            <p className="admin-help">
+              Процент задаётся вручную с учётом объёма работ. Количество готовых
+              услуг считается отдельно.
+            </p>
+            <div className="admin-service-progress">
+              {order.services.map((service) => (
+                <label key={service.code}>
+                  <span>
+                    {service.code} · {service.name}
+                  </span>
+                  <select
+                    value={draft.service_progress[service.code] ?? "pending"}
+                    onChange={(e) =>
+                      change("service_progress", {
+                        ...draft.service_progress,
+                        [service.code]: e.target.value as ServiceStatus,
+                      })
+                    }
+                  >
+                    {serviceStatuses.map((state) => (
+                      <option key={state} value={state}>
+                        {serviceStatusLabels[state]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ))}
+            </div>
             <div className="admin-notice-presets">
               {noticePresets.map(([key, label]) => (
                 <button
@@ -781,7 +880,13 @@ function OrderEditor({
             </p>
             <div className="admin-client-preview">
               <span>Предпросмотр для клиента</span>
-              <strong>{statusLabels[draft.status]}</strong>
+              <strong>
+                {statusLabels[draft.status]} ·{" "}
+                {Number.isFinite(draft.progress_percent)
+                  ? draft.progress_percent
+                  : 0}
+                %
+              </strong>
               <p>{draft.public_notice || "Дополнительного сообщения нет."}</p>
             </div>
           </fieldset>

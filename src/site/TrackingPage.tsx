@@ -14,7 +14,12 @@ import "./tracking.css";
 export type PublicOrder = {
   number: number;
   status: OrderStatus;
-  services: { code: string; name: string }[];
+  progress: number;
+  services: {
+    code: string;
+    name: string;
+    status: "pending" | "in_progress" | "completed";
+  }[];
   amount: number | null;
   dueDate: string | null;
   paid: boolean;
@@ -252,6 +257,29 @@ export function TrackingPage() {
             <p className="tracking-current-description">
               {stages[order.status]?.[lang === "en" ? 3 : 2]}
             </p>
+            <div className="tracking-work-progress">
+              <div>
+                <b>{t("Готовность заказа", "Order readiness")}</b>
+                <strong>{order.progress ?? 0}%</strong>
+              </div>
+              <progress
+                max="100"
+                value={order.progress ?? 0}
+                aria-label={t("Готовность заказа", "Order readiness")}
+              />
+              {order.services.length ? (
+                <small>
+                  {t("Готово", "Completed")}{" "}
+                  {
+                    order.services.filter(
+                      (service) => service.status === "completed",
+                    ).length
+                  }{" "}
+                  {t("из", "of")} {order.services.length}{" "}
+                  {t("услуг", "services")}
+                </small>
+              ) : null}
+            </div>
             {order.notice ? (
               <aside className="tracking-notice">
                 <span aria-hidden="true">◷</span>
@@ -318,13 +346,25 @@ export function TrackingPage() {
                 <span className="tracking-eyebrow">
                   {t("Состав заявки", "Requested services")}
                 </span>
-                <h3>{t("Ваш выбор", "Your selection")}</h3>
+                <h3>{t("Услуги по заказу", "Order services")}</h3>
                 {order.services.length ? (
                   <ul>
                     {order.services.map((service, index) => (
                       <li key={index}>
                         <small>{service.code}</small>
                         <b>{service.name}</b>
+                        <span
+                          className={
+                            "tracking-service-state service-" +
+                            (service.status ?? "pending")
+                          }
+                        >
+                          {service.status === "completed"
+                            ? t("✓ Готово", "✓ Complete")
+                            : service.status === "in_progress"
+                              ? t("◉ В работе", "◉ In progress")
+                              : t("○ Ожидает начала", "○ Not started")}
+                        </span>
                       </li>
                     ))}
                   </ul>
