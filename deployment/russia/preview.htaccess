@@ -1,0 +1,9 @@
+Options -Indexes
+DirectoryIndex index.html
+<IfModule mod_headers.c>
+Header set X-Robots-Tag "noindex, nofollow"
+Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+RewriteEngine On
+RewriteRule ^api(?:/|$) preview-api.php [L]
+RewriteRule ^(services|pricing|portfolio|process|contacts|order|admin)/?$ $1/index.html [L]
