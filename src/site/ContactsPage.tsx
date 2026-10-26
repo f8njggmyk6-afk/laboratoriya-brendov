@@ -1,3 +1,4 @@
+import { BusinessDetails } from "./BusinessDetails";
 import { revealCheckoutSection as revealOrderStep } from "./checkoutScroll";
 import { businessPhone, businessMax } from "./contactDetails";
 import { TrackingReceipt } from "./TrackingReceipt";
@@ -209,6 +210,7 @@ export function ContactsPage() {
           </div>
           <div className="contact-direct-call"><span>{t("Или позвоните нам", "Or call us")}</span><a id="contact-phone" className={highlightPhone?"phone-arrival-highlight":""} href={businessPhone.href}>{businessPhone.display}</a></div>
         </form>
+        <BusinessDetails />
       </main>
     </SiteShell>
   );
