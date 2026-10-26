@@ -1,3 +1,4 @@
+import { PrivacyNotice } from "./PrivacyNotice";
 import { BusinessDetails } from "./BusinessDetails";
 import { revealCheckoutSection as revealOrderStep } from "./checkoutScroll";
 import { businessPhone, businessMax } from "./contactDetails";
@@ -206,6 +207,7 @@ export function ContactsPage() {
           <div className="unified-brief"><label htmlFor="brief">{chosen.length ? t("Пожелания к заказу — необязательно", "Order notes — optional") : t("Коротко о задаче", "Your brief")}</label><textarea id="brief" name="brief" required={!chosen.length} maxLength={3900} rows={4} value={draft.brief} onChange={e=>setDraft(d=>({...d,brief:e.target.value}))} placeholder={t("Что нужно сделать и какие детали важно учесть", "What do you need and what should we consider?")}/></div>
           </details>
           <p className="order-send-explanation">{t("На следующем шаге — весь заказ, копирование одним нажатием и способы отправки.", "Next: your complete order, one-click copying and send options.")}</p>
+          <PrivacyNotice />
           <button type="submit" disabled={submitting}>{submitting?t("Подготавливаем…", "Preparing…"):t("Подготовить заказ", "Prepare order")} →</button>
           </div>
           <div className="contact-direct-call"><span>{t("Или позвоните нам", "Or call us")}</span><a id="contact-phone" className={highlightPhone?"phone-arrival-highlight":""} href={businessPhone.href}>{businessPhone.display}</a></div>

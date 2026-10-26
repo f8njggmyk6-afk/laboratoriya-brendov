@@ -1,3 +1,4 @@
+import "./privacy.css";
 import { BusinessDetails } from "./BusinessDetails";
 import { businessPhone, businessMax } from "./contactDetails";
 import { Link } from "@tanstack/react-router";
@@ -43,6 +44,7 @@ export function SiteFooter() {
       <div><p className="footer-label">{t("Связаться","Contact")}</p><p><a href={businessMax.href} target="_blank" rel="noopener noreferrer">{t("Написать в MAX", "Message on MAX")} ↗</a></p><p><a href={businessPhone.href}>{businessPhone.display}</a></p><p><a href="mailto:laboratoriabrendov@gmail.com">laboratoriabrendov@gmail.com</a></p></div>
       <Link to="/order" className="footer-order-link">{t("Статус заказа", "Order status")} ↗</Link>
       <BusinessDetails footer />
+      <a href="/privacy" className="footer-privacy-link">{t("Обработка персональных данных", "Personal data policy")}</a>
       <p className="footer-note">{t("MAX, телефон и email — выберите удобный способ связи.","Choose MAX, phone or email to contact us.")}</p>
     </footer>
   );
