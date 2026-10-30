@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { handleAdminAuth } from "../../../server/admin.server";
+import { handleAdminAuth } from "../../../server/local-admin.server";
 export const Route = createFileRoute("/api/admin/auth")({
   server: {
     handlers: {
