@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { createHash, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, randomInt, randomUUID, timingSafeEqual } from "node:crypto";
 import { chmodSync, mkdirSync } from "node:fs";
 import { dirname, resolve, sep } from "node:path";
 import { summarizeServices, serviceIdentity } from "../site/serviceCatalog";
@@ -22,11 +22,12 @@ function storageConfigured() {
 }
 
 export function adminConfigured() {
-  const password = process.env.LB_ADMIN_PASSWORD ?? "";
+  const sender = process.env.RESEND_FROM_EMAIL ?? "";
   return process.env.LB_ADMIN_ENABLED === "true" &&
     storageConfigured() &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOfOwner()) &&
-    password.length >= 32;
+    Boolean((process.env.RESEND_API_KEY ?? "").trim()) &&
+    sender.includes("@");
 }
 
 function openDatabase() {
@@ -109,6 +110,15 @@ function openDatabase() {
       expires_at INTEGER NOT NULL
     );
     CREATE INDEX IF NOT EXISTS lb_sessions_expiry ON lb_admin_sessions(expires_at);
+
+    CREATE TABLE IF NOT EXISTS lb_admin_login_codes (
+      email TEXT PRIMARY KEY,
+      code_hash TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      expires_at INTEGER NOT NULL,
+      attempts INTEGER NOT NULL DEFAULT 0 CHECK(attempts >= 0)
+    );
+    CREATE INDEX IF NOT EXISTS lb_login_codes_expiry ON lb_admin_login_codes(expires_at);
   `);
   try {
     chmodSync(path, 0o600);
@@ -258,30 +268,94 @@ export async function handleAdminAuth(request: Request) {
       clearSession(headers);
       return privateJson({ ok: true }, 200, headers);
     }
-    if (body.action !== "login" || !adminConfigured()) {
+    if (!adminConfigured()) {
       throw new AdminError(503, "Вход в панель ещё не настроен.");
     }
 
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     await rateLimit("admin-ip:" + ip, 12, 900);
     const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
-    await rateLimit("admin-owner:" + email, 8, 900);
-    const suppliedPassword = typeof body.password === "string" ? body.password : "";
-    const expectedPassword = process.env.LB_ADMIN_PASSWORD ?? "";
-    const equalLength = Buffer.from(suppliedPassword).length === Buffer.from(expectedPassword).length;
-    const safeSupplied = createHash("sha256").update(suppliedPassword).digest();
-    const safeExpected = createHash("sha256").update(expectedPassword).digest();
-    const passwordOk = timingSafeEqual(safeSupplied, safeExpected);
-    if (email !== emailOfOwner() || !equalLength || !passwordOk) {
-      throw new AdminError(401, "Неверная почта или пароль.");
+
+    if (body.action === "request") {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        throw new AdminError(400, "Укажите почту владельца.");
+      }
+      await rateLimit("owner-code:" + email, 1, 60);
+      // Return the same response for unknown addresses so the owner email is not disclosed.
+      if (email !== emailOfOwner()) {
+        return privateJson({ ok: true }, 200, headers);
+      }
+
+      const key = process.env.RESEND_API_KEY?.trim() ?? "";
+      const from = process.env.RESEND_FROM_EMAIL?.trim() ?? "";
+      if (!key || !from) {
+        throw new AdminError(503, "Не подключена отправка кода входа.");
+      }
+      const code = randomInt(0, 1_000_000).toString().padStart(6, "0");
+      const now = Date.now();
+      const db = database();
+      db.prepare("DELETE FROM lb_admin_login_codes WHERE expires_at<=?").run(now);
+      db.prepare("INSERT INTO lb_admin_login_codes(email,code_hash,created_at,expires_at,attempts) VALUES(?,?,?,?,0) ON CONFLICT(email) DO UPDATE SET code_hash=excluded.code_hash,created_at=excluded.created_at,expires_at=excluded.expires_at,attempts=0")
+        .run(email, tokenHash(code), now, now + 10 * 60 * 1000);
+
+      let response: Response;
+      try {
+        response = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + key,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from,
+            to: [email],
+            subject: "Код входа — Лаборатория брендов",
+            text: "Код для входа в панель заказов: " + code + "\n\nКод действует 10 минут. Введите его только в панели Лаборатории брендов. Если вы не запрашивали вход, не сообщайте никому этот код.",
+          }),
+          signal: AbortSignal.timeout(10_000),
+        });
+      } catch {
+        db.prepare("DELETE FROM lb_admin_login_codes WHERE email=?").run(email);
+        throw new AdminError(503, "Не удалось отправить код. Попробуйте позже.");
+      }
+      if (!response.ok) {
+        db.prepare("DELETE FROM lb_admin_login_codes WHERE email=?").run(email);
+        await response.body?.cancel().catch(() => undefined);
+        throw new AdminError(503, "Не удалось отправить код. Попробуйте позже.");
+      }
+      return privateJson({ ok: true }, 200, headers);
     }
 
+    if (body.action !== "verify") {
+      throw new AdminError(400, "Некорректный запрос.");
+    }
+    const code = typeof body.code === "string" ? body.code.trim() : "";
+    if (email !== emailOfOwner() || !/^\d{6}$/.test(code)) {
+      throw new AdminError(401, "Код неверный или истёк. Запросите новый.");
+    }
+    await rateLimit("owner-verify:" + email, 8, 900);
     const now = Date.now();
-    database().prepare("DELETE FROM lb_admin_sessions WHERE expires_at<=?").run(now);
+    const db = database();
+    const challenge = db.prepare("SELECT code_hash,expires_at,attempts FROM lb_admin_login_codes WHERE email=?")
+      .get(email) as { code_hash: string; expires_at: number; attempts: number } | undefined;
+    if (!challenge || challenge.expires_at <= now || challenge.attempts >= 8) {
+      db.prepare("DELETE FROM lb_admin_login_codes WHERE email=?").run(email);
+      throw new AdminError(401, "Код неверный или истёк. Запросите новый.");
+    }
+    const expectedHash = Buffer.from(challenge.code_hash, "hex");
+    const suppliedHash = createHash("sha256").update(code).digest();
+    if (expectedHash.length !== suppliedHash.length || !timingSafeEqual(suppliedHash, expectedHash)) {
+      db.prepare("UPDATE lb_admin_login_codes SET attempts=attempts+1 WHERE email=?").run(email);
+      throw new AdminError(401, "Код неверный или истёк. Запросите новый.");
+    }
+
     const token = randomBytes(32).toString("hex");
-    database()
-      .prepare("INSERT INTO lb_admin_sessions(token_hash,email,created_at,expires_at) VALUES(?,?,?,?)")
-      .run(tokenHash(token), email, now, now + sessionSeconds * 1000);
+    db.transaction(() => {
+      db.prepare("DELETE FROM lb_admin_login_codes WHERE email=?").run(email);
+      db.prepare("DELETE FROM lb_admin_sessions WHERE expires_at<=?").run(now);
+      db.prepare("INSERT INTO lb_admin_sessions(token_hash,email,created_at,expires_at) VALUES(?,?,?,?)")
+        .run(tokenHash(token), email, now, now + sessionSeconds * 1000);
+    })();
     setSession(headers, token);
     return privateJson({ authenticated: true, email }, 200, headers);
   } catch (error) {
