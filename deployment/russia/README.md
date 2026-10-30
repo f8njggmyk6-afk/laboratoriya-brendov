@@ -24,7 +24,7 @@ The VPS backend uses SQLite through `better-sqlite3`. The native package needs t
 - `LB_ADMIN_PASSWORD` must be a random secret of at least 32 characters.
 - Set the environment file permissions to `0600`; never commit it or send it through email/chat.
 
-The database file is created on first request. It contains order intake, status history, hashed tracking codes only in the limiter table, hashed admin session tokens and hashed rate-limit keys. Session cookies are HttpOnly, Secure and SameSite=Strict. Admin writes require same-origin JSON, version checks and a server-side order-state validation.
+The database file is created on first request. It stores customer details and tracking codes in the orders table, history in a separate table, and only hashes of admin session tokens and rate-limit keys. Restrict the database and backup files to the service owner. Session cookies are HttpOnly, Secure and SameSite=Strict. Admin writes require same-origin JSON, version checks and server-side order-state validation.
 
 The email order option saves the request locally but the Russian branch does not relay customer data through Resend. The owner must check the admin panel; the notification field remains marked as failed until a domestic notification method is selected and connected. MAX handoff remains user-initiated.
 
