@@ -93,8 +93,7 @@ export function AdminPage() {
   );
   const [configured, setConfigured] = useState(true);
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [codeSent, setCodeSent] = useState(false);
+  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -153,19 +152,10 @@ export function AdminPage() {
     setError("");
     setMessage("");
     try {
-      const data = await api("auth", "POST", {
-        action: codeSent ? "verify" : "request",
-        email,
-        ...(codeSent ? { code } : {}),
-      });
-      if (data.authenticated) {
-        setSession("owner");
-        setCode("");
-        setCodeSent(false);
-      } else {
-        setCodeSent(true);
-        setMessage("Код отправлен на почту владельца. Введите его ниже.");
-      }
+      const data = await api("auth", "POST", { action: "login", email, password });
+      if (!data.authenticated) throw new ApiError(401, "Не удалось войти в панель");
+      setSession("owner");
+      setPassword("");
     } catch (reason) {
       showError(reason);
     } finally {
@@ -303,7 +293,7 @@ export function AdminPage() {
             <h1>Панель заказов</h1>
             <p>
               Заявки, согласованные условия и сроки — в одном месте. Вход по
-              одноразовому коду на почту.
+              паролю владельца.
             </p>
             {!configured ? (
               <div className="admin-setup-note">
@@ -319,49 +309,27 @@ export function AdminPage() {
               <input
                 id="admin-email"
                 type="email"
-                autoComplete="email"
+                autoComplete="username"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                readOnly={codeSent}
                 placeholder="Ваш email"
                 disabled={!configured}
               />
-              {codeSent ? (
-                <>
-                  <label htmlFor="admin-code">Код из письма</label>
-                  <input
-                    id="admin-code"
-                    autoComplete="one-time-code"
-                    inputMode="numeric"
-                    pattern="[0-9]{6,10}"
-                    required
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                    placeholder="Введите код"
-                  />
-                </>
-              ) : null}
+              <label htmlFor="admin-password">Пароль владельца</label>
+              <input
+                id="admin-password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Введите пароль"
+                disabled={!configured}
+              />
               <button className="admin-primary" disabled={busy || !configured}>
-                {busy
-                  ? "Подождите…"
-                  : codeSent
-                    ? "Войти в панель →"
-                    : "Получить код входа →"}
+                {busy ? "Подождите…" : "Войти в панель →"}
               </button>
-              {codeSent ? (
-                <button
-                  type="button"
-                  className="admin-link-button"
-                  onClick={() => {
-                    setCodeSent(false);
-                    setCode("");
-                    setMessage("");
-                  }}
-                >
-                  Изменить email / запросить код повторно
-                </button>
-              ) : null}
             </form>
           </section>
         ) : null}
