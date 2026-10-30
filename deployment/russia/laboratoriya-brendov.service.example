@@ -1,0 +1,33 @@
+[Unit]
+Description=Laboratoriya Brendov local backend
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=lbapp
+Group=lbapp
+WorkingDirectory=/opt/laboratoriya-brendov/current
+EnvironmentFile=/etc/laboratoriya-brendov.env
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=NITRO_HOST=127.0.0.1
+Environment=PORT=3000
+Environment=NITRO_PORT=3000
+ExecStart=/usr/bin/node .output-russia/server/index.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+ReadWritePaths=/var/lib/laboratoriya-brendov
+
+[Install]
+WantedBy=multi-user.target
