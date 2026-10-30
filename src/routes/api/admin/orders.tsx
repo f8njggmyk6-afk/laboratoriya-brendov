@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { handleOrders } from "../../../server/admin.server";
+import { handleOrders } from "../../../server/local-admin.server";
 export const Route = createFileRoute("/api/admin/orders")({
   server: {
     handlers: {
