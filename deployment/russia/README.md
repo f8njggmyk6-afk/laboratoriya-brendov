@@ -44,3 +44,13 @@ Do not upload `.env`, the database file, customer records, or private build sour
 - Validate requests from Russia on mobile and fixed networks; a cloud-browser load does not establish availability from Russia.
 - Review notifications, retention, privacy wording and operator notification requirements against the actual deployed flow.
 - Keep the Vercel deployment and DNS rollback available. Do not switch DNS or purge old storage during preparation.
+
+
+## Service and proxy templates
+
+- `laboratoriya-brendov.service.example` runs the Node server as the dedicated `lbapp` account, binds it to loopback port 3000, and grants write access only to the SQLite data directory.
+- `nginx.conf.example` is an HTTPS reverse proxy. Replace `example.invalid` and certificate paths after the real domain and TLS certificate are ready. It overwrites `X-Forwarded-For` with Nginx's client address.
+
+Install the service only after creating the `lbapp` user and `/var/lib/laboratoriya-brendov` with that owner. Keep the application release root-owned and read-only to `lbapp`. Create `/etc/laboratoriya-brendov.env` as `root:root` with mode `0600`; enter the owner email and unique 32+ character password privately on the VPS. Keep `LB_ADMIN_ENABLED=false` until HTTPS and the password are configured.
+
+After replacing every placeholder, validate the Nginx configuration with `nginx -t`, then reload Nginx and start the systemd service. These templates are not installed on the VPS by this branch commit.
