@@ -721,14 +721,24 @@ function OrderEditor({
                 placeholder="Укажите сумму"
               />
             </label>
-            <label>
-              Дата сдачи
-              <input
-                type="date"
-                value={draft.due_date ?? ""}
-                onChange={(e) => change("due_date", e.target.value || null)}
-              />
-            </label>
+            <div>
+              <label>
+                Дата сдачи
+                <input
+                  type="date"
+                  value={draft.due_date ?? ""}
+                  onChange={(e) => change("due_date", e.target.value || null)}
+                />
+              </label>
+              <button
+                type="button"
+                className="admin-link-button"
+                disabled={busy || !draft.due_date}
+                onClick={() => change("due_date", null)}
+              >
+                Сбросить срок
+              </button>
+            </div>
           </div>
           <label>
             Состав согласованных работ
