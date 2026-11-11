@@ -94,6 +94,9 @@ export function AdminPage() {
   const [configured, setConfigured] = useState(true);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
+  const [pinEnabled, setPinEnabled] = useState(false);
+  const [useEmail, setUseEmail] = useState(false);
+  const pinLogin = pinEnabled && !useEmail;
   const [codeSent, setCodeSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -130,6 +133,7 @@ export function AdminPage() {
       .then((data) => {
         if (!active) return;
         setConfigured(data.configured !== false);
+        setPinEnabled(data.pinEnabled === true);
         setEmail(data.email ?? "");
         setSession(data.authenticated ? "owner" : "anonymous");
       })
@@ -154,9 +158,9 @@ export function AdminPage() {
     setMessage("");
     try {
       const data = await api("auth", "POST", {
-        action: codeSent ? "verify" : "request",
-        email,
-        ...(codeSent ? { code } : {}),
+        ...(pinLogin
+          ? { action: "pin", code }
+          : { action: codeSent ? "verify" : "request", email, ...(codeSent ? { code } : {}) }),
       });
       if (data.authenticated) {
         setSession("owner");
@@ -302,8 +306,7 @@ export function AdminPage() {
             <span className="admin-kicker">Только для владельца</span>
             <h1>Панель заказов</h1>
             <p>
-              Заявки, согласованные условия и сроки — в одном месте. Вход по
-              одноразовому коду на почту.
+              {pinLogin ? "Введите PIN владельца." : "Вход по одноразовому коду на почту."}
             </p>
             {!configured ? (
               <div className="admin-setup-note">
@@ -315,26 +318,32 @@ export function AdminPage() {
               </div>
             ) : null}
             <form onSubmit={login}>
-              <label htmlFor="admin-email">Почта владельца</label>
-              <input
-                id="admin-email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                readOnly={codeSent}
-                placeholder="Ваш email"
-                disabled={!configured}
-              />
-              {codeSent ? (
+              {!pinLogin ? (
                 <>
-                  <label htmlFor="admin-code">Код из письма</label>
+                  <label htmlFor="admin-email">Почта владельца</label>
+                  <input
+                    id="admin-email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    readOnly={codeSent}
+                    placeholder="Ваш email"
+                    disabled={!configured}
+                  />
+                </>
+              ) : null}
+              {pinLogin || codeSent ? (
+                <>
+                  <label htmlFor="admin-code">{pinLogin ? "PIN" : "Код из письма"}</label>
                   <input
                     id="admin-code"
-                    autoComplete="one-time-code"
+                    type={pinLogin ? "password" : "text"}
+                    autoComplete={pinLogin ? "current-password" : "one-time-code"}
                     inputMode="numeric"
-                    pattern="[0-9]{6,10}"
+                    pattern={pinLogin ? "[0-9]{10}" : "[0-9]{6,10}"}
+                    maxLength={10}
                     required
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
@@ -345,7 +354,7 @@ export function AdminPage() {
               <button className="admin-primary" disabled={busy || !configured}>
                 {busy
                   ? "Подождите…"
-                  : codeSent
+                  : pinLogin || codeSent
                     ? "Войти в панель →"
                     : "Получить код входа →"}
               </button>
@@ -360,6 +369,17 @@ export function AdminPage() {
                   }}
                 >
                   Изменить email / запросить код повторно
+                </button>
+              ) : null}
+              {pinEnabled ? (
+                <button type="button" className="admin-link-button" disabled={busy} onClick={() => {
+                  setUseEmail(!useEmail);
+                  setCodeSent(false);
+                  setCode("");
+                  setMessage("");
+                  setError("");
+                }}>
+                  {pinLogin ? "Войти по коду из письма" : "Войти по PIN"}
                 </button>
               ) : null}
             </form>
