@@ -94,6 +94,11 @@ export function AdminPage() {
   const [configured, setConfigured] = useState(true);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
+  const [showPinSetup, setShowPinSetup] = useState(false);
+  const [pinSetupCodeSent, setPinSetupCodeSent] = useState(false);
+  const [newPin, setNewPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
+  const [pinSetupCode, setPinSetupCode] = useState("");
   const [pinEnabled, setPinEnabled] = useState(false);
   const [useEmail, setUseEmail] = useState(false);
   const pinLogin = pinEnabled && !useEmail;
@@ -129,6 +134,7 @@ export function AdminPage() {
   }
   useEffect(() => {
     let active = true;
+    setShowPinSetup(window.location.hash === "#pin-setup");
     api("auth")
       .then((data) => {
         if (!active) return;
@@ -242,10 +248,48 @@ export function AdminPage() {
       setBusy(false);
     }
   }
+  function clearPinSetup() {
+    setPinSetupCodeSent(false);
+    setPinSetupCode("");
+    setNewPin("");
+    setConfirmPin("");
+  }
+  async function submitPinSetup(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (busy) return;
+    setError("");
+    setMessage("");
+    if (pinSetupCodeSent && newPin !== confirmPin) {
+      setError("Введённые PIN не совпадают.");
+      return;
+    }
+    setBusy(true);
+    try {
+      if (pinSetupCodeSent) {
+        await api("auth", "POST", { action: "pin-setup", pin: newPin, code: pinSetupCode });
+        setPinEnabled(true);
+        setUseEmail(false);
+        clearPinSetup();
+        setShowPinSetup(false);
+        setMessage("PIN сохранён. При следующем входе можно использовать его.");
+      } else {
+        await api("auth", "POST", { action: "pin-setup-request" });
+        setPinSetupCodeSent(true);
+        setMessage("Код подтверждения отправлен на почту владельца.");
+      }
+    } catch (reason) {
+      setPinSetupCode("");
+      setError((reason as ApiError).message ?? "Не удалось сохранить PIN");
+    } finally {
+      setBusy(false);
+    }
+  }
   async function logout() {
     setBusy(true);
     try {
       await api("auth", "POST", { action: "logout" });
+      clearPinSetup();
+      setShowPinSetup(false);
       setSession("anonymous");
       setOrders([]);
       setCurrent(null);
@@ -277,9 +321,17 @@ export function AdminPage() {
         <div>
           <span className="admin-private-mark">Закрытый раздел</span>
           {session === "owner" ? (
-            <button onClick={logout} disabled={busy}>
-              Выйти
-            </button>
+            <>
+              <button type="button" disabled={busy} onClick={() => {
+                clearPinSetup();
+                setError("");
+                setMessage("");
+                setShowPinSetup(!showPinSetup);
+              }}>
+                {pinEnabled ? "Изменить PIN" : "Установить PIN"}
+              </button>
+              <button onClick={logout} disabled={busy}>Выйти</button>
+            </>
           ) : (
             <a href="/">На сайт ↗</a>
           )}
@@ -380,6 +432,42 @@ export function AdminPage() {
                   setError("");
                 }}>
                   {pinLogin ? "Войти по коду из письма" : "Войти по PIN"}
+                </button>
+              ) : null}
+            </form>
+          </section>
+        ) : null}
+        {session === "owner" && showPinSetup ? (
+          <section className="admin-login" id="pin-setup">
+            <h1>{pinEnabled ? "Изменить PIN" : "Установить PIN"}</h1>
+            <p>Подтверди действие кодом из письма и задай PIN из 10 цифр.</p>
+            <form onSubmit={submitPinSetup}>
+              {pinSetupCodeSent ? (
+                <>
+                  <label htmlFor="admin-new-pin">Новый PIN</label>
+                  <input id="admin-new-pin" type="password" inputMode="numeric"
+                    autoComplete="new-password" pattern="[0-9]{10}" maxLength={10}
+                    value={newPin} onChange={(e) => setNewPin(e.target.value)} required />
+                  <label htmlFor="admin-confirm-pin">Повтори PIN</label>
+                  <input id="admin-confirm-pin" type="password" inputMode="numeric"
+                    autoComplete="new-password" pattern="[0-9]{10}" maxLength={10}
+                    value={confirmPin} onChange={(e) => setConfirmPin(e.target.value)} required />
+                  <label htmlFor="admin-pin-otp">Код из письма</label>
+                  <input id="admin-pin-otp" inputMode="numeric" autoComplete="one-time-code"
+                    pattern="[0-9]{6,10}" maxLength={10} value={pinSetupCode}
+                    onChange={(e) => setPinSetupCode(e.target.value)} required />
+                </>
+              ) : null}
+              <button className="admin-primary" disabled={busy}>
+                {pinSetupCodeSent ? "Сохранить PIN" : "Получить код подтверждения"}
+              </button>
+              {pinSetupCodeSent ? (
+                <button type="button" className="admin-link-button" disabled={busy} onClick={() => {
+                  clearPinSetup();
+                  setMessage("");
+                  setError("");
+                }}>
+                  Запросить новый код
                 </button>
               ) : null}
             </form>

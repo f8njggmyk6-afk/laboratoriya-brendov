@@ -27,6 +27,7 @@ export async function handler(request: Request): Promise<Response> {
     const path = url.pathname;
     const allowed =
       (path === "/rest/v1/lb_orders" && ["GET", "POST", "PATCH"].includes(method)) ||
+      (path === "/rest/v1/lb_admin_pin" && ["GET", "POST"].includes(method)) ||
       (path === "/rest/v1/lb_order_history" && method === "GET") ||
       (["/rest/v1/rpc/lb_admin_rate_limit", "/rest/v1/rpc/lb_admin_update_order"].includes(path) && method === "POST") ||
       (path === "/auth/v1/admin/generate_link" && method === "POST") ||
