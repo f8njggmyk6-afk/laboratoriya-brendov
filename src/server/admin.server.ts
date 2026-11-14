@@ -244,13 +244,16 @@ export async function handleAdminAuth(request: Request) {
       setSession(headers, result.data.session);
       return privateJson({ authenticated: true, email }, 200, headers);
     }
+    const initialPin = body.action === "pin-initialize";
+    if (initialPin && (await pinConfig()))
+      throw new AdminError(409, "PIN уже установлен");
     const settingPin = body.action === "pin-setup" || body.action === "pin-setup-request";
     const owner = settingPin ? await requireAdmin(request, headers) : null;
     const email = owner?.email ??
       (typeof body.email === "string" ? body.email.trim().toLowerCase() : "");
     if (email !== ownerEmail())
       throw new AdminError(403, "Вход доступен только владельцу");
-    if (body.action === "pin-setup" && (typeof body.pin !== "string" || !/^\d{10}$/.test(body.pin)))
+    if ((initialPin || body.action === "pin-setup") && (typeof body.pin !== "string" || !/^\d{10}$/.test(body.pin)))
       throw new AdminError(400, "Введите 10 цифр PIN");
     if (body.action === "request" || body.action === "pin-setup-request") {
       await rateLimit("owner-code:" + email, 1, 60);
@@ -284,7 +287,7 @@ export async function handleAdminAuth(request: Request) {
         );
       return privateJson({ ok: true }, 200, headers);
     }
-    if (body.action === "verify" || body.action === "pin-setup") {
+    if (initialPin || body.action === "verify" || body.action === "pin-setup") {
       if (typeof body.code !== "string" || !/^\d{6,10}$/.test(body.code))
         throw new AdminError(400, "Введите код из письма");
       await rateLimit("owner-verify:" + email, 8, 900);
@@ -301,13 +304,12 @@ export async function handleAdminAuth(request: Request) {
       )
         throw new AdminError(401, "Код неверный или уже истёк");
       setSession(headers, data.session);
-      if (body.action === "pin-setup" && typeof body.pin === "string") {
+      if ((initialPin || body.action === "pin-setup") && typeof body.pin === "string") {
         const salt = randomBytes(16);
         const key = await hashPin(body.pin, salt);
-        const { error: saveError } = await database().from("lb_admin_pin").upsert({
-          owner_email: email,
-          pin_hash: salt.toString("hex") + ":" + key.toString("hex"),
-        });
+        const table = database().from("lb_admin_pin");
+        const record = { owner_email: email, pin_hash: salt.toString("hex") + ":" + key.toString("hex") };
+        const { error: saveError } = await (initialPin ? table.insert(record) : table.upsert(record));
         if (saveError) throw new AdminError(503, "Не удалось сохранить PIN. Запросите новый код и повторите попытку.");
         return privateJson({ pinEnabled: true }, 200, headers);
       }

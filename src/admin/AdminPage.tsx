@@ -102,6 +102,7 @@ export function AdminPage() {
   const [pinEnabled, setPinEnabled] = useState(false);
   const [useEmail, setUseEmail] = useState(false);
   const pinLogin = pinEnabled && !useEmail;
+  const initialPinSetup = session === "anonymous" && showPinSetup && !pinEnabled;
   const [codeSent, setCodeSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -159,6 +160,10 @@ export function AdminPage() {
   async function login(event: FormEvent) {
     event.preventDefault();
     if (busy) return;
+    if (initialPinSetup && codeSent && newPin !== confirmPin) {
+      setError("Введённые PIN не совпадают.");
+      return;
+    }
     setBusy(true);
     setError("");
     setMessage("");
@@ -166,9 +171,20 @@ export function AdminPage() {
       const data = await api("auth", "POST", {
         ...(pinLogin
           ? { action: "pin", code }
-          : { action: codeSent ? "verify" : "request", email, ...(codeSent ? { code } : {}) }),
+          : {
+              action: codeSent ? (initialPinSetup ? "pin-initialize" : "verify") : "request",
+              email,
+              ...(codeSent ? { code } : {}),
+              ...(initialPinSetup && codeSent ? { pin: newPin } : {}),
+            }),
       });
-      if (data.authenticated) {
+      if (data.authenticated || (initialPinSetup && data.pinEnabled)) {
+        if (initialPinSetup) {
+          setPinEnabled(true);
+          setShowPinSetup(false);
+          clearPinSetup();
+          setMessage("PIN сохранён.");
+        }
         setSession("owner");
         setCode("");
         setCodeSent(false);
@@ -356,9 +372,9 @@ export function AdminPage() {
         {session === "anonymous" ? (
           <section className="admin-login">
             <span className="admin-kicker">Только для владельца</span>
-            <h1>Панель заказов</h1>
+            <h1>{initialPinSetup ? "Установить PIN" : "Панель заказов"}</h1>
             <p>
-              {pinLogin ? "Введите PIN владельца." : "Вход по одноразовому коду на почту."}
+              {initialPinSetup ? "Подтверди почту один раз и задай PIN из 10 цифр." : pinLogin ? "Введите PIN владельца." : "Вход по одноразовому коду на почту."}
             </p>
             {!configured ? (
               <div className="admin-setup-note">
@@ -403,10 +419,24 @@ export function AdminPage() {
                   />
                 </>
               ) : null}
+              {initialPinSetup && codeSent ? (
+                <>
+                  <label htmlFor="admin-initial-pin">Новый PIN</label>
+                  <input id="admin-initial-pin" type="password" inputMode="numeric"
+                    autoComplete="new-password" pattern="[0-9]{10}" maxLength={10}
+                    value={newPin} onChange={(e) => setNewPin(e.target.value)} required />
+                  <label htmlFor="admin-initial-pin-confirm">Повтори PIN</label>
+                  <input id="admin-initial-pin-confirm" type="password" inputMode="numeric"
+                    autoComplete="new-password" pattern="[0-9]{10}" maxLength={10}
+                    value={confirmPin} onChange={(e) => setConfirmPin(e.target.value)} required />
+                </>
+              ) : null}
               <button className="admin-primary" disabled={busy || !configured}>
                 {busy
                   ? "Подождите…"
-                  : pinLogin || codeSent
+                  : initialPinSetup && codeSent
+                    ? "Сохранить PIN"
+                    : pinLogin || codeSent
                     ? "Войти в панель →"
                     : "Получить код входа →"}
               </button>
