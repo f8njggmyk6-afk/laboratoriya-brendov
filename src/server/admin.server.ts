@@ -1,5 +1,5 @@
 import { createClient, type Session } from "@supabase/supabase-js";
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomUUID, scrypt, timingSafeEqual } from "node:crypto";
 import { summarizeServices, serviceIdentity } from "../site/serviceCatalog";
 import { validateOrderPatch } from "../admin/model";
 
@@ -65,6 +65,24 @@ async function gatewayFetch(input: RequestInfo | URL, init?: RequestInit) {
     signal: request.signal,
     redirect: "error",
   });
+}
+async function pinConfig() {
+  const { data, error } = await database().from("lb_admin_pin")
+    .select("pin_hash").eq("owner_email", ownerEmail()!).maybeSingle();
+  const hash = error ? undefined : data?.pin_hash ?? process.env.LB_ADMIN_PIN_HASH;
+  return typeof hash === "string" ? hash.match(/^([a-f0-9]{32}):([a-f0-9]{64})$/i) : null;
+}
+function hashPin(pin: string, salt: Buffer) {
+  return new Promise<Buffer>((resolve, reject) => {
+    scrypt(pin, salt, 32, (error, key) => {
+      if (error) reject(error);
+      else resolve(key);
+    });
+  });
+}
+async function matchesPin(pin: string, config: RegExpMatchArray) {
+  const actual = await hashPin(pin, Buffer.from(config[1], "hex"));
+  return timingSafeEqual(actual, Buffer.from(config[2], "hex"));
 }
 const ownerEmail = () => process.env.LB_ADMIN_EMAIL?.trim().toLowerCase();
 export function assertOrigin(request: Request) {
@@ -168,9 +186,19 @@ export async function handleAdminAuth(request: Request) {
           200,
           headers,
         );
-      const user = await requireAdmin(request, headers);
+      let user;
+      try {
+        user = await requireAdmin(request, headers);
+      } catch (error) {
+        if (!(error instanceof AdminError) || error.status !== 401) throw error;
+        return privateJson(
+          { authenticated: false, pinEnabled: !!(await pinConfig()) },
+          200,
+          headers,
+        );
+      }
       return privateJson(
-        { authenticated: true, email: user.email },
+        { authenticated: true, email: user.email, pinEnabled: !!(await pinConfig()) },
         200,
         headers,
       );
@@ -195,11 +223,36 @@ export async function handleAdminAuth(request: Request) {
       request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() ??
       "unknown";
     await rateLimit("auth-ip:" + ip, 12, 900);
-    const email =
-      typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    if (body.action === "pin") {
+      const config = await pinConfig();
+      if (!config) throw new AdminError(503, "Вход по PIN ещё не настроен");
+      if (typeof body.code !== "string" || !/^\d{10}$/.test(body.code))
+        throw new AdminError(400, "Введите 10 цифр PIN");
+      const email = ownerEmail()!;
+      await rateLimit("owner-pin:" + email, 5, 900);
+      if (!(await matchesPin(body.code, config)))
+        throw new AdminError(401, "Неверный PIN");
+      await rateLimit("owner-code:" + email, 1, 60);
+      const db = database();
+      const { data, error } = await db.auth.admin.generateLink({ type: "magiclink", email });
+      if (error || !data.properties?.email_otp)
+        throw new AdminError(503, "Вход временно недоступен");
+      const result = await db.auth.verifyOtp({ email, token: data.properties.email_otp, type: "email" });
+      if (result.error || !result.data.session || !result.data.user?.email_confirmed_at ||
+          result.data.user.email?.toLowerCase() !== email)
+        throw new AdminError(503, "Вход временно недоступен");
+      setSession(headers, result.data.session);
+      return privateJson({ authenticated: true, email }, 200, headers);
+    }
+    const settingPin = body.action === "pin-setup" || body.action === "pin-setup-request";
+    const owner = settingPin ? await requireAdmin(request, headers) : null;
+    const email = owner?.email ??
+      (typeof body.email === "string" ? body.email.trim().toLowerCase() : "");
     if (email !== ownerEmail())
       throw new AdminError(403, "Вход доступен только владельцу");
-    if (body.action === "request") {
+    if (body.action === "pin-setup" && (typeof body.pin !== "string" || !/^\d{10}$/.test(body.pin)))
+      throw new AdminError(400, "Введите 10 цифр PIN");
+    if (body.action === "request" || body.action === "pin-setup-request") {
       await rateLimit("owner-code:" + email, 1, 60);
       const key = process.env.RESEND_API_KEY,
         from = process.env.RESEND_FROM_EMAIL;
@@ -231,7 +284,7 @@ export async function handleAdminAuth(request: Request) {
         );
       return privateJson({ ok: true }, 200, headers);
     }
-    if (body.action === "verify") {
+    if (body.action === "verify" || body.action === "pin-setup") {
       if (typeof body.code !== "string" || !/^\d{6,10}$/.test(body.code))
         throw new AdminError(400, "Введите код из письма");
       await rateLimit("owner-verify:" + email, 8, 900);
@@ -248,6 +301,16 @@ export async function handleAdminAuth(request: Request) {
       )
         throw new AdminError(401, "Код неверный или уже истёк");
       setSession(headers, data.session);
+      if (body.action === "pin-setup" && typeof body.pin === "string") {
+        const salt = randomBytes(16);
+        const key = await hashPin(body.pin, salt);
+        const { error: saveError } = await database().from("lb_admin_pin").upsert({
+          owner_email: email,
+          pin_hash: salt.toString("hex") + ":" + key.toString("hex"),
+        });
+        if (saveError) throw new AdminError(503, "Не удалось сохранить PIN. Запросите новый код и повторите попытку.");
+        return privateJson({ pinEnabled: true }, 200, headers);
+      }
       return privateJson({ authenticated: true, email }, 200, headers);
     }
     throw new AdminError(400, "Неизвестное действие");
